@@ -1,0 +1,5 @@
+{
+  "status": "Pending",
+  "ignorableValue": "${json-unit.ignore}",
+  "regexValue": "${json-unit.regex}[A-Z]+"
+}
