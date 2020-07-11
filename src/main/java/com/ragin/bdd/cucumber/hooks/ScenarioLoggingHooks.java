@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.hooks;
 
-import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.Loggable;
+import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -29,7 +29,7 @@ public class ScenarioLoggingHooks extends Loggable {
 					scenario.getStatus()
 			));
 		} else {
-			ResponseEntity<String> latestResponse = BaseCucumberCore.latestResponse;
+			ResponseEntity<String> latestResponse = ScenarioStateContext.current().getLatestResponse();
 			if (latestResponse != null) {
 				LOG.error(String.format(
 						"Scenario FAIL: Exiting %s\nResponse status:%d\nResponse body:\n%s\n----------------\n",

@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.glue;
 
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
-import io.cucumber.java.en.And;
+import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.Given;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -18,7 +18,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      */
     @Given("that all file paths are relative to {string}")
     public void givenThatAllFilePathsAreRelativeTo(String basePath) {
-        fileBasePath = basePath;
+        ScenarioStateContext.current().setFileBasePath(basePath);
     }
 
     /**
@@ -26,7 +26,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      */
     @Given("that all URL's are relative to {string}")
     public void givenThatAllURLSAreRelativeTo(String basePath) {
-        urlBasePath = basePath;
+        ScenarioStateContext.current().setUrlBasePath(basePath);
     }
 
     /**
@@ -34,12 +34,12 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      */
     @Given("that a bearer token without scopes is used")
     public void givenThatBearerTokenWithoutScopesIsUsed() {
-        bearerToken = noScopeBearerToken;
+        ScenarioStateContext.current().setBearerToken(noScopeBearerToken);
     }
 
     @Given("that the API path is {string}")
     public void givenThatAPIPathIs(String apiPath) {
-        uriPath = apiPath;
+        ScenarioStateContext.current().setUriPath(apiPath);
     }
 
     /**
@@ -47,6 +47,6 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      */
     @Given("that the file {string} is used as the body")
     public void givenThatTheFileIsUsedAsTheBody(String pathToFile) throws Exception {
-        editableBody = readFile(pathToFile);
+        ScenarioStateContext.current().setEditableBody(readFile(pathToFile));
     }
 }

@@ -1,8 +1,8 @@
 package com.ragin.bdd.cucumber.hooks;
 
-import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
 import com.ragin.bdd.cucumber.core.Loggable;
+import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,6 @@ public class ResetHooks extends Loggable {
     @Before(order = 3)
     public void resetBaseCucumberCoreState(Scenario scenario) {
         LOG.info(String.format("Cleanup test state for scenario %s", scenario.getName()));
-        new BaseCucumberCore().resetState();
+        ScenarioStateContext.current().reset();
     }
 }

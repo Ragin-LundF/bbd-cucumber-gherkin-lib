@@ -64,7 +64,7 @@ public class DatabaseGlue extends BaseCucumberCore {
         String actualResultAsJSON = mapper.writeValueAsString(queryResults);
 
         // compare JSON
-        compareJson(expectedResultAsJSON, actualResultAsJSON);
+        assertJSONisEqual(expectedResultAsJSON, actualResultAsJSON);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.ragin.bdd.cucumber.glue;
 
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
+import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import com.ragin.bdd.cucumber.utils.JsonUtils;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
@@ -34,7 +35,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     private TestRestTemplate restTemplate;
 
     private static void setLatestResponse(ResponseEntity<String> latestResponse) {
-        BaseCucumberCore.latestResponse = latestResponse;
+        ScenarioStateContext.current().setLatestResponse(latestResponse);
     }
 
     @PostConstruct
@@ -59,7 +60,14 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     public void whenExecutingAGETCallToPath(final String path) {
         final String url = fullURLFor(path);
         final HttpHeaders headers = createHTTPHeader(false);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.GET,
+                        new HttpEntity<>(headers),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -69,7 +77,14 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     public void whenExecutingAnAuthorizedGETCallToUrl(final String path) {
         final String url = fullURLFor(path);
         final HttpHeaders headers = createHTTPHeader(true);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.GET,
+                        new HttpEntity<>(headers),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -81,7 +96,14 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
         HttpHeaders headers = createHTTPHeader(false);
 
         String body = readFile(pathToFile);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.POST,
+                        new HttpEntity<>(body, headers),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -93,7 +115,14 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
         HttpHeaders headers = createHTTPHeader(true);
 
         String body = readFile(pathToFile);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.POST,
+                        new HttpEntity<>(body, headers),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -124,8 +153,8 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
             throw new IllegalArgumentException("Dynamic URL parts are null");
         } else {
             // Prepare request
-            String path = uriPath;
-            String body = editableBody;
+            String path = ScenarioStateContext.current().getUriPath();
+            String body = ScenarioStateContext.current().getEditableBody();
 
             // assert that given for path and body was previously done
             Assert.assertNotNull("No given path found", path);
@@ -136,7 +165,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
 
             for (Map<String, String> stringStringMap : dataTableRowList) {
                 // Try to resolve value from context map
-                String uriValue = testContextMap.get(stringStringMap.get("URI Values"));
+                String uriValue = ScenarioStateContext.current().getScenarioContextMap().get(stringStringMap.get("URI Values"));
                 // If context map knows nothing about the value, use value directly
                 if (uriValue == null) {
                     uriValue = stringStringMap.get("URI Values");
@@ -149,7 +178,14 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
             }
             HttpHeaders headers = createHTTPHeader(true);
 
-            setLatestResponse(restTemplate.exchange(fullURLFor(path), HttpMethod.POST, new HttpEntity<>(body, headers), String.class));
+            setLatestResponse(
+                    restTemplate.exchange(
+                            fullURLFor(path),
+                            HttpMethod.POST,
+                            new HttpEntity<>(body, headers),
+                            String.class
+                    )
+            );
         }
     }
 
@@ -158,11 +194,21 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      */
     @When("executing an authorized POST call to {string} with previously given body")
     public void whenExecutingAnAuthorizedPOSTCallToWithGivenBody(String path) {
-        Assert.assertNotNull("No body was previously given!", editableBody);
+        Assert.assertNotNull("No body was previously given!", ScenarioStateContext.current().getEditableBody());
         String url = fullURLFor(path);
         HttpHeaders headers = createHTTPHeader(true);
 
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(editableBody, headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.POST,
+                        new HttpEntity<>(
+                                ScenarioStateContext.current().getEditableBody(),
+                                headers
+                        ),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -174,7 +220,14 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
         HttpHeaders headers = createHTTPHeader(false);
 
         String body = readFile(pathToFile);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.PUT,
+                        new HttpEntity<>(body, headers),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -186,7 +239,14 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
         HttpHeaders headers = createHTTPHeader(true);
 
         String body = readFile(pathToFile);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(body, headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.PUT,
+                        new HttpEntity<>(body, headers),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -196,7 +256,17 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     public void whenExecutingAPUTCallToPathWithGivenBody(String path) {
         String url = fullURLFor(path);
         HttpHeaders headers = createHTTPHeader(false);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(editableBody, headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.PUT,
+                        new HttpEntity<>(
+                                ScenarioStateContext.current().getEditableBody(),
+                                headers
+                        ),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -206,7 +276,17 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     public void whenExecutingAnAuthorizedPUTCallToPathWithGivenBody(String path) {
         String url = fullURLFor(path);
         HttpHeaders headers = createHTTPHeader(true);
-        setLatestResponse(restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(editableBody, headers), String.class));
+        setLatestResponse(
+                restTemplate.exchange(
+                        url,
+                        HttpMethod.PUT,
+                        new HttpEntity<>(
+                                ScenarioStateContext.current().getEditableBody(),
+                                headers
+                        ),
+                        String.class
+                )
+        );
     }
 
     /**
@@ -237,13 +317,30 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
         String safePropertyPath = "/" + propertyPath.replace(".", "/");
 
         if ("null".equals(value)) {
-            editableBody = JsonUtils.removeJsonField(editableBody, safePropertyPath);
+            ScenarioStateContext.current().setEditableBody(
+                    JsonUtils.removeJsonField(
+                            ScenarioStateContext.current().getEditableBody(),
+                            safePropertyPath
+                    )
+            );
         } else if (value.matches("\\d* characters")) {
             Integer numOfChars = Integer.parseInt(value.split(" ")[0]);
             String newValue = StringUtils.rightPad("", numOfChars, "1234567890");
-            editableBody = JsonUtils.editJsonField(editableBody, safePropertyPath, newValue);
+            ScenarioStateContext.current().setEditableBody(
+                    JsonUtils.editJsonField(
+                            ScenarioStateContext.current().getEditableBody(),
+                            safePropertyPath,
+                            newValue
+                    )
+            );
         } else {
-            editableBody = JsonUtils.editJsonField(editableBody, safePropertyPath, value);
+            ScenarioStateContext.current().setEditableBody(
+                    JsonUtils.editJsonField(
+                            ScenarioStateContext.current().getEditableBody(),
+                            safePropertyPath,
+                            value
+                    )
+            );
         }
     }
 
@@ -260,7 +357,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
         headers.add("Content-Type", "application/json");
 
         if (addAuthorisation) {
-            headers.add("Authorization", "Bearer " + bearerToken);
+            headers.add("Authorization", "Bearer " + ScenarioStateContext.current().getBearerToken());
         }
 
         return headers;
@@ -273,6 +370,6 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      * @return  full URL as protocol:server_host:port/basePath/path
      */
     private String fullURLFor(String path) {
-        return SERVER_URL + port + urlBasePath + path;
+        return SERVER_URL + port + ScenarioStateContext.current().getUrlBasePath() + path;
     }
 }

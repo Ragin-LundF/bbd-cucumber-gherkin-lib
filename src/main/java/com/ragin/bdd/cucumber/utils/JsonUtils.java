@@ -1,17 +1,15 @@
 package com.ragin.bdd.cucumber.utils;
 
+import static net.javacrumbs.jsonunit.core.Option.TREATING_NULL_AS_ABSENT;
 import com.ragin.bdd.cucumber.core.Loggable;
-import net.javacrumbs.jsonunit.JsonAssert;
-
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import java.io.StringReader;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import static net.javacrumbs.jsonunit.core.Option.TREATING_NULL_AS_ABSENT;
+import net.javacrumbs.jsonunit.JsonAssert;
 
 /**
  * Utility class used to work with JSON objects.
