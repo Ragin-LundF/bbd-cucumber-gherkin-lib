@@ -24,8 +24,8 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
     /**
      * Defines the base URL path to which other URLs are relative
      */
-    @Given("that all URL's are relative to {string}")
-    public void givenThatAllURLSAreRelativeTo(String basePath) {
+    @Given("that all URLs are relative to {string}")
+    public void givenThatAllURLsAreRelativeTo(String basePath) {
         ScenarioStateContext.current().setUrlBasePath(basePath);
     }
 
