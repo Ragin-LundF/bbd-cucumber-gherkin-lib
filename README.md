@@ -27,3 +27,27 @@ This is very helpful for IDE's with code completion.
 | `When` | `executing a` or `I set` |
 | `Then` | `I ensure` or `I store` |
 
+# Steps
+
+## Database
+Before every Scenario the library looks for a `database/reset_database.xml` file (`$projectDir/src/test/resources/database/reset_database.xml`).
+This file has to be a [Liquibase](https://www.liquibase.org) definition, which can contain everything to reset a database (`truncate`, `delete`, `insert`...).
+
+### Given
+#### Liquibase script initialization
+```gherkin
+Given: that the database was initialized with the liquibase file {string}
+```
+
+Executes a liquibase script to prepare the database.
+
+### Then / And
+
+#### Database comparision
+```gherkin
+I ensure that the result of the query of the file {string} is equal to the CSV file {string}
+```
+
+Executes an SQL query from a file and compares the result in CSV format with the contents of the second file.
+The conversion of the database result to CSV is done internally.
+
