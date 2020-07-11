@@ -11,6 +11,7 @@ Read also about [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/) 
 # Table of content
 
 - [Cucumber REST Gherkin library](#cucumber-rest-gherkin-library)
+- [Table of content](#table-of-content)
 - [Support JUnit 5](#support-junit-5)
 - [Basic Concept](#basic-concept)
 - [Steps](#steps)
@@ -26,16 +27,20 @@ Read also about [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/) 
       - [Define that a token without scopes should be used.](#define-that-a-token-without-scopes-should-be-used)
       - [Set a URI path for later execution](#set-a-uri-path-for-later-execution)
       - [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)
+    - [When](#when)
+      - [GET requests](#get-requests)
+        - [Execute a GET request call to an endpoint](#execute-a-get-request-call-to-an-endpoint)
+        - [Execute an authorized GET request call](#execute-an-authorized-get-request-call)
+      - [POST requests](#post-requests)
+        - [Execute a POST request call to an endpoint with body from file](#execute-a-post-request-call-to-an-endpoint-with-body-from-file)
+        - [Execute an authorized POST request call to an endpoint with body from file](#execute-an-authorized-post-request-call-to-an-endpoint-with-body-from-file)
+        - [Execute an authorized POST request call to previously given URL and body with dynamic URI elements](#execute-an-authorized-post-request-call-to-previously-given-url-and-body-with-dynamic-uri-elements)
+        - [Executing an authorized POST request call to a URL with a previously given body](#executing-an-authorized-post-request-call-to-a-url-with-a-previously-given-body)
     - [Then](#then)
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
       - [Validate response body with given String](#validate-response-body-with-given-string)
       - [Read from Response and set it to a `Feature` context](#read-from-response-and-set-it-to-a-feature-context)
-    - [When](#when)
-      - [GET requests](#get-requests)
-        - [Execute a GET request call to an endpoint](#execute-a-get-request-call-to-an-endpoint)
-        - [Execute a GET request call with authorized header](#execute-a-get-request-call-with-authorized-header)
-      - [POST requests](#post-requests)
 
 # Support JUnit 5
 To support JUnit 5 add the `org.junit.vintage:junit-vintage-engine` dependency to your project.
@@ -175,6 +180,80 @@ Given: that the file {string} is used as the body
 This sets the JSON file for the body for later execution.
 It is required to use this `Given` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
 
+### When
+#### GET requests
+The paths that are used here can be shorten by set a base URL path with [Set base path for URLs](#set-base-path-for-urls) with a `Given` Step before.
+##### Execute a GET request call to an endpoint
+```gherkin
+When: executing a GET call to {string}
+```
+
+Calls the given URL path as a GET request without `Authorization` header.
+
+##### Execute an authorized GET request call
+```gherkin
+When: executing an authorized GET call to {string}
+```
+
+Calls the given URL path as a GET request with `Authorization` header and `Bearer` token.
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+#### POST requests
+##### Execute a POST request call to an endpoint with body from file
+```gherkin
+When: executing a POST call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a POST request without `Authorization` header, and a body defined in the given file.
+
+##### Execute an authorized POST request call to an endpoint with body from file
+```gherkin
+When: executing an authorized POST call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a POST request with `Authorization` header, and a body defined in the given file.
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Execute an authorized POST request call to previously given URL and body with dynamic URI elements
+```gherkin
+When: executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+| URI Elements  | URI Values |
+| resourceId    | abc-def-gh |
+| subResourceId | abc-def-gh |
+```
+
+Calls a previously given URL path and Body as a POST request and replace dynamic URI elements with values.
+
+In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
+The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
+
+This datatable requires the header `| URI Elements  | URI Values |`.
+
+The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
+If it finds the key, this key will be used, else it uses the value of the table directly.
+
+To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
+But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
+
+**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Executing an authorized POST request call to a URL with a previously given body
+```gherkin
+When: executing an authorized POST call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a POST request.
+**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+
+
+
+
+
+
+
+
+
 ### Then
 #### Validate HTTP response code
 ```gherkin
@@ -216,62 +295,3 @@ This can be used to write the value of a JSON element of the response to a conte
 
 Use this with caution, because at the point where the element is reused, the `Scenario` is hard coupled to this `Step` which ultimately makes it not executable as single `Step`.
 On the other hand, this can be useful to support cross-`Features` testing with dynamic values for end-to-end testing.
-
-### When
-#### GET requests
-The paths that are used here can be shorten by set a base URL path with [Set base path for URLs](#set-base-path-for-urls) with a `Given` Step before.
-##### Execute a GET request call to an endpoint
-```gherkin
-When: executing a GET call to {string}
-```
-
-Calls the given URI as a GET request without `Authorization` header.
-
-##### Execute an authorized GET request call
-```gherkin
-When: executing an authorized GET call to {string}
-```
-
-Calls the given URI as a GET request with `Authorization` header and `Bearer` token.
-The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
-
-#### POST requests
-##### Execute a POST request call to an endpoint with body from file
-```gherkin
-When: executing a POST call to {string} with the body from file {string}
-```
-
-Calls the given URI as a POST request without `Authorization` header, and a body defined in the given file.
-
-##### Execute an authorized POST request call to an endpoint with body from file
-```gherkin
-When: executing an authorized POST call to {string} with the body from file {string}
-```
-
-Calls the given URI as a POST request with `Authorization` header, and a body defined in the given file.
-The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
-
-##### Execute an authorized POST request call to previously given URL and body with dynamic URI elements
-```gherkin
-When: executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
-| URI Elements  | URI Values |
-| resourceId    | abc-def-gh |
-| subResourceId    | abc-def-gh |
-```
-
-Calls a previously given URI and Body as a POST request and replace dynamic URI elements with values.
-
-In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
-The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
-
-This datatable requires the header `| URI Elements  | URI Values |`.
-
-The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
-If it finds the key, this key will be used, else it uses the value of the table directly.
-
-To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
-But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
-
-**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
-The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
-
