@@ -46,9 +46,9 @@ public class DatabaseGlue extends BaseCucumberCore {
      * @param pathToCsvFile     Path/filename to CSV file with result to compare
      * @throws Throwable        Unable to read file or to parse results
      */
-    @Then("ensure that the result of the query of the file {string} is equal to the CSV file {string}")
+    @Then("I ensure that the result of the query of the file {string} is equal to the CSV file {string}")
     @Transactional
-    public void ensureThatResultOfQueryOfFileIsEqualToCSV(String pathToQueryFile, String pathToCsvFile) throws Throwable {
+    public void thenEnsureThatResultOfQueryOfFileIsEqualToCSV(String pathToQueryFile, String pathToCsvFile) throws Throwable {
         // read file
         String sqlStatements = readFile(pathToQueryFile);
         // execute query
