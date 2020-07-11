@@ -1,5 +1,7 @@
 # Cucumber REST Gherkin library
 
+![Java CI with Gradle](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/workflows/Java%20CI%20with%20Gradle/badge.svg)
+
 This library supports some basic sentences to handle REST API calls and basic database operations.
 
 It is based on [Cucumber](https://cucumber.io) and helps to support [Behaviour-Driven Development (BDD)](https://cucumber.io/docs/bdd/).
