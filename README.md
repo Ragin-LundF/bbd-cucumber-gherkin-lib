@@ -4,8 +4,11 @@ This library supports some basic sentences to handle REST API calls and basic da
 
 It is based on [Cucumber](https://cucumber.io) and helps to support [Behaviour-Driven Development (BDD)](https://cucumber.io/docs/bdd/).
 
+Cucumber executes `Steps` in form of [Gherkin](https://cucumber.io/docs/gherkin/) language.
 
-# Support JUnit 5
+Read also about [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/) of Cucumber to avoid problems and to have a clear style.
+
+## Support JUnit 5
 To support JUnit 5 add the `org.junit.vintage:junit-vintage-engine` dependency to your project.
 This allows JUnit 5 to execute JUnit 3 and 4 tests.
 
@@ -18,16 +21,35 @@ testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
 # Basic Concept
 
 This library defines a set of sentences and tries to harmonize them and provide a context-related beginning of sentences.
-This is very helpful for IDE's with code completion.
+This is very helpful for IDEs with code completion.
 
-| Step | Sentence start |
-| --- | --- |
-| `Given` | `that` |
-| `And` | `that` (reuse of given) |
-| `When` | `executing a` or `I set` |
-| `Then` | `I ensure` or `I store` |
+| Step | Sentence start | Main usage |
+| --- | --- | --- |
+| `Given` | `that` | Prepare something |
+| `When` | `executing a` or `I set` | Do something |
+| `Then` | `I ensure` or `I store` | Validate something |
 
 # Steps
+It is a best-practice to not use syntax like this:
+```gherkin
+Given: that something was done
+Given: that something else was done
+Given: that something more was done
+```
+
+For that `Gherkin` offers `Steps` like `And` to make the definition more readable. In general every sentence can be reused with another `Step`.
+It is recommended to follow the basic definition like described under [Basic concept](#basic-concept).
+
+This transforms the upper example to:
+```gherkin
+Given: that something was done
+And: that something else was done
+And: that something more was done
+```
+
+This sounds much better, didn't it?
+
+
 ## Database
 Before every Scenario the library looks for a `database/reset_database.xml` file (`$projectDir/src/test/resources/database/reset_database.xml`).
 This file has to be a [Liquibase](https://www.liquibase.org) definition, which can contain everything to reset a database (`truncate`, `delete`, `insert`...).
@@ -110,7 +132,6 @@ cucumberTest:
 ```
 
 #### Set a URI path for later execution
-(can also be used as `And:` step, if a `Given:` step has been written before)
 ```gherkin
 Given: that the API path is {string}
 ```
@@ -118,11 +139,52 @@ This sets a URI, path which can be executed later.
 It is required to use this `Given`/`And` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
 
 #### Set a body from JSON file for later execution
-(can also be used as `And:` step, if a `Given:` step has been written before)
 ```gherkin
 Given: that the file {string} is used as the body
 ```
 
 This sets the JSON file for the body for later execution.
-It is required to use this `Given`/`And` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
+It is required to use this `Given` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
+
+### Then
+#### Validate HTTP response code
+```gherkin
+Then: I ensure that the status code of the response is {int}
+```
+
+Validates, that the response is the expected HTTP code (e.g. `200`).
+
+
+#### Validate response body with JSON file
+```gherkin
+Then: I ensure that the body of the response is equal to the file {string}
+```
+
+Validates, that the body of the response is equal to the given file.
+Like mentioned above, this file can contain [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax for dynamic field validation.
+
+#### Validate response body with given String
+```gherkin
+Then: I ensure that the body of the response is equal to
+    """
+    {
+      "field": "value",
+    }
+    """
+```
+
+In this case, the JSON is written directly under the sentence and enclosed in three double quotation marks.
+Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
+
+#### Read from Response and set it to a `Feature` context
+```gherkin
+Then: I store the string of the field {string} in the context {string} for later usage
+```
+
+**Attention: This is an [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/)!**
+
+This can be used to write the value of a JSON element of the response to a context that is available through the `Feature` or other `Scenarios`.
+
+Use this with caution, because at the point where the element is reused, the `Scenario` is hard coupled to this `Step` which ultimately makes it not executable as single `Step`.
+On the other hand, this can be useful to support cross-`Features` testing with dynamic values for end-to-end testing.
 
