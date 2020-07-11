@@ -18,7 +18,7 @@ Read also about [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/) 
   - [Database](#database)
     - [Given](#given)
       - [Liquibase script initialization](#liquibase-script-initialization)
-    - [Then / And](#then--and)
+    - [Then](#then)
       - [Database data comparision](#database-data-comparision)
   - [REST](#rest)
     - [Given](#given-1)
@@ -35,8 +35,17 @@ Read also about [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/) 
         - [Execute a POST request call to an endpoint with body from file](#execute-a-post-request-call-to-an-endpoint-with-body-from-file)
         - [Execute an authorized POST request call to an endpoint with body from file](#execute-an-authorized-post-request-call-to-an-endpoint-with-body-from-file)
         - [Execute an authorized POST request call to previously given URL and body with dynamic URI elements](#execute-an-authorized-post-request-call-to-previously-given-url-and-body-with-dynamic-uri-elements)
-        - [Executing an authorized POST request call to a URL with a previously given body](#executing-an-authorized-post-request-call-to-a-url-with-a-previously-given-body)
-    - [Then](#then)
+        - [Execute an authorized POST request call to a URL with a previously given body](#execute-an-authorized-post-request-call-to-a-url-with-a-previously-given-body)
+      - [PUT requests](#put-requests)
+        - [Execute a PUT request call to an endpoint with body from file](#execute-a-put-request-call-to-an-endpoint-with-body-from-file)
+        - [Execute an authorized PUT request call to an endpoint with body from file](#execute-an-authorized-put-request-call-to-an-endpoint-with-body-from-file)
+        - [Execute a PUT request call to a URL with a previously given body](#execute-a-put-request-call-to-a-url-with-a-previously-given-body)
+        - [Execute an authorized PUT request call to a URL with a previously given body](#execute-an-authorized-put-request-call-to-a-url-with-a-previously-given-body)
+      - [DELETE requests](#delete-requests)
+        - [Execute a DELETE request call to a URL](#execute-a-delete-request-call-to-a-url)
+        - [Execute an authorized DELETE request call to a URL](#execute-an-authorized-delete-request-call-to-a-url)
+      - [Body manipulation](#body-manipulation)
+    - [Then](#then-1)
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
       - [Validate response body with given String](#validate-response-body-with-given-string)
@@ -96,7 +105,7 @@ Given: that the database was initialized with the liquibase file {string}
 
 Executes a liquibase script to prepare the database.
 
-### Then / And
+### Then
 #### Database data comparision
 ```gherkin
 Then: I ensure that the result of the query of the file {string} is equal to the CSV file {string}
@@ -181,21 +190,22 @@ This sets the JSON file for the body for later execution.
 It is required to use this `Given` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
 
 ### When
+The paths that are used here can be shortened by set a base URL path with [Set base path for URLs](#set-base-path-for-urls) with a `Given` Step before.
+
 #### GET requests
-The paths that are used here can be shorten by set a base URL path with [Set base path for URLs](#set-base-path-for-urls) with a `Given` Step before.
 ##### Execute a GET request call to an endpoint
 ```gherkin
 When: executing a GET call to {string}
 ```
 
-Calls the given URL path as a GET request without `Authorization` header.
+Calls the given URL path as a `GET` request without `Authorization` header.
 
 ##### Execute an authorized GET request call
 ```gherkin
 When: executing an authorized GET call to {string}
 ```
 
-Calls the given URL path as a GET request with `Authorization` header and `Bearer` token.
+Calls the given URL path as a `GET` request with `Authorization` header and `Bearer` token.
 The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
 
 #### POST requests
@@ -204,14 +214,14 @@ The used token depends on [Define that a token without scopes should be used](#d
 When: executing a POST call to {string} with the body from file {string}
 ```
 
-Calls the given URL path as a POST request without `Authorization` header, and a body defined in the given file.
+Calls the given URL path as a `POST` request without `Authorization` header, and a body defined in the given file.
 
 ##### Execute an authorized POST request call to an endpoint with body from file
 ```gherkin
 When: executing an authorized POST call to {string} with the body from file {string}
 ```
 
-Calls the given URL path as a POST request with `Authorization` header, and a body defined in the given file.
+Calls the given URL path as a `POST` request with `Authorization` header, and a body defined in the given file.
 The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
 
 ##### Execute an authorized POST request call to previously given URL and body with dynamic URI elements
@@ -222,7 +232,7 @@ When: executing an authorized POST call with previously given API path, body and
 | subResourceId | abc-def-gh |
 ```
 
-Calls a previously given URL path and Body as a POST request and replace dynamic URI elements with values.
+Calls a previously given URL path and Body as a `POST` request and replace dynamic URI elements with values.
 
 In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
 The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
@@ -238,20 +248,73 @@ But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/
 **Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
 The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
 
-##### Executing an authorized POST request call to a URL with a previously given body
+##### Execute an authorized POST request call to a URL with a previously given body
 ```gherkin
 When: executing an authorized POST call to {string} with previously given body
 ```
 
-Calls the given URL path with a previously given Body as a POST request.
+Calls the given URL path with a previously given Body as a `POST` request.
+**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+#### PUT requests
+##### Execute a PUT request call to an endpoint with body from file
+```gherkin
+When: executing a `PUT` call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a PUT request without `Authorization` header, and a body defined in the given file.
+
+##### Execute an authorized PUT request call to an endpoint with body from file
+```gherkin
+When: executing an authorized `PUT` call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a PUT request with `Authorization` header, and a body defined in the given file.
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+
+##### Execute a PUT request call to a URL with a previously given body
+```gherkin
+When: executing a PUT call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a `PUT` request without `Authorization` header.
 **Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
 
 
+##### Execute an authorized PUT request call to a URL with a previously given body
+```gherkin
+When: executing an authorized PUT call to {string} with previously given body
+```
 
+Calls the given URL path with a previously given Body as an authorized `PUT` request.
+**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
 
+#### DELETE requests
+##### Execute a DELETE request call to a URL
+```gherkin
+When: executing a DELETE call to {string}
+```
 
+Calls the given URL path as a `DELETE` request without `Authorization` header.
 
+##### Execute an authorized DELETE request call to a URL
+```gherkin
+When: executing an authorized DELETE call to {string}
+```
 
+Calls the given URL path as a `DELETE` request with `Authorization` header.
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+#### Body manipulation
+```gherkin
+When: I set the value of the previously given body property {string} to {string}
+```
+
+This can manipulate a previously given body by exchanging a JSON element with the given value.
+**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
 
 
 ### Then
