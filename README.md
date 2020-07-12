@@ -74,6 +74,8 @@ This is very helpful for IDEs with code completion.
 | `When` | `executing a` or `I set` | Do something |
 | `Then` | `I ensure` or `I store` | Validate something |
 
+There are some basic examples in the [src/test](src/test) directory.
+
 # Steps
 It is a best-practice to not use syntax like this:
 ```gherkin
