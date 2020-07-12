@@ -77,9 +77,10 @@ This is very helpful for IDEs with code completion.
 # Steps
 It is a best-practice to not use syntax like this:
 ```gherkin
-Given: that something was done
-Given: that something else was done
-Given: that something more was done
+Scenario:
+  Given that something was done
+  Given that something else was done
+  Given that something more was done
 ```
 
 For that `Gherkin` offers `Steps` like `And` to make the definition more readable. In general every sentence can be reused with another `Step`.
@@ -87,9 +88,10 @@ It is recommended to follow the basic definition like described under [Basic con
 
 This transforms the upper example to:
 ```gherkin
-Given: that something was done
-And: that something else was done
-And: that something more was done
+Scenario:
+  Given that something was done
+  And that something else was done
+  And that something more was done
 ```
 
 This sounds much better, didn't it?
@@ -102,7 +104,8 @@ This file has to be a [Liquibase](https://www.liquibase.org) definition, which c
 ### Given
 #### Liquibase script initialization
 ```gherkin
-Given: that the database was initialized with the liquibase file {string}
+Scenario:
+  Given that the database was initialized with the liquibase file {string}
 ```
 
 Executes a liquibase script to prepare the database.
@@ -110,7 +113,8 @@ Executes a liquibase script to prepare the database.
 ### Then
 #### Database data comparision
 ```gherkin
-Then: I ensure that the result of the query of the file {string} is equal to the CSV file {string}
+Scenario:
+  Then I ensure that the result of the query of the file {string} is equal to the CSV file {string}
 ```
 
 Executes an SQL query from a file and compares the result in CSV format with the contents of the second file.
@@ -131,7 +135,8 @@ For the comparison of the results the library uses `JSON` files, which can be en
 ### Given
 #### Set path base directory for request/result/database files
 ```gherkin
-Given: that all file paths are relative to {string}
+Scenario:
+  Given that all file paths are relative to {string}
 ```
 
 Sets an internal `base file path` for all files in the `Scenario` or `Feature`.
@@ -143,7 +148,8 @@ It is used for:
 
 #### Set base path for URLs
 ```gherkin
-Given: that all URLs are relative to {string}
+Scenario:
+  Given that all URLs are relative to {string}
 ```
 
 Sets an internal `base URL path` for all URLs in the `Scenario` or `Feature`.
@@ -151,7 +157,8 @@ This is very useful to avoid repeating e.g. `/api/v1/myapitotest` before every c
 
 #### Define that a token without scopes should be used.
 ```gherkin
-Given: that a bearer token without scopes is used
+Scenario:
+  Given that a bearer token without scopes is used
 ```
 
 This library supports two types of Bearer tokens. With this step it possible to set the token without scope.
@@ -178,14 +185,16 @@ cucumberTest:
 
 #### Set a URI path for later execution
 ```gherkin
-Given: that the API path is {string}
+Scenario:
+  Given that the API path is {string}
 ```
 This sets a URI, path which can be executed later.
 It is required to use this `Given`/`And` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
 
 #### Set a body from JSON file for later execution
 ```gherkin
-Given: that the file {string} is used as the body
+Scenario:
+  Given that the file {string} is used as the body
 ```
 
 This sets the JSON file for the body for later execution.
@@ -197,14 +206,16 @@ The paths that are used here can be shortened by set a base URL path with [Set b
 #### GET requests
 ##### Execute a GET request call to an endpoint
 ```gherkin
-When: executing a GET call to {string}
+Scenario:
+  When executing a GET call to {string}
 ```
 
 Calls the given URL path as a `GET` request without `Authorization` header.
 
 ##### Execute an authorized GET request call
 ```gherkin
-When: executing an authorized GET call to {string}
+Scenario:
+  When executing an authorized GET call to {string}
 ```
 
 Calls the given URL path as a `GET` request with `Authorization` header and `Bearer` token.
@@ -213,14 +224,16 @@ The used token depends on [Define that a token without scopes should be used](#d
 #### POST requests
 ##### Execute a POST request call to an endpoint with body from file
 ```gherkin
-When: executing a POST call to {string} with the body from file {string}
+Scenario:
+  When executing a POST call to {string} with the body from file {string}
 ```
 
 Calls the given URL path as a `POST` request without `Authorization` header, and a body defined in the given file.
 
 ##### Execute an authorized POST request call to an endpoint with body from file
 ```gherkin
-When: executing an authorized POST call to {string} with the body from file {string}
+Scenario:
+  When executing an authorized POST call to {string} with the body from file {string}
 ```
 
 Calls the given URL path as a `POST` request with `Authorization` header, and a body defined in the given file.
@@ -228,10 +241,11 @@ The used token depends on [Define that a token without scopes should be used](#d
 
 ##### Execute an authorized POST request call to previously given URL and body with dynamic URI elements
 ```gherkin
-When: executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
-| URI Elements  | URI Values |
-| resourceId    | abc-def-gh |
-| subResourceId | abc-def-gh |
+Scenario:
+  When executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+    | URI Elements  | URI Values |
+    | resourceId    | abc-def-gh |
+    | subResourceId | abc-def-gh |
 ```
 
 Calls a previously given URL path and Body as a `POST` request and replace dynamic URI elements with values.
@@ -252,7 +266,8 @@ The used token depends on [Define that a token without scopes should be used](#d
 
 ##### Execute an authorized POST request call to a URL with a previously given body
 ```gherkin
-When: executing an authorized POST call to {string} with previously given body
+Scenario:
+  When executing an authorized POST call to {string} with previously given body
 ```
 
 Calls the given URL path with a previously given Body as a `POST` request.
@@ -262,14 +277,16 @@ The used token depends on [Define that a token without scopes should be used](#d
 #### PUT requests
 ##### Execute a PUT request call to an endpoint with body from file
 ```gherkin
-When: executing a `PUT` call to {string} with the body from file {string}
+Scenario:
+  When executing a `PUT` call to {string} with the body from file {string}
 ```
 
 Calls the given URL path as a PUT request without `Authorization` header, and a body defined in the given file.
 
 ##### Execute an authorized PUT request call to an endpoint with body from file
 ```gherkin
-When: executing an authorized `PUT` call to {string} with the body from file {string}
+Scenario:
+  When executing an authorized `PUT` call to {string} with the body from file {string}
 ```
 
 Calls the given URL path as a PUT request with `Authorization` header, and a body defined in the given file.
@@ -278,7 +295,8 @@ The used token depends on [Define that a token without scopes should be used](#d
 
 ##### Execute a PUT request call to a URL with a previously given body
 ```gherkin
-When: executing a PUT call to {string} with previously given body
+Scenario:
+  When executing a PUT call to {string} with previously given body
 ```
 
 Calls the given URL path with a previously given Body as a `PUT` request without `Authorization` header.
@@ -287,7 +305,8 @@ Calls the given URL path with a previously given Body as a `PUT` request without
 
 ##### Execute an authorized PUT request call to a URL with a previously given body
 ```gherkin
-When: executing an authorized PUT call to {string} with previously given body
+Scenario:
+  When executing an authorized PUT call to {string} with previously given body
 ```
 
 Calls the given URL path with a previously given Body as an authorized `PUT` request.
@@ -297,14 +316,16 @@ The used token depends on [Define that a token without scopes should be used](#d
 #### DELETE requests
 ##### Execute a DELETE request call to a URL
 ```gherkin
-When: executing a DELETE call to {string}
+Scenario:
+  When executing a DELETE call to {string}
 ```
 
 Calls the given URL path as a `DELETE` request without `Authorization` header.
 
 ##### Execute an authorized DELETE request call to a URL
 ```gherkin
-When: executing an authorized DELETE call to {string}
+Scenario:
+  When executing an authorized DELETE call to {string}
 ```
 
 Calls the given URL path as a `DELETE` request with `Authorization` header.
@@ -312,7 +333,8 @@ The used token depends on [Define that a token without scopes should be used](#d
 
 #### Body manipulation
 ```gherkin
-When: I set the value of the previously given body property {string} to {string}
+Scenario:
+  When I set the value of the previously given body property {string} to {string}
 ```
 
 This can manipulate a previously given body by exchanging a JSON element with the given value.
@@ -322,7 +344,8 @@ This can manipulate a previously given body by exchanging a JSON element with th
 ### Then
 #### Validate HTTP response code
 ```gherkin
-Then: I ensure that the status code of the response is {int}
+Scenario:
+  Then I ensure that the status code of the response is {int}
 ```
 
 Validates, that the response is the expected HTTP code (e.g. `200`).
@@ -330,7 +353,8 @@ Validates, that the response is the expected HTTP code (e.g. `200`).
 
 #### Validate response body with JSON file
 ```gherkin
-Then: I ensure that the body of the response is equal to the file {string}
+Scenario:
+  Then I ensure that the body of the response is equal to the file {string}
 ```
 
 Validates, that the body of the response is equal to the given file.
@@ -338,7 +362,8 @@ Like mentioned above, this file can contain [JSON Unit](https://github.com/lukas
 
 #### Validate response body with given String
 ```gherkin
-Then: I ensure that the body of the response is equal to
+Scenario:
+  Then I ensure that the body of the response is equal to
     """
     {
       "field": "value",
@@ -351,7 +376,8 @@ Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/Json
 
 #### Read from Response and set it to a `Feature` context
 ```gherkin
-Then: I store the string of the field {string} in the context {string} for later usage
+Scenario:
+  Then I store the string of the field {string} in the context {string} for later usage
 ```
 
 **Attention: This is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/)!**

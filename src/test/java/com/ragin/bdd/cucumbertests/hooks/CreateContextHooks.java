@@ -1,6 +1,6 @@
 package com.ragin.bdd.cucumbertests.hooks;
 
-import com.ragin.bdd.application.CucumberTestApplication;
+import com.ragin.bdd.Application;
 import io.cucumber.java.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("cucumberTest")
 @SpringBootTest(
-        classes = CucumberTestApplication.class,
+        classes = Application.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 public class CreateContextHooks {
