@@ -61,7 +61,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifactId "cucumber-bdd-baselib"
+            artifactId "bdd-cucumber-gherkin-lib"
         }
     }
 

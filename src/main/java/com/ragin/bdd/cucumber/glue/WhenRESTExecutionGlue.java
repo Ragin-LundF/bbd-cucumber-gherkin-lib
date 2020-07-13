@@ -149,6 +149,42 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      */
     @When("executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     public void whenExecutingAnAuthorizedPOSTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) throws Exception {
+        executePOSTCallToPathWithBodyAndDynamicURLElement(dataTable, true);
+    }
+    /**
+     * Execute a POST call without authentication to the defined URL with body from file and dynamic URL elements.
+     * <p>!!!ATTENTION!!! This is an Anti-Pattern, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
+     * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
+     * <br />
+     * <p>
+     *     DataTable looks like:
+     *     <pre>
+     *     | URI Elements  | URI Values |
+     *     | resourceId    | abc-def-gh |
+     *     | subResourceId | zyx-wvu-ts |
+     *     </pre>
+     * </p>
+     * <br />
+     * <p>Structure:</p>
+     * <ul>
+     *     <li>First line is the header.</li>
+     *     <li>'URI Elements' is the element name of the dynamic URI path without {}.</li>
+     *     <li>'URI Values' will be evaluated first from the scenario context.
+     *     If context var was not found use value directly</li>
+     * </ul>
+     */
+    @When("executing a POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
+    public void whenExecutingAPOSTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) throws Exception {
+        executePOSTCallToPathWithBodyAndDynamicURLElement(dataTable, false);
+    }
+
+    /**
+     * Executes a POST call with dynamic URL and replaces dynamic values with data from DataTable
+     *
+     * @param dataTable     DataTable which contains dynamic values mapping
+     * @param authorized    should the request executed as authorized POST or unauthorized (true = authorized)
+     */
+    private void executePOSTCallToPathWithBodyAndDynamicURLElement(final DataTable dataTable, final boolean authorized) {
         if (dataTable == null) {
             throw new IllegalArgumentException("Dynamic URL parts are null");
         } else {
@@ -176,7 +212,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
                         uriValue
                 );
             }
-            HttpHeaders headers = createHTTPHeader(true);
+            HttpHeaders headers = createHTTPHeader(authorized);
 
             setLatestResponse(
                     restTemplate.exchange(
