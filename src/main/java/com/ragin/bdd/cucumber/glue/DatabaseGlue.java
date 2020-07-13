@@ -35,8 +35,23 @@ public class DatabaseGlue extends BaseCucumberCore {
      */
     @Given("that the database was initialized with the liquibase file {string}")
     @Transactional
-    public void givenThatTheDatabaseWasInitializedWithFile(String pathToFile) throws Exception {
+    public void givenThatTheDatabaseWasInitializedWithLiquibaseFile(String pathToFile) throws Exception {
         databaseExecutorService.executeLiquibaseScript(pathToFile);
+    }
+
+    /**
+     * Execute a file which contains SQL statements
+     *
+     * @param pathToQueryFile   Path/filename to file with query (SQL)
+     * @throws Throwable        Unable to read file or to parse results
+     */
+    @Given("that the SQL statements from the SQL file {string} was executed")
+    @Transactional
+    public void givenThatTheDatabaseWasInitializedWithSQLFile(String pathToQueryFile) throws Throwable {
+        // read file
+        String sqlStatements = readFile(pathToQueryFile);
+        // execute query
+        databaseExecutorService.executeSQL(sqlStatements);
     }
 
     /**

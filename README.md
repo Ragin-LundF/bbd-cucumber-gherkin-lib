@@ -113,6 +113,14 @@ Scenario:
 
 Executes a liquibase script to prepare the database.
 
+#### SQL statement execution
+```gherkin
+Scenario:
+    Given that the SQL statements from the SQL file {string} was executed
+```
+
+Executes an SQL script to prepare/change the database.
+
 ### Then
 #### Database data comparision
 ```gherkin

@@ -88,6 +88,60 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     }
 
     /**
+     * Execute an authorized GET call to the defined URL and dynamic URL elements.
+     * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
+     * <br />
+     * <p>
+     *     DataTable looks like:
+     *     <pre>
+     *     | URI Elements  | URI Values |
+     *     | resourceId    | abc-def-gh |
+     *     | subResourceId | zyx-wvu-ts |
+     *     </pre>
+     * </p>
+     * <br />
+     * <p>Structure:</p>
+     * <ul>
+     *     <li>First line is the header.</li>
+     *     <li>'URI Elements' is the element name of the dynamic URI path without {}.</li>
+     *     <li>'URI Values' will be evaluated first from the scenario context.
+     *     If context var was not found use value directly</li>
+     * </ul>
+     * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
+     */
+    @When("executing an authorized GET call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'")
+    public void whenExecutingAnAuthorizedGETCallToPathWithDynamicURLElement(DataTable dataTable) throws Exception {
+        executeGETCallToPathWithDynamicURLElement(dataTable, true);
+    }
+
+    /**
+     * Execute a GET call without authentication to the defined URL with dynamic URL elements.
+     * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
+     * <br />
+     * <p>
+     *     DataTable looks like:
+     *     <pre>
+     *     | URI Elements  | URI Values |
+     *     | resourceId    | abc-def-gh |
+     *     | subResourceId | zyx-wvu-ts |
+     *     </pre>
+     * </p>
+     * <br />
+     * <p>Structure:</p>
+     * <ul>
+     *     <li>First line is the header.</li>
+     *     <li>'URI Elements' is the element name of the dynamic URI path without {}.</li>
+     *     <li>'URI Values' will be evaluated first from the scenario context.
+     *     If context var was not found use value directly</li>
+     * </ul>
+     * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
+     */
+    @When("executing a GET call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
+    public void whenExecutingAGETCallToPathWithDynamicURLElement(DataTable dataTable) throws Exception {
+        executeGETCallToPathWithDynamicURLElement(dataTable, false);
+    }
+
+    /**
      * Execute a POST call to the defined URL with body from file
      */
     @When("executing a POST call to {string} with the body from file {string}")
@@ -127,7 +181,6 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
 
     /**
      * Execute an authorized POST call to the defined URL with body from file and dynamic URL elements.
-     * <p>!!!ATTENTION!!! This is an Anti-Pattern, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
      * <br />
      * <p>
@@ -146,14 +199,15 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      *     <li>'URI Values' will be evaluated first from the scenario context.
      *     If context var was not found use value directly</li>
      * </ul>
+     * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     public void whenExecutingAnAuthorizedPOSTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) throws Exception {
         executePOSTCallToPathWithBodyAndDynamicURLElement(dataTable, true);
     }
+
     /**
      * Execute a POST call without authentication to the defined URL with body from file and dynamic URL elements.
-     * <p>!!!ATTENTION!!! This is an Anti-Pattern, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
      * <br />
      * <p>
@@ -172,57 +226,11 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      *     <li>'URI Values' will be evaluated first from the scenario context.
      *     If context var was not found use value directly</li>
      * </ul>
+     * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing a POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     public void whenExecutingAPOSTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) throws Exception {
         executePOSTCallToPathWithBodyAndDynamicURLElement(dataTable, false);
-    }
-
-    /**
-     * Executes a POST call with dynamic URL and replaces dynamic values with data from DataTable
-     *
-     * @param dataTable     DataTable which contains dynamic values mapping
-     * @param authorized    should the request executed as authorized POST or unauthorized (true = authorized)
-     */
-    private void executePOSTCallToPathWithBodyAndDynamicURLElement(final DataTable dataTable, final boolean authorized) {
-        if (dataTable == null) {
-            throw new IllegalArgumentException("Dynamic URL parts are null");
-        } else {
-            // Prepare request
-            String path = ScenarioStateContext.current().getUriPath();
-            String body = ScenarioStateContext.current().getEditableBody();
-
-            // assert that given for path and body was previously done
-            Assert.assertNotNull("No given path found", path);
-            Assert.assertNotNull("No given body found", body);
-
-            // Read datatable
-            List<Map<String, String>> dataTableRowList = dataTable.asMaps(String.class, String.class);
-
-            for (Map<String, String> stringStringMap : dataTableRowList) {
-                // Try to resolve value from context map
-                String uriValue = ScenarioStateContext.current().getScenarioContextMap().get(stringStringMap.get("URI Values"));
-                // If context map knows nothing about the value, use value directly
-                if (uriValue == null) {
-                    uriValue = stringStringMap.get("URI Values");
-                }
-                // replace path with URI key and URI value
-                path = path.replace(
-                        "{" + stringStringMap.get("URI Elements") + "}",
-                        uriValue
-                );
-            }
-            HttpHeaders headers = createHTTPHeader(authorized);
-
-            setLatestResponse(
-                    restTemplate.exchange(
-                            fullURLFor(path),
-                            HttpMethod.POST,
-                            new HttpEntity<>(body, headers),
-                            String.class
-                    )
-            );
-        }
     }
 
     /**
@@ -397,6 +405,105 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
         }
 
         return headers;
+    }
+
+    /**
+     * Executes a GET call with dynamic URL and replaces dynamic values with data from DataTable
+     *
+     * @param dataTable     DataTable which contains dynamic values mapping
+     * @param authorized    should the request executed as authorized POST or unauthorized (true = authorized)
+     */
+    private void executeGETCallToPathWithDynamicURLElement(final DataTable dataTable, final boolean authorized) {
+        if (dataTable == null) {
+            throw new IllegalArgumentException("Dynamic URL parts are null");
+        } else {
+            // Prepare request
+            String path = ScenarioStateContext.current().getUriPath();
+
+            // assert that given for path and body was previously done
+            Assert.assertNotNull("No given path found", path);
+
+            // Prepare path with dynamic URLs from datatable
+            path = prepareDynamicURL(dataTable);
+
+            HttpHeaders headers = createHTTPHeader(authorized);
+
+            setLatestResponse(
+                    restTemplate.exchange(
+                            fullURLFor(path),
+                            HttpMethod.GET,
+                            new HttpEntity<>(headers),
+                            String.class
+                    )
+            );
+        }
+    }
+
+    /**
+     * Executes a POST call with dynamic URL and replaces dynamic values with data from DataTable
+     *
+     * @param dataTable     DataTable which contains dynamic values mapping
+     * @param authorized    should the request executed as authorized POST or unauthorized (true = authorized)
+     */
+    private void executePOSTCallToPathWithBodyAndDynamicURLElement(final DataTable dataTable, final boolean authorized) {
+        if (dataTable == null) {
+            throw new IllegalArgumentException("Dynamic URL parts are null");
+        } else {
+            // Prepare request
+            String path = ScenarioStateContext.current().getUriPath();
+            String body = ScenarioStateContext.current().getEditableBody();
+
+            // assert that given for path and body was previously done
+            Assert.assertNotNull("No given path found", path);
+            Assert.assertNotNull("No given body found", body);
+
+            // Prepare path with dynamic URLs from datatable
+            path = prepareDynamicURL(dataTable);
+
+            HttpHeaders headers = createHTTPHeader(authorized);
+
+            setLatestResponse(
+                    restTemplate.exchange(
+                            fullURLFor(path),
+                            HttpMethod.POST,
+                            new HttpEntity<>(body, headers),
+                            String.class
+                    )
+            );
+        }
+    }
+
+    /**
+     * Prepare dynamic URL with data from datatable to exchange the dynamic values
+     *
+     * @param dataTable     DataTable from Cucumber file
+     * @return              path with replaced values
+     */
+    private String prepareDynamicURL(DataTable dataTable) {
+        // Prepare request
+        String path = ScenarioStateContext.current().getUriPath();
+
+        // assert that given for path and body was previously done
+        Assert.assertNotNull("No given path found", path);
+
+        // Read datatable
+        List<Map<String, String>> dataTableRowList = dataTable.asMaps(String.class, String.class);
+
+        for (Map<String, String> stringStringMap : dataTableRowList) {
+            // Try to resolve value from context map
+            String uriValue = ScenarioStateContext.current().getScenarioContextMap().get(stringStringMap.get("URI Values"));
+            // If context map knows nothing about the value, use value directly
+            if (uriValue == null) {
+                uriValue = stringStringMap.get("URI Values");
+            }
+            // replace path with URI key and URI value
+            path = path.replace(
+                    "{" + stringStringMap.get("URI Elements") + "}",
+                    uriValue
+            );
+        }
+
+        return path;
     }
 
     /**
