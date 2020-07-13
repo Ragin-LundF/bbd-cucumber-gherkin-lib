@@ -49,9 +49,18 @@ public class DatabaseExecutorService {
      * Execute SQL statements
      *
      * @param sql   SQL statements that should be executed
+     */
+    public void executeSQL(final String sql) {
+        jdbcTemplate.execute(sql);
+    }
+
+    /**
+     * Execute an query of SQL statements
+     *
+     * @param sql   SQL statements that should be executed
      * @return      List with a map per row which contains the result
      */
-    public List<Map<String, Object>> executeSQL(final String sql) {
+    public List<Map<String, Object>> executeQuerySQL(final String sql) {
         return jdbcTemplate.queryForList(sql);
     }
 }

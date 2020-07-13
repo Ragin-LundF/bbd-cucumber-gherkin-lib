@@ -67,7 +67,7 @@ public class DatabaseGlue extends BaseCucumberCore {
         // read file
         String sqlStatements = readFile(pathToQueryFile);
         // execute query
-        List<Map<String, Object>> queryResults = generifyDatabaseJSONFiles(databaseExecutorService.executeSQL(sqlStatements));
+        List<Map<String, Object>> queryResults = generifyDatabaseJSONFiles(databaseExecutorService.executeQuerySQL(sqlStatements));
 
         // Generify the results to be database independent
         List<Map<String, Object>> data = generifyDatabaseJSONFiles(
