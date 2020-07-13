@@ -90,7 +90,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     /**
      * Execute an authorized GET call to the defined URL and dynamic URL elements.
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
-     * <br />
+     * <br>
      * <p>
      *     DataTable looks like:
      *     <pre>
@@ -98,8 +98,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * </p>
-     * <br />
+     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
@@ -117,16 +116,15 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     /**
      * Execute a GET call without authentication to the defined URL with dynamic URL elements.
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
-     * <br />
-     * <p>
+     * <br>
+     * <p></p>
      *     DataTable looks like:
      *     <pre>
      *     | URI Elements  | URI Values |
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * </p>
-     * <br />
+     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
@@ -182,7 +180,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     /**
      * Execute an authorized POST call to the defined URL with body from file and dynamic URL elements.
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
-     * <br />
+     * <br>
      * <p>
      *     DataTable looks like:
      *     <pre>
@@ -190,8 +188,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * </p>
-     * <br />
+     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
@@ -209,7 +206,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
     /**
      * Execute a POST call without authentication to the defined URL with body from file and dynamic URL elements.
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
-     * <br />
+     * <br>
      * <p>
      *     DataTable looks like:
      *     <pre>
@@ -217,8 +214,7 @@ public class WhenRESTExecutionGlue extends BaseCucumberCore {
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * </p>
-     * <br />
+     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
