@@ -20,7 +20,10 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      */
     @Then("I ensure that the status code of the response is {int}")
     public void thenEnsureThatTheStatusCodeOfTheResponseIs(@NotNull final Integer expectedStatusCode) {
-        Assert.assertEquals(Integer.valueOf(ScenarioStateContext.current().getLatestResponse().getStatusCode().value()), expectedStatusCode);
+        Assert.assertEquals(
+                expectedStatusCode,
+                Integer.valueOf(ScenarioStateContext.current().getLatestResponse().getStatusCode().value())
+        );
     }
 
     /**
@@ -31,7 +34,10 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
     @Then("I ensure that the body of the response is equal to the file {string}")
     public void thenEnsureTheBodyOfTheResponseIsEqualToTheFile(@NotNull final String pathToFile) throws Exception {
         String expectedBody = readFile(pathToFile);
-        assertJSONisEqual(ScenarioStateContext.current().getLatestResponse().getBody(), expectedBody);
+        assertJSONisEqual(
+                expectedBody,
+                ScenarioStateContext.current().getLatestResponse().getBody()
+        );
     }
 
     /**
@@ -41,7 +47,10 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      */
     @Then("^I ensure that the body of the response is equal to$")
     public void thenEnsureTheBodyOfTheResponseIsEqualTo(@NotNull final String expectedBody) throws Exception {
-        assertJSONisEqual(ScenarioStateContext.current().getLatestResponse().getBody(), expectedBody);
+        assertJSONisEqual(
+                expectedBody,
+                ScenarioStateContext.current().getLatestResponse().getBody()
+        );
     }
 
     /**
@@ -56,14 +65,29 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
     public void storeStringOfFieldInContextForLaterUsage(@NotNull final String fieldName, @NotNull final String contextName) throws Exception {
         Assert.assertNotNull(fieldName);
         Assert.assertNotNull(contextName);
-        Assert.assertNotNull("response was null!", ScenarioStateContext.current().getLatestResponse());
-        Assert.assertNotNull("body of response was null", ScenarioStateContext.current().getLatestResponse().getBody());
+        Assert.assertNotNull(
+                "response was null!",
+                ScenarioStateContext.current().getLatestResponse()
+        );
+        Assert.assertNotNull(
+                "body of response was null",
+                ScenarioStateContext.current().getLatestResponse().getBody()
+        );
 
-        JsonReader jsonReader = Json.createReader(new StringReader(Objects.requireNonNull(ScenarioStateContext.current().getLatestResponse().getBody())));
+        JsonReader jsonReader = Json.createReader(
+                new StringReader(
+                        Objects.requireNonNull(
+                                ScenarioStateContext.current().getLatestResponse().getBody()
+                        )
+                )
+        );
         JsonObject json = jsonReader.readObject();
         jsonReader.close();
 
-        ScenarioStateContext.current().getScenarioContextMap().put(replaceTrailingAndLeadingQuotes(contextName), json.getJsonString(fieldName).getString());
+        ScenarioStateContext.current().getScenarioContextMap().put(
+                replaceTrailingAndLeadingQuotes(contextName),
+                json.getJsonString(fieldName).getString()
+        );
     }
 
     /**

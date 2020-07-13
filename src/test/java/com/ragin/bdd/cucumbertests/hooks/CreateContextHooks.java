@@ -1,19 +1,31 @@
 package com.ragin.bdd.cucumbertests.hooks;
 
 import com.ragin.bdd.Application;
+import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
 import io.cucumber.java.Before;
+import io.cucumber.spring.CucumberContextConfiguration;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("cucumberTest")
+@CucumberContextConfiguration
+@ContextConfiguration(
+        classes = {
+                Application.class,
+                DatabaseExecutorService.class
+        },
+        loader = SpringBootContextLoader.class
+)
 @SpringBootTest(
-        classes = Application.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = "spring.main.allow-bean-definition-overriding=true"
 )
 public class CreateContextHooks {
 
