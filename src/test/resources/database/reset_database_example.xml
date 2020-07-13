@@ -5,8 +5,8 @@
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 	<changeSet author="ragin" id="remove-elements" runAlways="true">
-		<!--<delete tableName="test_data"/>-->
-		<!--<delete tableName="test_metadata" />-->
+		<delete tableName="test_data"/>
+		<delete tableName="test_metadata" />
 	</changeSet>
 	<changeSet author="ragin" id="reset-sequence" runAlways="true">
 		<dropSequence sequenceName="default_gen" />
