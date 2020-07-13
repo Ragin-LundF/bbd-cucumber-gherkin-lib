@@ -62,7 +62,10 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * @param contextName   name of the field as which it should be stored (should be unique, else it will be overwritten)
      */
     @Then("I store the string of the field {string} in the context {string} for later usage")
-    public void storeStringOfFieldInContextForLaterUsage(@NotNull final String fieldName, @NotNull final String contextName) throws Exception {
+    public void storeStringOfFieldInContextForLaterUsage(
+            @NotNull final String fieldName,
+            @NotNull final String contextName
+    ) throws Exception {
         Assert.assertNotNull(fieldName);
         Assert.assertNotNull(contextName);
         Assert.assertNotNull(

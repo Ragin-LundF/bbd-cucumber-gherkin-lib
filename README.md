@@ -214,10 +214,41 @@ Scenario:
 This sets the JSON file for the body for later execution.
 It is required to use this `Given` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
 
+#### Set a body directly for later execution
+```gherkin
+Scenario:
+  Given that the body of the response is
+    """
+    {
+      "key": "value"
+    }
+    """
+```
+
+This sets the JSON body for later execution.
+It is required to use this `Given` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
+
+
 ### When
 The paths that are used here can be shortened by set a base URL path with [Set base path for URLs](#set-base-path-for-urls) with a `Given` Step before.
 
 #### GET requests
+##### Execute a GET request call with previously given URI
+```gherkin
+Scenario:
+  When executing a GET call with previously given URI
+```
+
+Calls a previously given URL path as a `GET` request without `Authorization` header.
+
+##### Execute an authorized GET request call with previously given URI
+```gherkin
+Scenario:
+  When executing an authorized GET call with previously given URI
+```
+
+Calls a previously given URL path as a `GET` request with `Authorization` header.
+
 ##### Execute a GET request call to an endpoint
 ```gherkin
 Scenario:
@@ -288,6 +319,41 @@ But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/
 
 
 #### POST requests
+##### Execute a POST request to an endpoint with previously given URI and body
+```gherkin
+Scenario:
+  When executing a POST call with previously given URI and body
+```
+
+Calls a previously given URI path as a `POST` request without `Authorization` header, and a previously given body.
+
+##### Execute an authorized POST request call to an endpoint with previously given URI and body
+```gherkin
+Scenario:
+  When executing an authorized POST call with previously given URI and body
+```
+
+Calls a previously given URL path as a `POST` request with `Authorization` header, and a previously given body.
+
+##### Execute a POST request call to a URL with a previously given body
+```gherkin
+Scenario:
+  When executing a POST call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a `POST` request.
+
+##### Execute an authorized POST request call to a URL with a previously given body
+```gherkin
+Scenario:
+  When executing an authorized POST call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a `POST` request.
+
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+
 ##### Execute a POST request call to an endpoint with body from file
 ```gherkin
 Scenario:
@@ -355,34 +421,22 @@ But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/
 **Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
 
 
-##### Execute an authorized POST request call to a URL with a previously given body
-```gherkin
-Scenario:
-  When executing an authorized POST call to {string} with previously given body
-```
-
-Calls the given URL path with a previously given Body as a `POST` request.
-**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
-The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
-
 #### PUT requests
-##### Execute a PUT request call to an endpoint with body from file
+##### Execute a PUT request to an endpoint with previously given URI and body
 ```gherkin
 Scenario:
-  When executing a `PUT` call to {string} with the body from file {string}
+  When executing a PUT call with previously given URI and body
 ```
 
-Calls the given URL path as a PUT request without `Authorization` header, and a body defined in the given file.
+Calls a previously given URI path as a `PUT` request without `Authorization` header, and a previously given body.
 
-##### Execute an authorized PUT request call to an endpoint with body from file
+##### Execute an authorized PUT request call to an endpoint with previously given URI and body
 ```gherkin
 Scenario:
-  When executing an authorized `PUT` call to {string} with the body from file {string}
+  When executing an authorized PUT call with previously given URI and body
 ```
 
-Calls the given URL path as a PUT request with `Authorization` header, and a body defined in the given file.
-The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
-
+Calls a previously given URL path as a `PUT` request with `Authorization` header, and a previously given body.
 
 ##### Execute a PUT request call to a URL with a previously given body
 ```gherkin
@@ -390,9 +444,7 @@ Scenario:
   When executing a PUT call to {string} with previously given body
 ```
 
-Calls the given URL path with a previously given Body as a `PUT` request without `Authorization` header.
-**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
-
+Calls the given URL path with a previously given Body as a `PUT` request.
 
 ##### Execute an authorized PUT request call to a URL with a previously given body
 ```gherkin
@@ -400,27 +452,284 @@ Scenario:
   When executing an authorized PUT call to {string} with previously given body
 ```
 
-Calls the given URL path with a previously given Body as an authorized `PUT` request.
-**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+Calls the given URL path with a previously given Body as a `PUT` request.
+
 The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+
+##### Execute a PUT request call to an endpoint with body from file
+```gherkin
+Scenario:
+  When executing a PUT call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a `PUT` request without `Authorization` header, and a body defined in the given file.
+
+##### Execute an authorized PUT request call to an endpoint with body from file
+```gherkin
+Scenario:
+  When executing an authorized PUT call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a `PUT` request with `Authorization` header, and a body defined in the given file.
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Execute an authorized PUT request call to previously given URL and body with dynamic URI elements
+```gherkin
+Scenario:
+  When executing an authorized PUT call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+    | URI Elements  | URI Values |
+    | resourceId    | abc-def-gh |
+    | subResourceId | abc-def-gh |
+```
+
+Calls a previously given URL path and Body as a `PUT` request and replace dynamic URI elements with values.
+
+In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
+The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
+
+This datatable requires the header `| URI Elements  | URI Values |`.
+
+The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
+If it finds the key, this key will be used, else it uses the value of the table directly.
+
+To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
+But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
+
+**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Execute a PUT request call to previously given URL and body with dynamic URI elements
+```gherkin
+Scenario:
+  When executing a PUT call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+    | URI Elements  | URI Values |
+    | resourceId    | abc-def-gh |
+    | subResourceId | abc-def-gh |
+```
+
+Calls a previously given URL path and Body as a `PUT` request and replace dynamic URI elements with values.
+
+In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
+The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
+
+This datatable requires the header `| URI Elements  | URI Values |`.
+
+The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
+If it finds the key, this key will be used, else it uses the value of the table directly.
+
+To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
+But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
+
+**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+
+
+#### PATCH requests
+##### Execute a PATCH request to an endpoint with previously given URI and body
+```gherkin
+Scenario:
+  When executing a PATCH call with previously given URI and body
+```
+
+Calls a previously given URI path as a `PATCH` request without `Authorization` header, and a previously given body.
+
+##### Execute an authorized PATCH request call to an endpoint with previously given URI and body
+```gherkin
+Scenario:
+  When executing an authorized PATCH call with previously given URI and body
+```
+
+Calls a previously given URL path as a `PATCH` request with `Authorization` header, and a previously given body.
+
+##### Execute a PATCH request call to a URL with a previously given body
+```gherkin
+Scenario:
+  When executing a PATCH call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a `PATCH` request.
+
+##### Execute an authorized PATCH request call to a URL with a previously given body
+```gherkin
+Scenario:
+  When executing an authorized PATCH call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a `PATCH` request.
+
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+
+##### Execute a PATCH request call to an endpoint with body from file
+```gherkin
+Scenario:
+  When executing a PATCH call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a `PATCH` request without `Authorization` header, and a body defined in the given file.
+
+##### Execute an authorized PATCH request call to an endpoint with body from file
+```gherkin
+Scenario:
+  When executing an authorized PATCH call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a `PATCH` request with `Authorization` header, and a body defined in the given file.
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Execute an authorized PATCH request call to previously given URL and body with dynamic URI elements
+```gherkin
+Scenario:
+  When executing an authorized PATCH call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+    | URI Elements  | URI Values |
+    | resourceId    | abc-def-gh |
+    | subResourceId | abc-def-gh |
+```
+
+Calls a previously given URL path and Body as a `PATCH` request and replace dynamic URI elements with values.
+
+In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
+The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
+
+This datatable requires the header `| URI Elements  | URI Values |`.
+
+The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
+If it finds the key, this key will be used, else it uses the value of the table directly.
+
+To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
+But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
+
+**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Execute a PATCH request call to previously given URL and body with dynamic URI elements
+```gherkin
+Scenario:
+  When executing a PATCH call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+    | URI Elements  | URI Values |
+    | resourceId    | abc-def-gh |
+    | subResourceId | abc-def-gh |
+```
+
+Calls a previously given URL path and Body as a `PATCH` request and replace dynamic URI elements with values.
+
+In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
+The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
+
+This datatable requires the header `| URI Elements  | URI Values |`.
+
+The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
+If it finds the key, this key will be used, else it uses the value of the table directly.
+
+To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
+But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
+
+**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+
+
 
 #### DELETE requests
-##### Execute a DELETE request call to a URL
+##### Execute a DELETE request to an endpoint with previously given URI and body
 ```gherkin
 Scenario:
-  When executing a DELETE call to {string}
+  When executing a DELETE call with previously given URI and body
 ```
 
-Calls the given URL path as a `DELETE` request without `Authorization` header.
+Calls a previously given URI path as a `DELETE` request without `Authorization` header, and a previously given body.
 
-##### Execute an authorized DELETE request call to a URL
+##### Execute an authorized DELETE request call to an endpoint with previously given URI and body
 ```gherkin
 Scenario:
-  When executing an authorized DELETE call to {string}
+  When executing an authorized DELETE call with previously given URI and body
 ```
 
-Calls the given URL path as a `DELETE` request with `Authorization` header.
+Calls a previously given URL path as a `DELETE` request with `Authorization` header, and a previously given body.
+
+##### Execute a DELETE request call to a URL with a previously given body
+```gherkin
+Scenario:
+  When executing a DELETE call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a `DELETE` request.
+
+##### Execute an authorized DELETE request call to a URL with a previously given body
+```gherkin
+Scenario:
+  When executing an authorized DELETE call to {string} with previously given body
+```
+
+Calls the given URL path with a previously given Body as a `DELETE` request.
+
 The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+
+##### Execute a DELETE request call to an endpoint with body from file
+```gherkin
+Scenario:
+  When executing a DELETE call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a `DELETE` request without `Authorization` header, and a body defined in the given file.
+
+##### Execute an authorized DELETE request call to an endpoint with body from file
+```gherkin
+Scenario:
+  When executing an authorized DELETE call to {string} with the body from file {string}
+```
+
+Calls the given URL path as a `DELETE` request with `Authorization` header, and a body defined in the given file.
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Execute an authorized DELETE request call to previously given URL and body with dynamic URI elements
+```gherkin
+Scenario:
+  When executing an authorized DELETE call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+    | URI Elements  | URI Values |
+    | resourceId    | abc-def-gh |
+    | subResourceId | abc-def-gh |
+```
+
+Calls a previously given URL path and Body as a `DELETE` request and replace dynamic URI elements with values.
+
+In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
+The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
+
+This datatable requires the header `| URI Elements  | URI Values |`.
+
+The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
+If it finds the key, this key will be used, else it uses the value of the table directly.
+
+To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
+But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
+
+**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+The used token depends on [Define that a token without scopes should be used](#define-that-a-token-without-scopes-should-be-used) `Step`.
+
+##### Execute a DELETE request call to previously given URL and body with dynamic URI elements
+```gherkin
+Scenario:
+  When executing a DELETE call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+    | URI Elements  | URI Values |
+    | resourceId    | abc-def-gh |
+    | subResourceId | abc-def-gh |
+```
+
+Calls a previously given URL path and Body as a `DELETE` request and replace dynamic URI elements with values.
+
+In the example above the given link looks like: `/api/v1/endpoint/{resourceId}/{subResourceId}`.
+The dynamic elements `{resourceId}` and `{subResourceId}` will be replaced with the values from the datatable below the sentence.
+
+This datatable requires the header `| URI Elements  | URI Values |`.
+
+The values do first a lookup in the `ScenarioStateContext`, if there is a key equal to the `URI Values` value.
+If it finds the key, this key will be used, else it uses the value of the table directly.
+
+To set something to the `ScenarioStateContext` it is possible to use [Read from Response and set it to a Feature context](#read-from-response-and-set-it-to-a-feature-context).
+But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
+
+**Requires the `Steps` [Set a URI path for later execution](#set-a-uri-path-for-later-execution) and [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+
 
 #### Body manipulation
 ```gherkin

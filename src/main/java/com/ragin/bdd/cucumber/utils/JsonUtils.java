@@ -13,12 +13,6 @@ import net.javacrumbs.jsonunit.JsonAssert;
 
 /**
  * Utility class used to work with JSON objects.
- * <p>This class offers the following <code>static</code> methods:
- * <ul>
- * <li>{@link #assertJsonEquals(String, String)}</li>
- * <li>{@link #removeJsonField(String, String)}</li>
- * <li>{@link #editJsonField(String, String, String)}</li>
- * </ul>
  */
 public final class JsonUtils extends Loggable {
     private JsonUtils() {

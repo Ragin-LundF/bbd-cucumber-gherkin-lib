@@ -3,6 +3,8 @@ package com.ragin.bdd.cucumber.glue;
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -17,7 +19,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * Defines the base path to which other paths are relative
      */
     @Given("that all file paths are relative to {string}")
-    public void givenThatAllFilePathsAreRelativeTo(String basePath) {
+    public void givenThatAllFilePathsAreRelativeTo(@NotNull String basePath) {
         ScenarioStateContext.current().setFileBasePath(basePath);
     }
 
@@ -25,7 +27,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * Defines the base URL path to which other URLs are relative
      */
     @Given("that all URLs are relative to {string}")
-    public void givenThatAllURLsAreRelativeTo(String basePath) {
+    public void givenThatAllURLsAreRelativeTo(@NotNull String basePath) {
         ScenarioStateContext.current().setUrlBasePath(basePath);
     }
 
@@ -38,7 +40,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
     }
 
     @Given("that the API path is {string}")
-    public void givenThatAPIPathIs(String apiPath) {
+    public void givenThatAPIPathIs(@NotNull String apiPath) {
         ScenarioStateContext.current().setUriPath(apiPath);
     }
 
@@ -46,7 +48,15 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * Define to use a file as the body
      */
     @Given("that the file {string} is used as the body")
-    public void givenThatTheFileIsUsedAsTheBody(String pathToFile) throws Exception {
+    public void givenThatTheFileIsUsedAsTheBody(@NotNull String pathToFile) throws Exception {
         ScenarioStateContext.current().setEditableBody(readFile(pathToFile));
+    }
+
+    /**
+     * Define to use a body directly
+     */
+    @Given("^that the body of the response is$")
+    public void givenThatTheBodyOfRequestIs(@NotNull final String body) {
+        ScenarioStateContext.current().setEditableBody(body);
     }
 }
