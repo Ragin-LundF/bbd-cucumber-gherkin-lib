@@ -90,6 +90,7 @@ publishing {
         maven(MavenPublication) {
             from components.java
             artifactId "bdd-cucumber-gherkin-lib"
+            version "${version}"
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Cucumber library for simpler e2e tests with predefined sentences for API and basic database access')
