@@ -39,4 +39,6 @@ jobs:
           BINTRAY_TOKEN: ${{ secrets.BINTRAY_TOKEN }}
           BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
         run: |
+          NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
+          echo "New version: ${NEW_VERSION}"
           ./gradlew -Pversion=${NEW_VERSION} bintrayUpload
