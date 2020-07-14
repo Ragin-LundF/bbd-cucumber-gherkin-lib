@@ -157,6 +157,6 @@ public class DatabaseGlue extends BaseCucumberCore {
             }
         }
 
-        return columnValue;
+        return String.valueOf(columnValue);
     }
 }

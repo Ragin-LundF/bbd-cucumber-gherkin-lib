@@ -18,6 +18,7 @@ import org.junit.Assert;
 public class ThenRESTValidationGlue extends BaseCucumberCore {
     /**
      * Ensure, that the response code is valid
+     * @param expectedStatusCode HTTP status code that is expected
      */
     @Then("I ensure that the status code of the response is {int}")
     public void thenEnsureThatTheStatusCodeOfTheResponseIs(@NotNull final Integer expectedStatusCode) {
@@ -31,6 +32,9 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * Ensure, that the response is equal to a file.
      * <p>This evaluates also JSON unit statements</p>
      * <p>see https://github.com/lukas-krecan/JsonUnit</p>
+     *
+     * @param pathToFile path to file to read
+     * @throws java.io.IOException error while reading file
      */
     @Then("I ensure that the body of the response is equal to the file {string}")
     public void thenEnsureTheBodyOfTheResponseIsEqualToTheFile(@NotNull final String pathToFile) throws IOException {
@@ -45,6 +49,8 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * Ensure, that the response is equal to a file.
      * <p>This evaluates also JSON unit statements</p>
      * <p>see https://github.com/lukas-krecan/JsonUnit</p>
+     *
+     * @param expectedBody expected JSON body
      */
     @Then("^I ensure that the body of the response is equal to$")
     public void thenEnsureTheBodyOfTheResponseIsEqualTo(@NotNull final String expectedBody) {

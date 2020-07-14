@@ -28,6 +28,8 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
 
     /**
      * Execute a POST call to an URL with previously given body
+     *
+     * @param path to the endpoint URI
      */
     @When("executing a POST call to {string} with previously given body")
     public void whenExecutingPOSTCallToWithGivenBody(String path) {
@@ -38,6 +40,8 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
 
     /**
      * Execute an authorized POST call to an URL with previously given body
+     *
+     * @param path to the endpoint URI
      */
     @When("executing an authorized POST call to {string} with previously given body")
     public void whenExecutingPOSTCallToWithGivenBodyAuthorized(String path) {
@@ -48,6 +52,10 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
 
     /**
      * Execute a POST call to the defined URL with body from file
+     *
+     * @param path to the endpoint URI
+     * @param pathToFile path to file to read
+     * @throws java.io.IOException error while reading file
      */
     @When("executing a POST call to {string} with the body from file {string}")
     public void whenExecutingPOSTCallToPathWithBodyFromFile(String path, String pathToFile) throws IOException {
@@ -60,6 +68,10 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
 
     /**
      * Execute an authorized POST call to the defined URL with body from file
+     *
+     * @param path to the endpoint URI
+     * @param pathToFile path to file to read
+     * @throws java.io.IOException error while reading file
      */
     @When("executing an authorized POST call to {string} with the body from file {string}")
     public void whenExecutingPOSTCallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws IOException {
@@ -81,7 +93,6 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
@@ -90,6 +101,8 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      *     If context var was not found use value directly</li>
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
+     *
+     * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     public void whenExecutingPOSTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) {
@@ -107,7 +120,6 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
@@ -116,6 +128,8 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      *     If context var was not found use value directly</li>
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
+     *
+     * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     public void whenExecutingPOSTCallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) {

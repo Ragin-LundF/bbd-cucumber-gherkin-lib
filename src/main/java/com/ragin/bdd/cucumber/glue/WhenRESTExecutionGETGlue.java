@@ -39,6 +39,8 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
 
     /**
      * Execute an authorized GET call to the defined URL
+     *
+     * @param path to the endpoint URI
      */
     @When("executing an authorized GET call to {string}")
     public void whenExecutingAnAuthorizedGETCallToUrl(final String path) {
@@ -58,7 +60,6 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
@@ -67,6 +68,8 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      *     If context var was not found use value directly</li>
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
+     *
+     * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized GET call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'")
     public void whenExecutingAnAuthorizedGETCallToPathWithDynamicURLElement(DataTable dataTable) {
@@ -77,14 +80,13 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      * Execute a GET call without authentication to the defined URL with dynamic URL elements.
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
      * <br>
-     * <p></p>
+     * <p>
      *     DataTable looks like:
      *     <pre>
      *     | URI Elements  | URI Values |
      *     | resourceId    | abc-def-gh |
      *     | subResourceId | zyx-wvu-ts |
      *     </pre>
-     * <p>
      * <p>Structure:</p>
      * <ul>
      *     <li>First line is the header.</li>
@@ -93,6 +95,8 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      *     If context var was not found use value directly</li>
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
+     *
+     * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a GET call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
     public void whenExecutingAGETCallToPathWithDynamicURLElement(DataTable dataTable) {

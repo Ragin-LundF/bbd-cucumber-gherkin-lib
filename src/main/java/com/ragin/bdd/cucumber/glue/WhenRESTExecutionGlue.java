@@ -11,6 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
     /**
      * set the value of the previously given body property to a new value
+     *
+     * @param propertyPath  path to the JSON property
+     * @param value         new value this element
      */
     @When("I set the value of the previously given body property {string} to {string}")
     public void whenISetTheValueOfTheBodyPropertyTo(String propertyPath, String value) {

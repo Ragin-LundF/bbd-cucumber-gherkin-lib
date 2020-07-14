@@ -17,6 +17,8 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
 
     /**
      * Defines the base path to which other paths are relative
+     *
+     * @param basePath of files
      */
     @Given("that all file paths are relative to {string}")
     public void givenThatAllFilePathsAreRelativeTo(@NotNull String basePath) {
@@ -25,6 +27,8 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
 
     /**
      * Defines the base URL path to which other URLs are relative
+     *
+     * @param basePath  of the URLs
      */
     @Given("that all URLs are relative to {string}")
     public void givenThatAllURLsAreRelativeTo(@NotNull String basePath) {
@@ -39,6 +43,11 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
         ScenarioStateContext.current().setBearerToken(noScopeBearerToken);
     }
 
+    /**
+     * Define to use a API path for a concrete endpoint
+     *
+     * @param apiPath   path of the endpoint
+     */
     @Given("that the API path is {string}")
     public void givenThatAPIPathIs(@NotNull String apiPath) {
         ScenarioStateContext.current().setUriPath(apiPath);
@@ -46,6 +55,9 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
 
     /**
      * Define to use a file as the body
+     *
+     * @param pathToFile path to file for body
+     * @throws java.io.IOException error while reading file
      */
     @Given("that the file {string} is used as the body")
     public void givenThatTheFileIsUsedAsTheBody(@NotNull String pathToFile) throws IOException {
@@ -54,6 +66,8 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
 
     /**
      * Define to use a body directly
+     *
+     * @param body of the next request
      */
     @Given("^that the body of the response is$")
     public void givenThatTheBodyOfRequestIs(@NotNull final String body) {
