@@ -1,12 +1,9 @@
 package com.ragin.bdd.cucumber.glue;
 
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
-import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
 import java.io.IOException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 /**
