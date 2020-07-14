@@ -84,7 +84,7 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
         // create HttpEntity
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
         String body = ScenarioStateContext.current().getEditableBody();
-        if (StringUtils.isEmpty(body)) {
+        if (! StringUtils.isEmpty(body)) {
             // there was a body...replace with new entity with body
             httpEntity = new HttpEntity<>(body, headers);
         }
