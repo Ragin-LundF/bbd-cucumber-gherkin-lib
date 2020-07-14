@@ -32,14 +32,14 @@ public class ScenarioLoggingHooks extends Loggable {
 			ResponseEntity<String> latestResponse = ScenarioStateContext.current().getLatestResponse();
 			if (latestResponse != null) {
 				LOG.error(String.format(
-						"Scenario FAIL: Exiting %s\nResponse status:%d\nResponse body:\n%s\n----------------\n",
+						"Scenario FAIL: Exiting %s%nResponse status:%d%nResponse body:%n%s%n----------------%n",
 						scenario.getId(),
 						latestResponse.getStatusCodeValue(),
 						latestResponse.getBody()
 				));
 			} else {
 				LOG.error(String.format(
-						"Scenario FAIL: Exiting %s\n----------------\n",
+						"Scenario FAIL: Exiting %s%n----------------%n",
 						scenario.getId()
 				));
 			}

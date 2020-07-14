@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.glue;
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.Given;
+import java.io.IOException;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -47,7 +48,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * Define to use a file as the body
      */
     @Given("that the file {string} is used as the body")
-    public void givenThatTheFileIsUsedAsTheBody(@NotNull String pathToFile) throws Exception {
+    public void givenThatTheFileIsUsedAsTheBody(@NotNull String pathToFile) throws IOException {
         ScenarioStateContext.current().setEditableBody(readFile(pathToFile));
     }
 

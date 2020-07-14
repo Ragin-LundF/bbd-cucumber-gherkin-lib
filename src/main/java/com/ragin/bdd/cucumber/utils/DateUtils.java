@@ -51,7 +51,7 @@ public final class DateUtils extends Loggable {
      * @return              LocalDateTime if valid date, else null
      * @throws DateTimeParseException   Exception, when date is not parseable
      */
-    private static LocalDateTime transformToLocalDateTime(final Object dateObject) throws DateTimeParseException {
+    private static LocalDateTime transformToLocalDateTime(final Object dateObject) {
         LocalDateTime localDateTime = null;
 
         if (dateObject instanceof Long) {

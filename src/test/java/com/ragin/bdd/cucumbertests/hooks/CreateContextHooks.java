@@ -30,9 +30,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class CreateContextHooks {
 
     @Test
-    @Ignore
+    @Ignore("Empty test to avoid java.lang.Exception: No runnable methods.")
     public void emptyTest(){
-        // Empty test to avoid "java.lang.Exception: No runnable methods".
         // See "http://sqa.fyicenter.com/FAQ/JUnit/Can_You_Explain_the_Exception_No_runnable_meth.html" for more info.
     }
 
