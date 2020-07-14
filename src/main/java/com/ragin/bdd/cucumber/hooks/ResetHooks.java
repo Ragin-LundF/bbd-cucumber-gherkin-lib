@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ResetHooks extends Loggable {
-    private final static String RESET_DATABASE_FILE = "database/reset_database.xml";
+    private static final String RESET_DATABASE_FILE = "database/reset_database.xml";
 
     @Autowired
     DatabaseExecutorService databaseExecutorService;
