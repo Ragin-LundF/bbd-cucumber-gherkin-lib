@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.glue;
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.Then;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.Objects;
 import javax.json.Json;
@@ -32,7 +33,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * <p>see https://github.com/lukas-krecan/JsonUnit</p>
      */
     @Then("I ensure that the body of the response is equal to the file {string}")
-    public void thenEnsureTheBodyOfTheResponseIsEqualToTheFile(@NotNull final String pathToFile) throws Exception {
+    public void thenEnsureTheBodyOfTheResponseIsEqualToTheFile(@NotNull final String pathToFile) throws IOException {
         String expectedBody = readFile(pathToFile);
         assertJSONisEqual(
                 expectedBody,
