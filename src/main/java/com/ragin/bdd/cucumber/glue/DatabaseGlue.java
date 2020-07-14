@@ -1,12 +1,15 @@
 package com.ragin.bdd.cucumber.glue;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,9 +74,18 @@ public class DatabaseGlue extends BaseCucumberCore {
         List<Map<String, Object>> queryResults = generifyDatabaseJSONFiles(databaseExecutorService.executeQuerySQL(sqlStatements));
 
         // Generify the results to be database independent
-        List<Map<String, Object>> data = generifyDatabaseJSONFiles(
-                mapper.readValue(readFile(pathToCsvFile), new TypeReference<List<Map<String, Object>>>() {})
-        );
+        Iterator<Map<String, Object>> iterator = new CsvMapper()
+                .readerFor(Map.class)
+                .with(CsvSchema.emptySchema().withHeader())
+                .readValues(readFile(pathToCsvFile));
+
+        // write data into list
+        List<Map<String, Object>> csvList = new ArrayList<>();
+        while (iterator.hasNext()) {
+            csvList.add(iterator.next());
+        }
+
+        List<Map<String, Object>> data = generifyDatabaseJSONFiles(csvList);
 
         // Convert results to JSON to reuse compare
         String expectedResultAsJSON = mapper.writeValueAsString(data);
