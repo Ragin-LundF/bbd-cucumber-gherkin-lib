@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
  * Utils class for common REST communication methods
  */
 public final class RESTCommunicationUtils {
+    private RESTCommunicationUtils() {}
 
     /**
      * Create HTTP header
