@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.glue;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
+import java.io.IOException;
 import org.springframework.http.HttpMethod;
 
 /**
@@ -49,7 +50,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * Execute a PATCH call to the defined URL with body from file
      */
     @When("executing a PATCH call to {string} with the body from file {string}")
-    public void whenExecutingPATCHCallToPathWithBodyFromFile(String path, String pathToFile) throws Exception {
+    public void whenExecutingPATCHCallToPathWithBodyFromFile(String path, String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
         String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
@@ -61,7 +62,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * Execute an authorized PATCH call to the defined URL with body from file
      */
     @When("executing an authorized PATCH call to {string} with the body from file {string}")
-    public void whenExecutingPATCHCallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws Exception {
+    public void whenExecutingPATCHCallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
         String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
@@ -91,7 +92,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing a PATCH call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) throws Exception {
+    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.PATCH, false);
     }
 
@@ -117,7 +118,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing an authorized PATCH call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) throws Exception {
+    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.PATCH, true);
     }
 }

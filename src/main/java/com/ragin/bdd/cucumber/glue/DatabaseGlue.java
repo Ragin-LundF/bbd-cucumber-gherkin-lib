@@ -6,6 +6,7 @@ import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,12 +43,12 @@ public class DatabaseGlue extends BaseCucumberCore {
     /**
      * Execute a file which contains SQL statements
      *
-     * @param pathToQueryFile   Path/filename to file with query (SQL)
-     * @throws Throwable        Unable to read file or to parse results
+     * @param pathToQueryFile       Path/filename to file with query (SQL)
+     * @throws java.io.IOException  Unable to read file or to parse results
      */
     @Given("that the SQL statements from the SQL file {string} was executed")
     @Transactional
-    public void givenThatTheDatabaseWasInitializedWithSQLFile(String pathToQueryFile) throws Throwable {
+    public void givenThatTheDatabaseWasInitializedWithSQLFile(String pathToQueryFile) throws IOException {
         // read file
         String sqlStatements = readFile(pathToQueryFile);
         // execute query
@@ -59,11 +60,11 @@ public class DatabaseGlue extends BaseCucumberCore {
      *
      * @param pathToQueryFile   Path/filename to file with query (SQL)
      * @param pathToCsvFile     Path/filename to CSV file with result to compare
-     * @throws Throwable        Unable to read file or to parse results
+     * @throws IOException      Unable to read file or to parse results
      */
     @Then("I ensure that the result of the query of the file {string} is equal to the CSV file {string}")
     @Transactional
-    public void thenEnsureThatResultOfQueryOfFileIsEqualToCSV(String pathToQueryFile, String pathToCsvFile) throws Throwable {
+    public void thenEnsureThatResultOfQueryOfFileIsEqualToCSV(String pathToQueryFile, String pathToCsvFile) throws IOException {
         // read file
         String sqlStatements = readFile(pathToQueryFile);
         // execute query

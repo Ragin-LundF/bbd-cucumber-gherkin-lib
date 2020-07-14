@@ -21,14 +21,17 @@ public final class DateUtils extends Loggable {
     /**
      * available dateFormats
      */
-    private static final Map<String, DateTimeFormatter> dateFormats = Collections.unmodifiableMap(
-            new HashMap<String, DateTimeFormatter>() {{
-                put("yyyy-MM-dd", DateTimeFormatter.ISO_LOCAL_DATE);
-                put("yyyy-MM-dd HH:mm:ss.SSS000", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS000"));
-                put("yyyy-MM-dd HH:mm:ss.SSS000+HH:mm", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-                put("yyyy-MM-dd'T'HH:mm:ss.SSS", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-            }}
-    );
+    private static final Map<String, DateTimeFormatter> dateFormats = createDateList();
+
+    private static Map<String, DateTimeFormatter> createDateList() {
+        Map<String, DateTimeFormatter> dateTimeFormatterMap = new HashMap<>();
+        dateTimeFormatterMap.put("yyyy-MM-dd", DateTimeFormatter.ISO_LOCAL_DATE);
+        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS000", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS000"));
+        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS000+HH:mm", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        dateTimeFormatterMap.put("yyyy-MM-dd'T'HH:mm:ss.SSS", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+
+        return Collections.unmodifiableMap(dateTimeFormatterMap);
+    }
 
     /**
      * Check, that mandatory date is valid.

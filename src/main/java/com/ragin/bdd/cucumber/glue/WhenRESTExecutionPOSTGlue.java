@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.glue;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
+import java.io.IOException;
 import org.springframework.http.HttpMethod;
 
 /**
@@ -49,7 +50,7 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      * Execute a POST call to the defined URL with body from file
      */
     @When("executing a POST call to {string} with the body from file {string}")
-    public void whenExecutingPOSTCallToPathWithBodyFromFile(String path, String pathToFile) throws Exception {
+    public void whenExecutingPOSTCallToPathWithBodyFromFile(String path, String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
         String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
@@ -61,7 +62,7 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      * Execute an authorized POST call to the defined URL with body from file
      */
     @When("executing an authorized POST call to {string} with the body from file {string}")
-    public void whenExecutingPOSTCallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws Exception {
+    public void whenExecutingPOSTCallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
         String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
@@ -91,7 +92,7 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing a POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPOSTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) throws Exception {
+    public void whenExecutingPOSTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.POST, false);
     }
 
@@ -117,7 +118,7 @@ public class WhenRESTExecutionPOSTGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPOSTCallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) throws Exception {
+    public void whenExecutingPOSTCallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.POST, true);
     }
 }

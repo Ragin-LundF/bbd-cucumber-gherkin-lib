@@ -46,7 +46,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * <p>see https://github.com/lukas-krecan/JsonUnit</p>
      */
     @Then("^I ensure that the body of the response is equal to$")
-    public void thenEnsureTheBodyOfTheResponseIsEqualTo(@NotNull final String expectedBody) throws Exception {
+    public void thenEnsureTheBodyOfTheResponseIsEqualTo(@NotNull final String expectedBody) {
         assertJSONisEqual(
                 expectedBody,
                 ScenarioStateContext.current().getLatestResponse().getBody()
@@ -65,7 +65,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
     public void storeStringOfFieldInContextForLaterUsage(
             @NotNull final String fieldName,
             @NotNull final String contextName
-    ) throws Exception {
+    ) {
         Assert.assertNotNull(fieldName);
         Assert.assertNotNull(contextName);
         Assert.assertNotNull(

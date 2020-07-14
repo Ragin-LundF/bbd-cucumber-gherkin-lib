@@ -18,5 +18,6 @@ public class ValidDateMatcher extends BaseMatcher<Object> {
 
     @Override
     public void describeTo(Description description) {
+        // nothing to describe here
     }
 }
