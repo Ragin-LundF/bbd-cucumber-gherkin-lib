@@ -3,7 +3,6 @@ package com.ragin.bdd.cucumber.glue;
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 

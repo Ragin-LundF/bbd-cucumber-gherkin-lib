@@ -69,7 +69,7 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing an authorized GET call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingAnAuthorizedGETCallToPathWithDynamicURLElement(DataTable dataTable) throws Exception {
+    public void whenExecutingAnAuthorizedGETCallToPathWithDynamicURLElement(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.GET, true);
     }
 
@@ -95,7 +95,7 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing a GET call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingAGETCallToPathWithDynamicURLElement(DataTable dataTable) throws Exception {
+    public void whenExecutingAGETCallToPathWithDynamicURLElement(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.GET, false);
     }
 }

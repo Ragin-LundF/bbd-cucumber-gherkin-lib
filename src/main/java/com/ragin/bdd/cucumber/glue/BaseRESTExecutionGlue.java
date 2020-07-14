@@ -38,6 +38,7 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
         // https://github.com/spring-projects/spring-framework/issues/14004
         restTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.getRestTemplate().setErrorHandler(new DefaultResponseErrorHandler() {
+            @Override
             public boolean hasError(ClientHttpResponse response) throws IOException {
                 HttpStatus statusCode = response.getStatusCode();
                 return statusCode.series() == HttpStatus.Series.SERVER_ERROR;
@@ -69,37 +70,33 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
             @NotNull final HttpMethod httpMethod,
             final boolean authorized
     ) {
-        if (dataTable == null) {
-            throw new IllegalArgumentException("Dynamic URL parts are null");
+        // Prepare path with dynamic URLs from datatable
+        String path;
+        if (! dataTable.isEmpty()) {
+            path = RESTCommunicationUtils.prepareDynamicURLWithDataTable(dataTable);
         } else {
-            // Prepare path with dynamic URLs from datatable
-            String path;
-            if (! dataTable.isEmpty()) {
-                path = RESTCommunicationUtils.prepareDynamicURLWithDataTable(dataTable);
-            } else {
-                path = ScenarioStateContext.current().getUriPath();
-            }
-
-            // Prepare headers
-            HttpHeaders headers = RESTCommunicationUtils.createHTTPHeader(authorized);
-
-            // create HttpEntity
-            HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-            String body = ScenarioStateContext.current().getEditableBody();
-            if (StringUtils.isEmpty(body)) {
-                // there was a body...replace with new entity with body
-                httpEntity = new HttpEntity<>(body, headers);
-            }
-
-            setLatestResponse(
-                    restTemplate.exchange(
-                            fullURLFor(path),
-                            httpMethod,
-                            httpEntity,
-                            String.class
-                    )
-            );
+            path = ScenarioStateContext.current().getUriPath();
         }
+
+        // Prepare headers
+        HttpHeaders headers = RESTCommunicationUtils.createHTTPHeader(authorized);
+
+        // create HttpEntity
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        String body = ScenarioStateContext.current().getEditableBody();
+        if (StringUtils.isEmpty(body)) {
+            // there was a body...replace with new entity with body
+            httpEntity = new HttpEntity<>(body, headers);
+        }
+
+        setLatestResponse(
+                restTemplate.exchange(
+                        fullURLFor(path),
+                        httpMethod,
+                        httpEntity,
+                        String.class
+                )
+        );
     }
 
     /**

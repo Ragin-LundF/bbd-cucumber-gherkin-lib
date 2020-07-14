@@ -1,11 +1,9 @@
 package com.ragin.bdd.cucumber.glue;
 
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
-import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import java.io.IOException;
 import org.springframework.http.HttpMethod;
 
 /**
@@ -52,7 +50,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * Execute a DELETE call to the defined URL with body from file
      */
     @When("executing a DELETE call to {string} with the body from file {string}")
-    public void whenExecutingDELETECallToPathWithBodyFromFile(String path, String pathToFile) throws Exception {
+    public void whenExecutingDELETECallToPathWithBodyFromFile(String path, String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
         String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
@@ -64,7 +62,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * Execute an authorized DELETE call to the defined URL with body from file
      */
     @When("executing an authorized DELETE call to {string} with the body from file {string}")
-    public void whenExecutingDELETECallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws Exception {
+    public void whenExecutingDELETECallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
         String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
@@ -94,7 +92,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing a DELETE call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElement(DataTable dataTable) throws Exception {
+    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElement(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.DELETE, false);
     }
 
@@ -120,7 +118,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      */
     @When("executing an authorized DELETE call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) throws Exception {
+    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.DELETE, true);
     }
 }

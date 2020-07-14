@@ -2,6 +2,7 @@ package com.ragin.bdd.cucumber.core;
 
 import com.ragin.bdd.cucumber.utils.JsonUtils;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
@@ -25,11 +26,11 @@ public class BaseCucumberCore extends Loggable {
     /**
      * Read file and return content as String
      *
-     * @param path          Path to file
-     * @return              Content of file as String
-     * @throws Exception    Error while reading file
+     * @param path              Path to file
+     * @return                  Content of file as String
+     * @throws IOException      Error while reading file
      */
-    protected String readFile(String path) throws Exception {
+    protected String readFile(String path) throws IOException {
         String name = ScenarioStateContext.current().getFileBasePath() + path;
         InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(name);
         if (resourceAsStream == null) {
