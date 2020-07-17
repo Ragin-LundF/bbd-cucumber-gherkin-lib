@@ -30,6 +30,8 @@ public final class DateUtils extends Loggable {
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS000+HH:mm", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         dateTimeFormatterMap.put("yyyy-MM-dd'T'HH:mm:ss.SSS", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"));
+        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.S", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
 
         return Collections.unmodifiableMap(dateTimeFormatterMap);
     }
