@@ -69,7 +69,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      *
      * @param body of the next request
      */
-    @Given("^that the body of the response is$")
+    @Given("^that the body of the request is$")
     public void givenThatTheBodyOfRequestIs(@NotNull final String body) {
         ScenarioStateContext.current().setEditableBody(body);
     }

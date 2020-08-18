@@ -11,6 +11,8 @@ Cucumber executes `Steps` in form of [Gherkin](https://cucumber.io/docs/gherkin/
 
 Read also about [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/) of Cucumber to avoid problems and to have a clear style.
 
+See [Changelog](CHANGELOG.md) for release information.
+
 # Table of content
 
 - [Cucumber REST Gherkin library](#cucumber-rest-gherkin-library)
