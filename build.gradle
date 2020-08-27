@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
     id 'org.springframework.boot' version '2.3.1.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
@@ -37,25 +38,25 @@ dependencyManagement {
 }
 
 dependencies {
+    api 'org.apache.httpcomponents:httpclient'
+    api 'org.glassfish:javax.json:1.1.4'
+    api 'net.javacrumbs.json-unit:json-unit:2.18.1'
+
+    api 'io.cucumber:cucumber-java:6.2.2'
+    api 'io.cucumber:cucumber-spring:6.2.2'
+    api 'io.cucumber:cucumber-junit:6.2.2'
+
+    api 'javax.validation:validation-api:2.0.1.Final'
+
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    implementation 'org.glassfish:javax.json:1.1.4'
-    implementation 'net.javacrumbs.json-unit:json-unit:2.18.1'
-
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
     implementation 'commons-io:commons-io:2.7'
     implementation 'org.apache.commons:commons-lang3:3.10'
-    implementation 'org.apache.httpcomponents:httpclient'
-
-    implementation 'io.cucumber:cucumber-java:6.2.2'
-    implementation 'io.cucumber:cucumber-spring:6.2.2'
-    implementation 'io.cucumber:cucumber-junit:6.2.2'
-
-    implementation 'javax.validation:validation-api:2.0.1.Final'
 
     testImplementation 'com.h2database:h2:1.4.200'
     testImplementation 'junit:junit:4.13'
