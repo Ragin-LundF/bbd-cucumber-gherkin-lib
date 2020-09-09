@@ -2,6 +2,7 @@ package com.ragin.bdd.cucumbertests.hooks;
 
 import com.ragin.bdd.Application;
 import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
+import com.ragin.bdd.cucumber.utils.JsonUtils;
 import io.cucumber.java.Before;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.junit.Ignore;
@@ -19,7 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(
         classes = {
                 Application.class,
-                DatabaseExecutorService.class
+                DatabaseExecutorService.class,
+                JsonUtils.class
         },
         loader = SpringBootContextLoader.class
 )

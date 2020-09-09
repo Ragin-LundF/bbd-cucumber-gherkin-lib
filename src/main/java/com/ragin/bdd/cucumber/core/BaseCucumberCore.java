@@ -7,9 +7,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 public class BaseCucumberCore extends Loggable {
+    @Autowired
+    protected JsonUtils jsonUtils;
+
     /**
      * Handle BearerToken
      *
@@ -47,6 +51,6 @@ public class BaseCucumberCore extends Loggable {
      * @param actual    actual JSON
      */
     protected void assertJSONisEqual(String expected, String actual) {
-        JsonUtils.assertJsonEquals(expected, actual);
+        jsonUtils.assertJsonEquals(expected, actual);
     }
 }

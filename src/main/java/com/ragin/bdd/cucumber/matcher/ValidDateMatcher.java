@@ -1,11 +1,14 @@
-package com.ragin.bdd.cucumber.utils;
+package com.ragin.bdd.cucumber.matcher;
 
+import com.ragin.bdd.cucumber.utils.DateUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.springframework.stereotype.Component;
 
 /**
  * Matcher for valid date
  */
+@Component
 public class ValidDateMatcher extends BaseMatcher<Object> {
     public boolean matches(Object item) {
         return DateUtils.isValidMandatoryDate(item);

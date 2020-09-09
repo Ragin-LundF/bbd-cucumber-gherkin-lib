@@ -20,7 +20,7 @@ public final class RESTCommunicationUtils {
      * @return  default Headers
      */
     public static HttpHeaders createHTTPHeader(final boolean addAuthorisation) {
-        HttpHeaders headers = new HttpHeaders();
+        final HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", "application/json");
         headers.add("Accept-Language", "en");
         headers.add("Content-Type", "application/json");
@@ -46,7 +46,7 @@ public final class RESTCommunicationUtils {
         Assert.assertNotNull("No given path found", path);
 
         // Read datatable
-        List<Map<String, String>> dataTableRowList = dataTable.asMaps(String.class, String.class);
+        final List<Map<String, String>> dataTableRowList = dataTable.asMaps(String.class, String.class);
 
         for (Map<String, String> stringStringMap : dataTableRowList) {
             // Try to resolve value from context map

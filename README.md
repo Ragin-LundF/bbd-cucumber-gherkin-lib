@@ -27,6 +27,7 @@ See [Changelog](CHANGELOG.md) for release information.
     - [Then](#then)
       - [Database data comparision](#database-data-comparision)
   - [REST](#rest)
+    - [JSON-Unit](#json-unit)
     - [Given](#given-1)
       - [Set path base directory for request/result/database files](#set-path-base-directory-for-requestresultdatabase-files)
       - [Set base path for URLs](#set-base-path-for-urls)
@@ -84,7 +85,10 @@ See [Changelog](CHANGELOG.md) for release information.
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
       - [Validate response body with given String](#validate-response-body-with-given-string)
       - [Read from Response and set it to a `Feature` context](#read-from-response-and-set-it-to-a-feature-context)
-
+- [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher)
+  - [Simple matcher](#simple-matcher)
+  - [Matcher with parameter](#matcher-with-parameter)
+  
 # Support JUnit 5
 To support JUnit 5 add the `org.junit.vintage:junit-vintage-engine` dependency to your project.
 This allows JUnit 5 to execute JUnit 3 and 4 tests.
@@ -164,6 +168,15 @@ The conversion of the database result to CSV is done internally.
 
 ## REST
 The REST API steps can be prepared with some given steps.
+
+### JSON-Unit
+
+The library contains already two matchers:
+- `${json-unit.matches:isValidDate}` which checks, if the date can be a valid date by parsing it into date formats
+- `${json-unit.matches:isEqualToScenarioContext}create_id` which compares the content of the actual JSON to a variable in the ScenarioContext.
+  The context has to be set before with the [I store the string of the field "<field>" in the context "<context-id>" for later usage](#read-from-response-and-set-it-to-a-feature-context) sentence.
+
+There are more details about how to extend it at the [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher) section.
 
 For the comparison of the results the library uses `JSON` files, which can be enhanced with [JSON Unit](https://github.com/lukas-krecan/JsonUnit) to validate dynamic responses with things like
 - Regex compare
@@ -814,3 +827,123 @@ This can be used to write the value of a JSON element of the response to a conte
 
 Use this with caution, because at the point where the element is reused, the `Scenario` is hard coupled to this `Step` which ultimately makes it not executable as single `Step`.
 On the other hand, this can be useful to support cross-`Features` testing with dynamic values for end-to-end testing.
+
+# Extension of JSON Unit Matcher
+
+It is possible to extend the JSON matchers by creating a new matcher and extending the `org.hamcrest.BaseMatcher` class and implementing the `com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher` interface.
+
+After they are created, you have to add them to the `@ContextConfiguration` classes definition.
+See [CreateContextHooks.java](src/test/java/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.java) for an example how the configuration should look like.
+
+## Simple matcher
+A simple matcher to validate the current object as it is, can look like this:
+
+```java
+import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
+import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DividableByTwoMatcher extends BaseMatcher<Object> implements BddCucumberJsonMatcher {
+    public boolean matches(Object item) {
+        if (StringUtils.isNumeric(String.valueOf(item))) {
+            // never do that, but it should show something ;)
+            return Integer.parseInt((String) item) % 2 == 0;
+        }
+        return false;
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        // nothing to describe here
+    }
+
+    @Override
+    public String matcherName() {
+        return "isDividableByTwo";
+    }
+
+    @Override
+    public Class<? extends BaseMatcher<?>> matcherClass() {
+        return this.getClass();
+    }
+}
+```
+
+Now you can use this matcher with the following statement in your expected JSON:
+
+```json
+{
+  "number": "${json-unit.matches:isDividableByTwo}"
+}
+```
+
+The `matcherName()` result is now part of the `json-unit.matches:` definition.
+
+## Matcher with parameter
+
+If you need parameter, you can implement also the `net.javacrumbs.jsonunit.core.ParametrizedMatcher` interface.
+If there are several arguments, you can pass the arguments as JSON to the matcher and parse it here.
+ 
+```java
+import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
+import net.javacrumbs.jsonunit.core.ParametrizedMatcher;
+import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DividableByNumberMatcher extends BaseMatcher<Object> implements ParametrizedMatcher, BddCucumberJsonMatcher {
+    private String parameter;
+
+    public boolean matches(Object item) {
+        if (StringUtils.isNumeric(String.valueOf(item))) {
+            // never do that, but it should show something ;)
+            return Integer.parseInt((String) item) % Integer.parseInt(parameter) == 0;
+        }
+        return false;
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        // nothing to describe here
+    }
+
+    @Override
+    public String matcherName() {
+        return "isDividableByNumber";
+    }
+
+    @Override
+    public Class<? extends BaseMatcher<?>> matcherClass() {
+        return this.getClass();
+    }
+
+    @Override
+    public void setParameter(String parameter) {
+        this.parameter = parameter;
+    }
+}
+```
+
+To pass the parameter to the matcher, the JSON has to look like this:
+
+
+```json
+{
+  "number": "${json-unit.matches:isDividableByNumber}5"
+}
+```
+
+If you want to pass a JSON, you have to do it with single quotes:
+
+
+```json
+{
+  "number": "${json-unit.matches:isDividableByNumber}'{"myarg1": "A"}'"
+}
+```
+
