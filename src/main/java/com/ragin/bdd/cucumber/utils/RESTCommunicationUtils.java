@@ -29,6 +29,13 @@ public final class RESTCommunicationUtils {
             headers.add("Authorization", "Bearer " + ScenarioStateContext.current().getBearerToken());
         }
 
+        // set user specific headers if present
+        if (! ScenarioStateContext.current().getHeaderValues().isEmpty()) {
+            for (String headerName : ScenarioStateContext.current().getHeaderValues().keySet()) {
+                headers.add(headerName, ScenarioStateContext.current().getHeaderValues().get(headerName));
+            }
+        }
+
         return headers;
     }
 

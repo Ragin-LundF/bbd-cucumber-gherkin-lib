@@ -20,7 +20,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
      * @param value         new value this element
      */
     @When("I set the value of the previously given body property {string} to {string}")
-    public void whenISetTheValueOfTheBodyPropertyTo(String propertyPath, String value) {
+    public void whenISetTheValueOfTheBodyPropertyTo(final String propertyPath, final String value) {
         final String safePropertyPath = "/" + propertyPath.replace(".", "/");
 
         if ("null".equals(value)) {
@@ -49,5 +49,16 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
                     )
             );
         }
+    }
+
+    /**
+     * Set a header to a specific value.
+     *
+     * @param header        Header name
+     * @param headerValue   Header value
+     */
+    @When("I set the header {string} to {string}")
+    public void whenISetTheHeaderValueTo(final String header, final String headerValue) {
+        ScenarioStateContext.current().getHeaderValues().put(header, headerValue);
     }
 }

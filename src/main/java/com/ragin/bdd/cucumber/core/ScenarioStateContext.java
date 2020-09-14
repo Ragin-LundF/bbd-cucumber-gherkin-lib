@@ -13,6 +13,7 @@ public class ScenarioStateContext extends Loggable {
     private String editableBody = "";
     private String uriPath = "";
     private String defaultBearerToken = "";
+    private Map<String, String> headerValues = new HashMap<>();
     private Map<String, String> scenarioContextMap = new HashMap<>();
 
     private ScenarioStateContext() {}
@@ -32,6 +33,7 @@ public class ScenarioStateContext extends Loggable {
         fileBasePath = "";
         urlBasePath = "";
         editableBody = "";
+        headerValues = new HashMap<>();
         bearerToken = defaultBearerToken;
     }
 
@@ -89,6 +91,14 @@ public class ScenarioStateContext extends Loggable {
 
     public void setDefaultBearerToken(String defaultBearerToken) {
         this.defaultBearerToken = defaultBearerToken;
+    }
+
+    public Map<String, String> getHeaderValues() {
+        return headerValues;
+    }
+
+    public void setHeaderValues(Map<String, String> headerValues) {
+        this.headerValues = headerValues;
     }
 
     public Map<String, String> getScenarioContextMap() {
