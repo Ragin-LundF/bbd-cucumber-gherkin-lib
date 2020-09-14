@@ -36,6 +36,7 @@ See [Changelog](CHANGELOG.md) for release information.
       - [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)
       - [Set a body directly for later execution](#set-a-body-directly-for-later-execution)
     - [When](#when)
+      - [Header manipulation](#header-manipulation)
       - [Body manipulation](#body-manipulation)
       - [Execute requests](#execute-requests)
     - [Then](#then-1)
