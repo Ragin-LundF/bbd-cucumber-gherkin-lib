@@ -1,7 +1,7 @@
 # Release 1.12.0
 
 - Adding support for adding and manipulating headers.
-- Restructured the documentation: HTTP Methods has now their own md files.
+- Restructured the documentation: HTTP Methods have now their own md files.
 
 # Release 1.11.0
 
