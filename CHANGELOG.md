@@ -1,3 +1,15 @@
+# Release 1.13.0
+
+Adding support for JSON path to the "I store" sentence.
+
+The JSON path can be used with:
+```
+$.firstElement[3].nextElement
+```
+
+The library detects, if the path has the prefix `$.`. If it is not available, it adds this prefix.
+
+
 # Release 1.12.0
 
 - Adding support for adding and manipulating headers.

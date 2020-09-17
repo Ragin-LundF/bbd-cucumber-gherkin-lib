@@ -1,5 +1,7 @@
 package com.ragin.bdd.cucumber.glue;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.Then;
@@ -94,9 +96,15 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
         JsonObject json = jsonReader.readObject();
         jsonReader.close();
 
+        String jsonPath = fieldName;
+        if (! jsonPath.startsWith("$.")) {
+            jsonPath = "$." + jsonPath;
+        }
+        final DocumentContext documentContext = JsonPath.parse(ScenarioStateContext.current().getLatestResponse().getBody());
+        String field = documentContext.read(jsonPath, String.class);
         ScenarioStateContext.current().getScenarioContextMap().put(
                 replaceTrailingAndLeadingQuotes(contextName),
-                json.getJsonString(fieldName).getString()
+                field
         );
     }
 
