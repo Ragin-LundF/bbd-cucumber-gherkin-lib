@@ -1,3 +1,9 @@
+# Release 1.14.0
+
+Adding support for the JSON path to the "I set the value of" sentence.
+It now also tries to resolve the value from the ScenarioContext.
+If nothing is found, it uses the original value. 
+
 # Release 1.13.0
 
 Adding support for JSON path to the "I store" sentence.

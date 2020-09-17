@@ -1,27 +1,19 @@
 package com.ragin.bdd.cucumber.utils;
 
 import static net.javacrumbs.jsonunit.core.Option.TREATING_NULL_AS_ABSENT;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.ragin.bdd.cucumber.core.Loggable;
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
 import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher;
 import com.ragin.bdd.cucumber.matcher.ValidDateMatcher;
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import net.javacrumbs.jsonunit.JsonAssert;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility class used to work with JSON objects.
@@ -82,17 +74,7 @@ public final class JsonUtils extends Loggable {
      * @return the JSON file as String without the field
      */
     public String removeJsonField(final String originalJson, final String fieldPath) {
-        final JsonReader jsonReader = Json.createReader(new StringReader(originalJson));
-        final JsonObject json = jsonReader.readObject();
-        jsonReader.close();
-
-        final JsonArray patchOps = Json.createArrayBuilder()
-                .add(Json.createObjectBuilder()
-                        .add("op", "remove")
-                        .add("path", fieldPath)
-                ).build();
-
-        return Json.createPatch(patchOps).apply(json).toString();
+        return editJsonField(originalJson, fieldPath, null);
     }
 
     /**
@@ -106,17 +88,17 @@ public final class JsonUtils extends Loggable {
      * @return the JSON file with the edited field
      */
     public String editJsonField(final String originalJson, final String fieldPath, final String newValue) {
-        final JsonReader jsonReader = Json.createReader(new StringReader(originalJson));
-        final JsonObject json = jsonReader.readObject();
-        jsonReader.close();
+        // set a JSON path
+        String fieldJSONPath = fieldPath;
+        if (! fieldJSONPath.startsWith("$.")) {
+            fieldJSONPath = "$." + fieldJSONPath;
+        }
 
-        final JsonArray patchOps = Json.createArrayBuilder().add(Json.createObjectBuilder()
-                .add("op", "add")
-                .add("path", fieldPath)
-                .add("value", newValue)
-        ).build();
+        // read document
+        final DocumentContext documentContext = JsonPath.parse(originalJson);
+        documentContext.set(fieldJSONPath, newValue);
 
-        return Json.createPatch(patchOps).apply(json).toString();
+        return documentContext.jsonString();
     }
 
     /**

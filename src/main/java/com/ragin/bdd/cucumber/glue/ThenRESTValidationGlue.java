@@ -6,11 +6,6 @@ import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.Then;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.Objects;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.validation.constraints.NotNull;
 import org.junit.Assert;
 
@@ -85,16 +80,6 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
                 "body of response was null",
                 ScenarioStateContext.current().getLatestResponse().getBody()
         );
-
-        JsonReader jsonReader = Json.createReader(
-                new StringReader(
-                        Objects.requireNonNull(
-                                ScenarioStateContext.current().getLatestResponse().getBody()
-                        )
-                )
-        );
-        JsonObject json = jsonReader.readObject();
-        jsonReader.close();
 
         String jsonPath = fieldName;
         if (! jsonPath.startsWith("$.")) {
