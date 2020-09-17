@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
         glue = {
                 "com.ragin.cucumber.glue",
                 "com.ragin.cucumber.hooks",
-                "com.ragin.cucumbertests.hooks"
+                "com.ragin.bdd.cucumbertests.hooks"
         },
         plugin = {
                 "json:target/reports/cucumber/cucumber.json",
