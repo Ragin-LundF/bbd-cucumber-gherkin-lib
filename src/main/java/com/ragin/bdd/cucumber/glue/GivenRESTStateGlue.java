@@ -2,8 +2,11 @@ package com.ragin.bdd.cucumber.glue;
 
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -72,5 +75,38 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
     @Given("^that the body of the request is$")
     public void givenThatTheBodyOfRequestIs(@NotNull final String body) {
         ScenarioStateContext.current().setEditableBody(body);
+    }
+
+    /**
+     * Offers the possibility to set static values to the context
+     *
+     * @param key       Key in the context map
+     * @param value     Value that should be used
+     */
+    @Given("that the context contains the key {string} with the value {string}")
+    public void givenThatContextContainsKeyValue(@NotNull final String key, @NotNull final String value) {
+        ScenarioStateContext.current().getScenarioContextMap().put(key, value);
+    }
+
+    /**
+     * With this sentence it is possible to add static values to the context map.
+     *
+     * <p>
+     * DataTable looks like:
+     * <pre>
+     * | key | value |
+     * | resourceId    | abc-def-gh |
+     * | subResourceId | zyx-wvu-ts |
+     * </pre>
+     *
+     * @param dataTable  DataTable with the key "key" and value "value"
+     */
+    @Given("that the context contains the following 'key' and 'value' pairs")
+    public void givenThatContextContainsKeyValuePairFromDataTable(final DataTable dataTable) {
+        final Map<String, String> contextDataTableMap = dataTable.asMap(String.class, String.class);
+        final Set<String> keySet = contextDataTableMap.keySet();
+        for (String key : keySet) {
+            ScenarioStateContext.current().getScenarioContextMap().put(key, contextDataTableMap.get(key));
+        }
     }
 }
