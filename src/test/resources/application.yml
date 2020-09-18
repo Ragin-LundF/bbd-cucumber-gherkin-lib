@@ -41,9 +41,3 @@ logging.level:
     springframework: error
   com:
     ragin: error
-
-# Cucumber publish settings
-cucumber:
-  publish:
-    enabled: true
-    quiet: false
