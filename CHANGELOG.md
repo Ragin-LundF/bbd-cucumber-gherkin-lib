@@ -1,3 +1,15 @@
+# Release 1.15.0
+Adding support in the paths to support templates.
+If the path contains something like:
+```
+/api/v1/${dynamicElement}/
+```
+In this case, the `dynamicElement` will be replaced, if it exists in the ScenarioContext.
+
+Support for adding static key/value pairs to the context:
+- [Set a static value to the context](README.md#set-a-static-value-to-the-context)
+- [Set multiple static values to the context](README.md#set-multiple-static-values-to-the-context)
+
 # Release 1.14.0
 
 Adding support for the JSON path to the "I set the value of" sentence.

@@ -72,7 +72,7 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized GET call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingAnAuthorizedGETCallToPathWithDynamicURLElement(DataTable dataTable) {
+    public void whenExecutingAnAuthorizedGETCallToPathWithDynamicURLElement(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.GET, true);
     }
 
@@ -99,7 +99,7 @@ public class WhenRESTExecutionGETGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a GET call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingAGETCallToPathWithDynamicURLElement(DataTable dataTable) {
+    public void whenExecutingAGETCallToPathWithDynamicURLElement(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.GET, false);
     }
 }

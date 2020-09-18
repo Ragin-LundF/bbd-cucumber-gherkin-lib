@@ -30,6 +30,8 @@ See [Changelog](CHANGELOG.md) for release information.
     - [JSON-Unit](#json-unit)
     - [Given](#given-1)
       - [Set path base directory for request/result/database files](#set-path-base-directory-for-requestresultdatabase-files)
+      - [Set a static value to the context](#set-a-static-value-to-the-context)
+      - [Set multiple static values to the context](#set-multiple-static-values-to-the-context)
       - [Set base path for URLs](#set-base-path-for-urls)
       - [Define that a token without scopes should be used.](#define-that-a-token-without-scopes-should-be-used)
       - [Set a URI path for later execution](#set-a-uri-path-for-later-execution)
@@ -128,6 +130,8 @@ The conversion of the database result to CSV is done internally.
 ## REST
 The REST API steps can be prepared with some given steps.
 
+If a path contains a template placeholder with `${}` like `${elementFromContext}` the library tries to replace this with `elementFromContext` in the context, if it exists. 
+
 ### JSON-Unit
 
 The library contains already two matchers:
@@ -160,6 +164,42 @@ It is used for:
 - Database query files (`.sql`)
 - Database CSV result files (`.csv`)
 
+#### Set a static value to the context
+```gherkin
+Scenario: Test with static key/value added to the context
+    Given that the context contains the key "staticKey" with the value "staticValue" 
+    And that the API path is "/api/v1/${staticKey}/myApi"
+    When executing a GET call with previously given URI
+```
+
+or use it in an outline scenario:
+
+```gherkin
+Scenario Outline: Test with static key/value added to the context in an outline scenario
+        Given that the context contains the key "<staticKey>" with the value "<staticValue>"
+        And that the API path is "/api/v1/${staticURLElement}"
+        When executing a GET call with previously given URI
+    Examples:
+        | staticKey        | staticValue |
+        | staticURLElement | resourceA   |
+        | staticURLElement | resourceB   |
+        | staticURLElement | resourceC   |
+```
+
+It adds the key/value pairs to the context. Please ensure, that those static values are unique to avoid overwriting them in later steps.
+
+#### Set multiple static values to the context
+```gherkin
+Scenario: Test with static key/value added to the context via table
+    Given that the context contains the following 'key' and 'value' pairs
+      | staticFirstElement  | resourceA |
+      | staticSecondElement | resourceB |
+    And that the API path is "/api/v1/${staticFirstElement}/${staticSecondElement}"
+    When executing a GET call with previously given URI
+```
+
+It adds the key/value pairs to the context. Please ensure, that those static values are unique to avoid overwriting them in later steps.
+
 #### Set base path for URLs
 ```gherkin
 Scenario:
@@ -168,6 +208,8 @@ Scenario:
 
 Sets an internal `base URL path` for all URLs in the `Scenario` or `Feature`.
 This is very useful to avoid repeating e.g. `/api/v1/myapitotest` before every concrete endpoint.
+
+It is also possible to use placeholders with `${placeholder}` syntax. They will be replaced from the context.
 
 #### Define that a token without scopes should be used.
 ```gherkin
