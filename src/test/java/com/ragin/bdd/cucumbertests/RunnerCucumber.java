@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
                 "json:target/reports/cucumber/cucumber.json",
                 "html:target/reports/cucumber/cucumber.html"
         },
-        publish = true,
+        publish = true, // publish it to https://reports.cucumber.io. Decide if you wish it!
         tags = "not @ignore"
 )
 public class RunnerCucumber {
