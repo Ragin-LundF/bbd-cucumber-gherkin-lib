@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
                 "json:target/reports/cucumber/cucumber.json",
                 "html:target/reports/cucumber/cucumber.html"
         },
+        publish = true,
         tags = "not @ignore"
 )
 public class RunnerCucumber {
