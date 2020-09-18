@@ -1,3 +1,12 @@
+# Release 1.15.0
+Adding support in the paths to support templates.
+If the path contains something like:
+```
+/api/v1/${dynamicElement}/
+```
+In this case the `dynamicElement` will be replaced, if it exists in the ScenarioContext.
+
+
 # Release 1.14.0
 
 Adding support for the JSON path to the "I set the value of" sentence.

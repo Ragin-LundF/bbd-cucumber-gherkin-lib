@@ -48,6 +48,8 @@ dependencies {
 
     api 'javax.validation:validation-api:2.0.1.Final'
 
+    api 'org.apache.commons:commons-text:1.9'
+
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-test'

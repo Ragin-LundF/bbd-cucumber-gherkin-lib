@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -77,6 +78,7 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
         } else {
             path = ScenarioStateContext.current().getUriPath();
         }
+        path = replacePathPlaceholders(path);
 
         // Prepare headers
         HttpHeaders headers = RESTCommunicationUtils.createHTTPHeader(authorized);
@@ -100,12 +102,26 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
     }
 
     /**
+     * Replace placeholder like ${myContextItem} with the available items from the context
+     *
+     * @param path  Path which can contain the placeholder
+     * @return      replaced path
+     */
+    protected String replacePathPlaceholders(final String path) {
+        // Build StringSubstitutor
+        StringSubstitutor sub = new StringSubstitutor(ScenarioStateContext.current().getScenarioContextMap());
+
+        // Replace
+        return sub.replace(path);
+    }
+
+    /**
      * Full URL for URI path
      *
      * @param path Path of URI
      * @return  full URL as protocol:server_host:port/basePath/path
      */
-    protected String fullURLFor(String path) {
+    protected String fullURLFor(final String path) {
         return SERVER_URL + port + ScenarioStateContext.current().getUrlBasePath() + path;
     }
 }
