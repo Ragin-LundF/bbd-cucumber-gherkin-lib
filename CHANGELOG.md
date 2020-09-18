@@ -8,7 +8,7 @@ In this case, the `dynamicElement` will be replaced, if it exists in the Scenari
 
 Support for adding static key/value pairs to the context:
 - [Set a static value to the context](README.md#set-a-static-value-to-the-context)
-- [Set multiple static values to the context](REAMDME.md#set-multiple-static-values-to-the-context)
+- [Set multiple static values to the context](README.md#set-multiple-static-values-to-the-context)
 
 # Release 1.14.0
 
