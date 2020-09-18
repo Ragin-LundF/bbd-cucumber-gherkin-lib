@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumbertests.hooks;
 import com.ragin.bdd.Application;
 import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
 import com.ragin.bdd.cucumber.utils.JsonUtils;
+import com.ragin.bdd.cucumbertests.library.test.Authentication;
 import io.cucumber.java.Before;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.junit.Ignore;
@@ -27,7 +28,6 @@ import org.springframework.test.context.ContextConfiguration;
         properties = "spring.main.allow-bean-definition-overriding=true"
 )
 public class CreateContextHooks {
-
     @Test
     @Ignore("Empty test to avoid java.lang.Exception: No runnable methods.")
     public void emptyTest(){
@@ -38,5 +38,4 @@ public class CreateContextHooks {
     public void springDummyForConfiguration(){
         // Dummy method so cucumber will recognize this class and use its context configuration.
     }
-
 }

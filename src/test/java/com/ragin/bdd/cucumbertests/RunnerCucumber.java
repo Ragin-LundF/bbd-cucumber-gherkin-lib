@@ -7,11 +7,11 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = {
-                "src/test/resources"
+                "classpath:features"
         },
         glue = {
-                "com.ragin.cucumber.glue",
-                "com.ragin.cucumber.hooks",
+                "com.ragin.bdd.cucumber.glue",
+                "com.ragin.bdd.cucumber.hooks",
                 "com.ragin.bdd.cucumbertests.hooks"
         },
         plugin = {
@@ -20,5 +20,5 @@ import org.junit.runner.RunWith;
         },
         tags = "not @ignore"
 )
-public class Runner {
+public class RunnerCucumber {
 }
