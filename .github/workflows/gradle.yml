@@ -28,6 +28,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Execute cucumber tests
+      run: ./gradlew cucumber
+
     - name: Sonarqube
       run: ./gradlew sonarqube
       env:
