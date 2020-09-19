@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,11 @@ public class Authentication {
 
     @PutMapping("/api/v1/unauthorized")
     public ResponseEntity<String> stubUnauthorizedPut(final @RequestBody String body) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());
+    }
+
+    @PatchMapping("/api/v1/unauthorized")
+    public ResponseEntity<String> stubUnauthorizedPatch(final @RequestBody String body) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());
     }
 
@@ -73,6 +79,17 @@ public class Authentication {
 
     @PutMapping("/api/v1/authorized")
     public ResponseEntity<String> stubAuthenticatedWithTokenPut(
+            final @NonNull @RequestHeader("Authorization") String authToken,
+            final @RequestBody String body
+    ) {
+        if (authToken.equals("Bearer " + token)) {
+            return ResponseEntity.ok().body(createAuthorizedResponse());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());
+    }
+
+    @PatchMapping("/api/v1/authorized")
+    public ResponseEntity<String> stubAuthenticatedWithTokenPatch(
             final @NonNull @RequestHeader("Authorization") String authToken,
             final @RequestBody String body
     ) {
