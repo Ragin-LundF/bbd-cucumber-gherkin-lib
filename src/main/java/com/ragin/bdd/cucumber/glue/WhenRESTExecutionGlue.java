@@ -29,7 +29,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
                             propertyPath
                     )
             );
-        } else if (newValue.matches("\\d* characters")) {
+        } else if (newValue.matches("\\d* bdd_lib_numbers")) {
             final int numOfChars = Integer.parseInt(newValue.split(" ")[0]);
             newValue = StringUtils.rightPad("", numOfChars, "1234567890");
             ScenarioStateContext.current().setEditableBody(

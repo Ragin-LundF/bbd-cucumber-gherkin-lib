@@ -25,8 +25,8 @@ public final class RESTCommunicationUtils {
         headers.add("Accept-Language", "en");
         headers.add("Content-Type", "application/json");
 
-        if (addAuthorisation) {
-            headers.add("Authorization", "Bearer " + ScenarioStateContext.current().getBearerToken());
+        if (addAuthorisation && ScenarioStateContext.current().getHeaderValues().get(HttpHeaders.AUTHORIZATION) == null) {
+            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + ScenarioStateContext.current().getBearerToken());
         }
 
         // set user specific headers if present

@@ -92,3 +92,10 @@ Feature: Authorization with PUT tests
     When executing an authorized PUT call with previously given URI and body
     Then I ensure that the status code of the response is 200
     And I ensure that the body of the response is equal to the file "responses/response_authorized.json"
+
+
+  Scenario: Authorized PUT call with direct given API path and dynamic path elements from context and body from file is successful
+    Given that the context contains the key "apiPath" with the value "authorized"
+    When executing an authorized PUT call to "/api/v1/${apiPath}" with the body from file "requests/request.json"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to the file "responses/response_authorized.json"
