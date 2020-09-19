@@ -2,9 +2,13 @@ package com.ragin.bdd.cucumber.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.ResponseEntity;
 
-public class ScenarioStateContext extends Loggable {
+@Getter
+@Setter
+public class ScenarioStateContext {
     private static ScenarioStateContext scenarioStateContext;
     private ResponseEntity<String> latestResponse = null;
     private String fileBasePath = "";
@@ -35,77 +39,5 @@ public class ScenarioStateContext extends Loggable {
         editableBody = "";
         headerValues = new HashMap<>();
         bearerToken = defaultBearerToken;
-    }
-
-    public ResponseEntity<String> getLatestResponse() {
-        return latestResponse;
-    }
-
-    public void setLatestResponse(ResponseEntity<String> latestResponse) {
-        this.latestResponse = latestResponse;
-    }
-
-    public String getFileBasePath() {
-        return fileBasePath;
-    }
-
-    public void setFileBasePath(String fileBasePath) {
-        this.fileBasePath = fileBasePath;
-    }
-
-    public String getUrlBasePath() {
-        return urlBasePath;
-    }
-
-    public void setUrlBasePath(String urlBasePath) {
-        this.urlBasePath = urlBasePath;
-    }
-
-    public String getBearerToken() {
-        return bearerToken;
-    }
-
-    public void setBearerToken(String bearerToken) {
-        this.bearerToken = bearerToken;
-    }
-
-    public String getEditableBody() {
-        return editableBody;
-    }
-
-    public void setEditableBody(String editableBody) {
-        this.editableBody = editableBody;
-    }
-
-    public String getUriPath() {
-        return uriPath;
-    }
-
-    public void setUriPath(String uriPath) {
-        this.uriPath = uriPath;
-    }
-
-    public String getDefaultBearerToken() {
-        return defaultBearerToken;
-    }
-
-    public void setDefaultBearerToken(String defaultBearerToken) {
-        this.defaultBearerToken = defaultBearerToken;
-    }
-
-    public Map<String, String> getHeaderValues() {
-        return headerValues;
-    }
-
-    public void setHeaderValues(Map<String, String> headerValues) {
-        this.headerValues = headerValues;
-    }
-
-    public Map<String, String> getScenarioContextMap() {
-        return scenarioContextMap;
-    }
-
-    public void setScenarioContextMap(Map<String, String> scenarioContextMap) {
-        this.scenarioContextMap = scenarioContextMap;
     }
 }

@@ -3,13 +3,13 @@ package com.ragin.bdd.cucumber.utils;
 import static net.javacrumbs.jsonunit.core.Option.TREATING_NULL_AS_ABSENT;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.ragin.bdd.cucumber.core.Loggable;
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
 import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher;
 import com.ragin.bdd.cucumber.matcher.ValidDateMatcher;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import lombok.extern.apachecommons.CommonsLog;
 import net.javacrumbs.jsonunit.JsonAssert;
 import net.javacrumbs.jsonunit.core.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,8 @@ import org.springframework.stereotype.Component;
  * Utility class used to work with JSON objects.
  */
 @Component
-public final class JsonUtils extends Loggable {
+@CommonsLog
+public final class JsonUtils {
     @Autowired(required = false)
     Collection<BddCucumberJsonMatcher> jsonMatcher;
 
@@ -44,7 +45,7 @@ public final class JsonUtils extends Loggable {
                                 matcher.matcherClass().newInstance()
                         );
                     } catch (Exception e) {
-                        LOG.error("Unable to instantiate the matcher [" + matcher.matcherName() + "]");
+                        log.error("Unable to instantiate the matcher [" + matcher.matcherName() + "]");
                     }
                 }
             }
@@ -57,7 +58,7 @@ public final class JsonUtils extends Loggable {
         } catch (AssertionError error) {
             final String minimizedExpected = minimizeJSON(expectedJSON);
             final String minimizedActual = minimizeJSON(actualJSON);
-            LOG.error("JSON comparison failed.\nExpected:\n\t" + minimizedExpected + "\nActual:\n\t" + minimizedActual + "\n");
+            log.error("JSON comparison failed.\nExpected:\n\t" + minimizedExpected + "\nActual:\n\t" + minimizedActual + "\n");
 
             // rethrow error to make the test fail
             throw error;
