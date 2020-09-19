@@ -39,7 +39,7 @@ public class DatabaseGlue extends BaseCucumberCore {
      */
     @Given("that the database was initialized with the liquibase file {string}")
     @Transactional
-    public void givenThatTheDatabaseWasInitializedWithLiquibaseFile(String pathToFile) throws Exception {
+    public void givenThatTheDatabaseWasInitializedWithLiquibaseFile(final String pathToFile) throws Exception {
         databaseExecutorService.executeLiquibaseScript(pathToFile);
     }
 
@@ -51,9 +51,9 @@ public class DatabaseGlue extends BaseCucumberCore {
      */
     @Given("that the SQL statements from the SQL file {string} was executed")
     @Transactional
-    public void givenThatTheDatabaseWasInitializedWithSQLFile(String pathToQueryFile) throws IOException {
+    public void givenThatTheDatabaseWasInitializedWithSQLFile(final String pathToQueryFile) throws IOException {
         // read file
-        String sqlStatements = readFile(pathToQueryFile);
+        final String sqlStatements = readFile(pathToQueryFile);
         // execute query
         databaseExecutorService.executeSQL(sqlStatements);
     }
@@ -67,29 +67,32 @@ public class DatabaseGlue extends BaseCucumberCore {
      */
     @Then("I ensure that the result of the query of the file {string} is equal to the CSV file {string}")
     @Transactional
-    public void thenEnsureThatResultOfQueryOfFileIsEqualToCSV(String pathToQueryFile, String pathToCsvFile) throws IOException {
+    public void thenEnsureThatResultOfQueryOfFileIsEqualToCSV(
+            final String pathToQueryFile,
+            final String pathToCsvFile
+    ) throws IOException {
         // read file
-        String sqlStatements = readFile(pathToQueryFile);
+        final String sqlStatements = readFile(pathToQueryFile);
         // execute query
-        List<Map<String, Object>> queryResults = generifyDatabaseJSONFiles(databaseExecutorService.executeQuerySQL(sqlStatements));
+        final List<Map<String, Object>> queryResults = generifyDatabaseJSONFiles(databaseExecutorService.executeQuerySQL(sqlStatements));
 
         // Generify the results to be database independent
-        Iterator<Map<String, Object>> iterator = new CsvMapper()
+        final Iterator<Map<String, Object>> iterator = new CsvMapper()
                 .readerFor(Map.class)
                 .with(CsvSchema.emptySchema().withHeader())
                 .readValues(readFile(pathToCsvFile));
 
         // write data into list
-        List<Map<String, Object>> csvList = new ArrayList<>();
+        final List<Map<String, Object>> csvList = new ArrayList<>();
         while (iterator.hasNext()) {
             csvList.add(iterator.next());
         }
 
-        List<Map<String, Object>> data = generifyDatabaseJSONFiles(csvList);
+        final List<Map<String, Object>> data = generifyDatabaseJSONFiles(csvList);
 
         // Convert results to JSON to reuse compare
-        String expectedResultAsJSON = mapper.writeValueAsString(data);
-        String actualResultAsJSON = mapper.writeValueAsString(queryResults);
+        final String expectedResultAsJSON = mapper.writeValueAsString(data);
+        final String actualResultAsJSON = mapper.writeValueAsString(queryResults);
 
         // compare JSON
         assertJSONisEqual(expectedResultAsJSON, actualResultAsJSON);
@@ -104,7 +107,7 @@ public class DatabaseGlue extends BaseCucumberCore {
      * @param data List of database rows as Map with column name and columns value
      * @return the generified data to be database independent
      */
-    private List<Map<String, Object>> generifyDatabaseJSONFiles(List<Map<String, Object>> data) {
+    private List<Map<String, Object>> generifyDatabaseJSONFiles(final List<Map<String, Object>> data) {
         return data.stream().map(
                 original -> original
                         .entrySet()
@@ -128,7 +131,7 @@ public class DatabaseGlue extends BaseCucumberCore {
      * @param columnName the columnName to be processed
      * @return the columnName processed to be database independent
      */
-    private String generifyDatabaseColumnName(String columnName) {
+    private String generifyDatabaseColumnName(final String columnName) {
         return columnName.toUpperCase();
     }
 
@@ -144,7 +147,7 @@ public class DatabaseGlue extends BaseCucumberCore {
      * @param <V> any object
      * @return the columnName processed to be database independent
      */
-    private <V> Object generifyDatabaseColumnValue(V columnValue) {
+    private <V> Object generifyDatabaseColumnValue(final V columnValue) {
         if (columnValue instanceof Boolean) {
             return (Boolean) columnValue ? 1 : 0;
         }

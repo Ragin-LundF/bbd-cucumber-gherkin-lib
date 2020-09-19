@@ -24,7 +24,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * @param basePath of files
      */
     @Given("that all file paths are relative to {string}")
-    public void givenThatAllFilePathsAreRelativeTo(@NotNull String basePath) {
+    public void givenThatAllFilePathsAreRelativeTo(final @NotNull String basePath) {
         ScenarioStateContext.current().setFileBasePath(basePath);
     }
 
@@ -34,7 +34,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * @param basePath  of the URLs
      */
     @Given("that all URLs are relative to {string}")
-    public void givenThatAllURLsAreRelativeTo(@NotNull String basePath) {
+    public void givenThatAllURLsAreRelativeTo(final @NotNull String basePath) {
         ScenarioStateContext.current().setUrlBasePath(basePath);
     }
 
@@ -52,7 +52,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * @param apiPath   path of the endpoint
      */
     @Given("that the API path is {string}")
-    public void givenThatAPIPathIs(@NotNull String apiPath) {
+    public void givenThatAPIPathIs(final @NotNull String apiPath) {
         ScenarioStateContext.current().setUriPath(apiPath);
     }
 
@@ -63,7 +63,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * @throws java.io.IOException error while reading file
      */
     @Given("that the file {string} is used as the body")
-    public void givenThatTheFileIsUsedAsTheBody(@NotNull String pathToFile) throws IOException {
+    public void givenThatTheFileIsUsedAsTheBody(final @NotNull String pathToFile) throws IOException {
         ScenarioStateContext.current().setEditableBody(readFile(pathToFile));
     }
 
@@ -73,7 +73,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * @param body of the next request
      */
     @Given("^that the body of the request is$")
-    public void givenThatTheBodyOfRequestIs(@NotNull final String body) {
+    public void givenThatTheBodyOfRequestIs(final @NotNull String body) {
         ScenarioStateContext.current().setEditableBody(body);
     }
 
@@ -84,7 +84,7 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
      * @param value     Value that should be used
      */
     @Given("that the context contains the key {string} with the value {string}")
-    public void givenThatContextContainsKeyValue(@NotNull final String key, @NotNull final String value) {
+    public void givenThatContextContainsKeyValue(final @NotNull String key, final @NotNull String value) {
         ScenarioStateContext.current().getScenarioContextMap().put(key, value);
     }
 

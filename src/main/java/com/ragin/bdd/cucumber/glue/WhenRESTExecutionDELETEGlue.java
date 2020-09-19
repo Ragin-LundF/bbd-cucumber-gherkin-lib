@@ -32,7 +32,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * @param path to the endpoint URI
      */
     @When("executing a DELETE call to {string} with previously given body")
-    public void whenExecutingDELETECallToWithGivenBody(String path) {
+    public void whenExecutingDELETECallToWithGivenBody(final String path) {
         ScenarioStateContext.current().setUriPath(path);
 
         executeRequest(HttpMethod.DELETE, false);
@@ -44,7 +44,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * @param path to the endpoint URI
      */
     @When("executing an authorized DELETE call to {string} with previously given body")
-    public void whenExecutingDELETECallToWithGivenBodyAuthorized(String path) {
+    public void whenExecutingDELETECallToWithGivenBodyAuthorized(final String path) {
         ScenarioStateContext.current().setUriPath(path);
 
         executeRequest(HttpMethod.DELETE, true);
@@ -58,9 +58,9 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * @throws java.io.IOException error while reading file
      */
     @When("executing a DELETE call to {string} with the body from file {string}")
-    public void whenExecutingDELETECallToPathWithBodyFromFile(String path, String pathToFile) throws IOException {
+    public void whenExecutingDELETECallToPathWithBodyFromFile(final String path, final String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
-        String body = readFile(pathToFile);
+        final String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
 
         executeRequest(HttpMethod.DELETE, false);
@@ -74,9 +74,9 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * @throws java.io.IOException error while reading file
      */
     @When("executing an authorized DELETE call to {string} with the body from file {string}")
-    public void whenExecutingDELETECallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws IOException {
+    public void whenExecutingDELETECallToPathWithBodyFromFileAuthorized(final String path, final String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
-        String body = readFile(pathToFile);
+        final String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
 
         executeRequest(HttpMethod.DELETE, true);
@@ -105,7 +105,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a DELETE call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElement(DataTable dataTable) {
+    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElement(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.DELETE, false);
     }
 
@@ -132,7 +132,7 @@ public class WhenRESTExecutionDELETEGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized DELETE call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) {
+    public void whenExecutingDELETECallToPathWithBodyAndDynamicURLElementAuthorized(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.DELETE, true);
     }
 }

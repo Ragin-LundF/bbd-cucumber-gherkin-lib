@@ -32,7 +32,7 @@ public class WhenRESTExecutionPUTGlue extends BaseRESTExecutionGlue {
      * @param path to the endpoint URI
      */
     @When("executing a PUT call to {string} with previously given body")
-    public void whenExecutingPUTCallToWithGivenBody(String path) {
+    public void whenExecutingPUTCallToWithGivenBody(final String path) {
         ScenarioStateContext.current().setUriPath(path);
 
         executeRequest(HttpMethod.PUT, false);
@@ -44,7 +44,7 @@ public class WhenRESTExecutionPUTGlue extends BaseRESTExecutionGlue {
      * @param path to the endpoint URI
      */
     @When("executing an authorized PUT call to {string} with previously given body")
-    public void whenExecutingPUTCallToWithGivenBodyAuthorized(String path) {
+    public void whenExecutingPUTCallToWithGivenBodyAuthorized(final String path) {
         ScenarioStateContext.current().setUriPath(path);
 
         executeRequest(HttpMethod.PUT, true);
@@ -58,9 +58,9 @@ public class WhenRESTExecutionPUTGlue extends BaseRESTExecutionGlue {
      * @throws java.io.IOException error while reading file
      */
     @When("executing a PUT call to {string} with the body from file {string}")
-    public void whenExecutingPUTCallToPathWithBodyFromFile(String path, String pathToFile) throws IOException {
+    public void whenExecutingPUTCallToPathWithBodyFromFile(final String path, final String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
-        String body = readFile(pathToFile);
+        final String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
 
         executeRequest(HttpMethod.PUT, false);
@@ -74,9 +74,9 @@ public class WhenRESTExecutionPUTGlue extends BaseRESTExecutionGlue {
      * @throws java.io.IOException error while reading file
      */
     @When("executing an authorized PUT call to {string} with the body from file {string}")
-    public void whenExecutingPUTCallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws IOException {
+    public void whenExecutingPUTCallToPathWithBodyFromFileAuthorized(final String path, final String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
-        String body = readFile(pathToFile);
+        final String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
 
         executeRequest(HttpMethod.PUT, true);
@@ -105,7 +105,7 @@ public class WhenRESTExecutionPUTGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a PUT call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPUTCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) {
+    public void whenExecutingPUTCallToPathWithBodyAndDynamicURLElement(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.PUT, false);
     }
 
@@ -132,7 +132,7 @@ public class WhenRESTExecutionPUTGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized PUT call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPUTCallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) {
+    public void whenExecutingPUTCallToPathWithBodyAndDynamicURLElementAuthorized(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.PUT, true);
     }
 }

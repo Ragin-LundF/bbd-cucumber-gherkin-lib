@@ -29,7 +29,7 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     protected TestRestTemplate restTemplate;
 
-    protected void setLatestResponse(ResponseEntity<String> latestResponse) {
+    protected void setLatestResponse(final ResponseEntity<String> latestResponse) {
         ScenarioStateContext.current().setLatestResponse(latestResponse);
     }
 
@@ -81,11 +81,11 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
         path = replacePathPlaceholders(path);
 
         // Prepare headers
-        HttpHeaders headers = RESTCommunicationUtils.createHTTPHeader(authorized);
+        final HttpHeaders headers = RESTCommunicationUtils.createHTTPHeader(authorized);
 
         // create HttpEntity
+        final String body = ScenarioStateContext.current().getEditableBody();
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        String body = ScenarioStateContext.current().getEditableBody();
         if (! StringUtils.isEmpty(body)) {
             // there was a body...replace with new entity with body
             httpEntity = new HttpEntity<>(body, headers);
@@ -109,7 +109,7 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
      */
     protected String replacePathPlaceholders(final String path) {
         // Build StringSubstitutor
-        StringSubstitutor sub = new StringSubstitutor(ScenarioStateContext.current().getScenarioContextMap());
+        final StringSubstitutor sub = new StringSubstitutor(ScenarioStateContext.current().getScenarioContextMap());
 
         // Replace
         return sub.replace(path);
