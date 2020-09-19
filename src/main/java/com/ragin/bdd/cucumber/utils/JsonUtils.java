@@ -39,14 +39,7 @@ public final class JsonUtils {
 
             if (jsonMatcher != null && ! jsonMatcher.isEmpty()) {
                 for (BddCucumberJsonMatcher matcher : jsonMatcher) {
-                    try {
-                        configuration = configuration.withMatcher(
-                                matcher.matcherName(),
-                                matcher.matcherClass().newInstance()
-                        );
-                    } catch (Exception e) {
-                        log.error("Unable to instantiate the matcher [" + matcher.matcherName() + "]");
-                    }
+                    configuration = addMatcherConfiguration(configuration, matcher);
                 }
             }
 
@@ -63,6 +56,25 @@ public final class JsonUtils {
             // rethrow error to make the test fail
             throw error;
         }
+    }
+
+    /**
+     * Add more matcher to existing configuration.
+     *
+     * @param configuration Configuration
+     * @param matcher       Class implementation of BddCucumberJsonMatcher interface
+     * @return              Configuration with added matcher
+     */
+    private Configuration addMatcherConfiguration(Configuration configuration, BddCucumberJsonMatcher matcher) {
+        try {
+            configuration = configuration.withMatcher(
+                    matcher.matcherName(),
+                    matcher.matcherClass().getDeclaredConstructor().newInstance()
+            );
+        } catch (Exception e) {
+            log.error("Unable to instantiate the matcher [" + matcher.matcherName() + "]");
+        }
+        return configuration;
     }
 
     /**
