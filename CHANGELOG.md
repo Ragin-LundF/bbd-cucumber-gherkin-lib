@@ -1,3 +1,8 @@
+# Release 1.16.0
+- Changing the body manipulation with creating numbers from `<number> characters` to `<number> bdd_lib_numbers` (e.g. `10 bdd_lib_numbers`).
+- Fixed Authorization header, that this header is only available once, when it is overwritten
+- Adding a lot of tests as examples
+
 # Release 1.15.0
 Adding support in the paths to support templates.
 If the path contains something like:
