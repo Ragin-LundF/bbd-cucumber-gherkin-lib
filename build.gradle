@@ -8,7 +8,6 @@ plugins {
     id "com.jfrog.bintray" version "1.8.5"
     id "org.sonarqube" version "3.0"
     id "jacoco"
-    id "se.thinkcode.cucumber-runner" version "0.0.8"
 }
 
 apply plugin: 'org.springframework.boot'
@@ -149,3 +148,32 @@ bootJar {
 test {
     exclude '**'
 }
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+task cucumber(group: "verification") {
+    doLast {
+        javaexec {
+            // Jacoco
+            def jacocoAgent = zipTree(configurations.jacocoAgent.singleFile).filter { it.name == "jacocoagent.jar" }.singleFile
+            jvmArgs = ["-javaagent:$jacocoAgent=destfile=$buildDir/results/jacoco/cucumber.exec,append=false"]
+            // Cucumber execution
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            String baseReportDir = "build/cucumberReport/"
+            args = [
+                    '-p', 'pretty',
+                    '-p', 'html:'+baseReportDir+'cucumber-html',
+                    '-p', 'junit:'+baseReportDir+'cucumber-junit.xml',
+                    '-p', 'json:'+baseReportDir+'cucumber-json.json',
+                    'src/test/resources/features'
+            ]
+        }
+    }
+}
+
+jacocoTestReport.dependsOn(cucumber)
