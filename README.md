@@ -464,7 +464,6 @@ If you want to pass a JSON, you have to do it with single quotes:
 
 ```json
 {
-  "number": "${json-unit.matches:isDividableByNumber}'{"myarg1": "A"}'"
+  "number": "${json-unit.matches:isDividableByNumber}{\"myarg1\": \"A\"}"
 }
 ```
-

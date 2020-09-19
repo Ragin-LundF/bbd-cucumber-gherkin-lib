@@ -19,7 +19,10 @@ import org.springframework.test.context.ContextConfiguration;
         classes = {
                 Application.class,
                 DatabaseExecutorService.class,
-                JsonUtils.class
+                JsonUtils.class,
+                ParameterizedCustomScenarioContextMatcher.class,
+                SimpleCustomUUIDMatcher.class,
+                ParameterizedCustomMultiParameterMatcher.class
         },
         loader = SpringBootContextLoader.class
 )

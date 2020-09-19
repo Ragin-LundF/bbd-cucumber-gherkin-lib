@@ -21,8 +21,6 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
      */
     @When("I set the value of the previously given body property {string} to {string}")
     public void whenISetTheValueOfTheBodyPropertyTo(final String propertyPath, final String value) {
-        final String safePropertyPath = propertyPath; // "/" + propertyPath.replace(".", "/");
-
         // fetch new value from state context if possible. Else use the given value
         String newValue = ScenarioStateContext.current().getScenarioContextMap().get(value);
         if (newValue == null) {
@@ -33,16 +31,16 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
             ScenarioStateContext.current().setEditableBody(
                     jsonUtils.removeJsonField(
                             ScenarioStateContext.current().getEditableBody(),
-                            safePropertyPath
+                            propertyPath
                     )
             );
         } else if (newValue.matches("\\d* characters")) {
-            int numOfChars = Integer.parseInt(newValue.split(" ")[0]);
+            final int numOfChars = Integer.parseInt(newValue.split(" ")[0]);
             newValue = StringUtils.rightPad("", numOfChars, "1234567890");
             ScenarioStateContext.current().setEditableBody(
                     jsonUtils.editJsonField(
                             ScenarioStateContext.current().getEditableBody(),
-                            safePropertyPath,
+                            propertyPath,
                             newValue
                     )
             );
@@ -50,7 +48,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
             ScenarioStateContext.current().setEditableBody(
                     jsonUtils.editJsonField(
                             ScenarioStateContext.current().getEditableBody(),
-                            safePropertyPath,
+                            propertyPath,
                             newValue
                     )
             );

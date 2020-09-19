@@ -28,8 +28,8 @@ public class DatabaseExecutorService {
      * @param liquibaseScript   path/filename of the Liquibase script
      * @throws Exception        Unable to execute liquibase script
      */
-    public void executeLiquibaseScript(String liquibaseScript) throws Exception {
-        JdbcConnection connection = new JdbcConnection(datasource.getConnection());
+    public void executeLiquibaseScript(final String liquibaseScript) throws Exception {
+        final JdbcConnection connection = new JdbcConnection(datasource.getConnection());
         try (Liquibase liquibase = new Liquibase(
                 liquibaseScript,
                 new ClassLoaderResourceAccessor(),

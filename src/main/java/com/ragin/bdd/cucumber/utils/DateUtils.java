@@ -1,6 +1,5 @@
 package com.ragin.bdd.cucumber.utils;
 
-import com.ragin.bdd.cucumber.core.Loggable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,9 +11,11 @@ import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.apachecommons.CommonsLog;
 
 @SuppressWarnings("WeakerAccess") // Methods are public to be used by the project.
-public final class DateUtils extends Loggable {
+@CommonsLog
+public final class DateUtils {
     private DateUtils() {
     }
 
@@ -24,7 +25,7 @@ public final class DateUtils extends Loggable {
     private static final Map<String, DateTimeFormatter> dateFormats = createDateList();
 
     private static Map<String, DateTimeFormatter> createDateList() {
-        Map<String, DateTimeFormatter> dateTimeFormatterMap = new HashMap<>();
+        final Map<String, DateTimeFormatter> dateTimeFormatterMap = new HashMap<>();
         dateTimeFormatterMap.put("yyyy-MM-dd", DateTimeFormatter.ISO_LOCAL_DATE);
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS000", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS000"));
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS000+HH:mm", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
@@ -77,7 +78,7 @@ public final class DateUtils extends Loggable {
 
             // check known date formats if one fits to the object
             for (Map.Entry<String, DateTimeFormatter> entry : dateFormats.entrySet()) {
-                LOG.debug("Try to parse " + dateObject.toString() + " with the format " + entry.getKey());
+                log.debug("Try to parse " + dateObject.toString() + " with the format " + entry.getKey());
                 localDateTime = parseDate(dateObject.toString(), entry);
 
                 // if parsing date was null, parse String as dateTime
@@ -110,7 +111,7 @@ public final class DateUtils extends Loggable {
         try {
             return LocalDateTime.of(LocalDate.parse(date, entry.getValue()), LocalTime.MIN);
         } catch (DateTimeParseException e) {
-            LOG.debug("Failed to parse as date " + date + " with the format " + entry.getKey());
+            log.debug("Failed to parse as date " + date + " with the format " + entry.getKey());
             return null;
         }
     }
@@ -126,7 +127,7 @@ public final class DateUtils extends Loggable {
         try {
             return LocalDateTime.parse(dateTime, entry.getValue());
         } catch (DateTimeParseException e) {
-            LOG.debug("Failed to parse as dateTime " + dateTime + " with the format " + entry.getKey());
+            log.debug("Failed to parse as dateTime " + dateTime + " with the format " + entry.getKey());
             return null;
         }
     }

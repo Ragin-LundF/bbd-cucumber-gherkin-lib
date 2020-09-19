@@ -60,7 +60,11 @@ dependencies {
 
     implementation 'commons-io:commons-io:2.7'
     implementation 'org.apache.commons:commons-lang3:3.11'
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
+    testCompileOnly 'org.projectlombok:lombok:1.18.12'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
     testImplementation 'com.h2database:h2:1.4.200'
     testImplementation 'junit:junit:4.13'
 }

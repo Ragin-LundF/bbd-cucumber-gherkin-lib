@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-public class BaseCucumberCore extends Loggable {
+public class BaseCucumberCore {
     @Autowired
     protected JsonUtils jsonUtils;
 
@@ -20,7 +20,7 @@ public class BaseCucumberCore extends Loggable {
      * @param defaultBearerToken default Bearer token
      */
     @Value("${cucumberTest.authorization.bearerToken.default}")
-    public void setDefaultBearerToken(String defaultBearerToken) {
+    public void setDefaultBearerToken(final String defaultBearerToken) {
         ScenarioStateContext.current().setDefaultBearerToken(defaultBearerToken);
         if (StringUtils.isEmpty(ScenarioStateContext.current().getBearerToken())) {
             ScenarioStateContext.current().setBearerToken(defaultBearerToken);
@@ -34,9 +34,9 @@ public class BaseCucumberCore extends Loggable {
      * @return                  Content of file as String
      * @throws IOException      Error while reading file
      */
-    protected String readFile(String path) throws IOException {
-        String name = ScenarioStateContext.current().getFileBasePath() + path;
-        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(name);
+    protected String readFile(final String path) throws IOException {
+        final String name = ScenarioStateContext.current().getFileBasePath() + path;
+        final InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(name);
         if (resourceAsStream == null) {
             throw new FileNotFoundException("Could not find the file " + name + " in the class path.");
         }
@@ -50,7 +50,7 @@ public class BaseCucumberCore extends Loggable {
      * @param expected  expected JSON
      * @param actual    actual JSON
      */
-    protected void assertJSONisEqual(String expected, String actual) {
+    protected void assertJSONisEqual(final String expected, final String actual) {
         jsonUtils.assertJsonEquals(expected, actual);
     }
 }

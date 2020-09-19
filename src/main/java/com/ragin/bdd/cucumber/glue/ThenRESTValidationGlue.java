@@ -18,7 +18,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * @param expectedStatusCode HTTP status code that is expected
      */
     @Then("I ensure that the status code of the response is {int}")
-    public void thenEnsureThatTheStatusCodeOfTheResponseIs(@NotNull final Integer expectedStatusCode) {
+    public void thenEnsureThatTheStatusCodeOfTheResponseIs(final @NotNull Integer expectedStatusCode) {
         Assert.assertEquals(
                 expectedStatusCode,
                 Integer.valueOf(ScenarioStateContext.current().getLatestResponse().getStatusCode().value())
@@ -34,8 +34,8 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * @throws java.io.IOException error while reading file
      */
     @Then("I ensure that the body of the response is equal to the file {string}")
-    public void thenEnsureTheBodyOfTheResponseIsEqualToTheFile(@NotNull final String pathToFile) throws IOException {
-        String expectedBody = readFile(pathToFile);
+    public void thenEnsureTheBodyOfTheResponseIsEqualToTheFile(final @NotNull String pathToFile) throws IOException {
+        final String expectedBody = readFile(pathToFile);
         assertJSONisEqual(
                 expectedBody,
                 ScenarioStateContext.current().getLatestResponse().getBody()
@@ -50,7 +50,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * @param expectedBody expected JSON body
      */
     @Then("^I ensure that the body of the response is equal to$")
-    public void thenEnsureTheBodyOfTheResponseIsEqualTo(@NotNull final String expectedBody) {
+    public void thenEnsureTheBodyOfTheResponseIsEqualTo(final @NotNull String expectedBody) {
         assertJSONisEqual(
                 expectedBody,
                 ScenarioStateContext.current().getLatestResponse().getBody()
@@ -67,8 +67,8 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      */
     @Then("I store the string of the field {string} in the context {string} for later usage")
     public void storeStringOfFieldInContextForLaterUsage(
-            @NotNull final String fieldName,
-            @NotNull final String contextName
+            final @NotNull String fieldName,
+            final @NotNull String contextName
     ) {
         Assert.assertNotNull(fieldName);
         Assert.assertNotNull(contextName);
@@ -86,7 +86,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
             jsonPath = "$." + jsonPath;
         }
         final DocumentContext documentContext = JsonPath.parse(ScenarioStateContext.current().getLatestResponse().getBody());
-        String field = documentContext.read(jsonPath, String.class);
+        final String field = documentContext.read(jsonPath, String.class);
         ScenarioStateContext.current().getScenarioContextMap().put(
                 replaceTrailingAndLeadingQuotes(contextName),
                 field

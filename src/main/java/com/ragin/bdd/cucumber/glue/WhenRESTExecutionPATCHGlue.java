@@ -32,7 +32,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * @param path to the endpoint URI
      */
     @When("executing a PATCH call to {string} with previously given body")
-    public void whenExecutingPATCHCallToWithGivenBody(String path) {
+    public void whenExecutingPATCHCallToWithGivenBody(final String path) {
         ScenarioStateContext.current().setUriPath(path);
 
         executeRequest(HttpMethod.PATCH, false);
@@ -44,7 +44,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * @param path to the endpoint URI
      */
     @When("executing an authorized PATCH call to {string} with previously given body")
-    public void whenExecutingPATCHCallToWithGivenBodyAuthorized(String path) {
+    public void whenExecutingPATCHCallToWithGivenBodyAuthorized(final String path) {
         ScenarioStateContext.current().setUriPath(path);
 
         executeRequest(HttpMethod.PATCH, true);
@@ -58,9 +58,9 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * @throws java.io.IOException error while reading file
      */
     @When("executing a PATCH call to {string} with the body from file {string}")
-    public void whenExecutingPATCHCallToPathWithBodyFromFile(String path, String pathToFile) throws IOException {
+    public void whenExecutingPATCHCallToPathWithBodyFromFile(final String path, final String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
-        String body = readFile(pathToFile);
+        final String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
 
         executeRequest(HttpMethod.PATCH, false);
@@ -74,9 +74,9 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * @throws java.io.IOException error while reading file
      */
     @When("executing an authorized PATCH call to {string} with the body from file {string}")
-    public void whenExecutingPATCHCallToPathWithBodyFromFileAuthorized(String path, String pathToFile) throws IOException {
+    public void whenExecutingPATCHCallToPathWithBodyFromFileAuthorized(final String path, final String pathToFile) throws IOException {
         ScenarioStateContext.current().setUriPath(path);
-        String body = readFile(pathToFile);
+        final String body = readFile(pathToFile);
         ScenarioStateContext.current().setEditableBody(body);
 
         executeRequest(HttpMethod.PATCH, true);
@@ -105,7 +105,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a PATCH call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElement(DataTable dataTable) {
+    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElement(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.PATCH, false);
     }
 
@@ -132,7 +132,7 @@ public class WhenRESTExecutionPATCHGlue extends BaseRESTExecutionGlue {
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized PATCH call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
-    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElementAuthorized(DataTable dataTable) {
+    public void whenExecutingPATCHCallToPathWithBodyAndDynamicURLElementAuthorized(final DataTable dataTable) {
         executeRequest(dataTable, HttpMethod.PATCH, true);
     }
 }
