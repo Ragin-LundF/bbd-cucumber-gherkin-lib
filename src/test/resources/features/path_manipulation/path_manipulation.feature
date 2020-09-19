@@ -48,6 +48,7 @@ Feature: Multiple resources
       | abc-def  | ghi-jkl     |
       | ghj-oid  | jks-dfg     |
 
+
   Scenario: Execute API call to endpoint with dynamic resources and manipulate them with the context from a static data table
     Given that the context contains the following 'key' and 'value' pairs
       | resourceId    | abc-def |
@@ -79,6 +80,7 @@ Feature: Multiple resources
       | resource | subresource |
       | abc-def  | ghi-jkl     |
       | ghj-oid  | jks-dfg     |
+
 
   Scenario: Execute API call to endpoint with dynamic resources and manipulate them with the context from static keys
     Given that the context contains the key "resourceId" with the value "abc-def"
