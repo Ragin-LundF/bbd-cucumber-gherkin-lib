@@ -155,12 +155,25 @@ configurations {
     }
 }
 
+test {
+    jacoco {
+        enabled = true
+        destinationFile = file("$buildDir/results/jacoco/jacoco.exec")
+        dumpOnExit = true
+        classDumpDir = null
+        output = JacocoTaskExtension.Output.FILE
+        address = "localhost"
+        port = 6300
+        jmx = false
+    }
+}
+
 task cucumber(group: "verification") {
     doLast {
         javaexec {
             // Jacoco
             def jacocoAgent = zipTree(configurations.jacocoAgent.singleFile).filter { it.name == "jacocoagent.jar" }.singleFile
-            jvmArgs = ["-javaagent:$jacocoAgent=destfile=$buildDir/results/jacoco/cucumber.exec,append=false"]
+            jvmArgs = ["-javaagent:$jacocoAgent=destfile=$buildDir/results/jacoco/jacoco.exec,append=false"]
             // Cucumber execution
             main = "io.cucumber.core.cli.Main"
             classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
@@ -174,6 +187,14 @@ task cucumber(group: "verification") {
             ]
         }
     }
+    finalizedBy jacocoTestReport
 }
 
-jacocoTestReport.dependsOn(cucumber)
+jacocoTestReport {
+    dependsOn cucumber
+    reports {
+        xml.enabled true
+        csv.enabled true
+        html.enabled true
+    }
+}
