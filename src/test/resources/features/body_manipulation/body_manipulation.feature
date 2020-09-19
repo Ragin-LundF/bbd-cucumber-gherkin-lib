@@ -59,6 +59,8 @@ Feature: Manipulation of the body
     Given that the context contains the key "secondEntry" with the value "unknown"
     Then I set the value of the previously given body property "name" to "newUserNameInContext"
     And I set the value of the previously given body property "ids[1]" to "secondEntry"
+    # It is also possible to write the JSON path with official notation.
+    And I set the value of the previously given body property "$.ids[2]" to "thirdEntry"
     When executing an authorized POST call to "/api/v1/body/manipulate" with previously given body
     Then I ensure that the status code of the response is 201
     And I ensure that the body of the response is equal to
@@ -68,7 +70,7 @@ Feature: Manipulation of the body
       "newIds" : [
         "first",
         "${json-unit.matches:isEqualToScenarioContext}secondEntry",
-        "third"
+        "thirdEntry"
       ]
     }
     """
