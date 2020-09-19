@@ -3,6 +3,7 @@ Feature: Multiple resources
   Background: 
     Given that all file paths are relative to "features/path_manipulation/"
 
+
   Scenario: Execute API call to endpoint with dynamic resources and manipulate them with data table
     Given that the API path is "/api/v1/{resourceId}/{subResourceId}"
     When executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
@@ -11,6 +12,19 @@ Feature: Multiple resources
       | subResourceId | ghi-jkl    |
     Then I ensure that the status code of the response is 201
     And I ensure that the body of the response is equal to the file "responses/response.json"
+
+
+  Scenario: Execute API call to endpoint with dynamic resources and manipulate them with data table and data fom context
+    Given that the API path is "/api/v1/{resourceId}/{subResourceId}"
+    And that the context contains the key "ctxResourceId" with the value "abc-def"
+    And that the context contains the key "ctxSubResourceId" with the value "ghi-jkl"
+    When executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+      | URI Elements  | URI Values       |
+      | resourceId    | ctxResourceId    |
+      | subResourceId | ctxSubResourceId |
+    Then I ensure that the status code of the response is 201
+    And I ensure that the body of the response is equal to the file "responses/response.json"
+
 
   Scenario Outline: Execute API calls to endpoint with dynamic resources and manipulate them with data table
     Given that the API path is "/api/v1/{resourceId}/{subResourceId}"
@@ -43,6 +57,7 @@ Feature: Multiple resources
     Then I ensure that the status code of the response is 201
     And I ensure that the body of the response is equal to the file "responses/response.json"
 
+
   Scenario Outline: Execute API calls to endpoint with dynamic resources and manipulate them with the context from a static data table
     Given that the context contains the following 'key' and 'value' pairs
       | resourceId    | <resource>    |
@@ -72,6 +87,7 @@ Feature: Multiple resources
     When executing an authorized POST call with previously given URI and body
     Then I ensure that the status code of the response is 201
     And I ensure that the body of the response is equal to the file "responses/response.json"
+
 
   Scenario Outline: Execute API calls to endpoint with dynamic resources and manipulate them with the context from static keys
     Given that the context contains the key "resourceId" with the value "<resource>"
