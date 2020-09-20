@@ -39,7 +39,7 @@ Feature: Multiple resources
       "resourceId": "<resource>",
       "subResourceId": "<subresource>",
       "ignorableValue": "${json-unit.ignore}",
-      "regexValue": "${json-unit.regex}[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+      "regexValue": "${json-unit.matches:isValidUUID}",
       "validDate": "${json-unit.matches:isValidDate}"
     }
     """
@@ -72,7 +72,7 @@ Feature: Multiple resources
       "resourceId": "<resource>",
       "subResourceId": "<subresource>",
       "ignorableValue": "${json-unit.ignore}",
-      "regexValue": "${json-unit.regex}[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}",
+      "regexValue": "${json-unit.matches:isValidUUID}",
       "validDate": "${json-unit.matches:isValidDate}"
     }
     """
