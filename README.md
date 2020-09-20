@@ -140,6 +140,7 @@ If a path contains a template placeholder with `${}` like `${elementFromContext}
 
 The library contains already two matchers:
 - `${json-unit.matches:isValidDate}` which checks, if the date can be a valid date by parsing it into date formats
+- `${json-unit.matches:isValidUUID}` which checks, if the string is a valid UUID
 - `${json-unit.matches:isEqualToScenarioContext}create_id` which compares the content of the actual JSON to a variable in the ScenarioContext.
   The context has to be set before with the [I store the string of the field "<field>" in the context "<context-id>" for later usage](#read-from-response-and-set-it-to-a-feature-context) sentence.
 
@@ -293,7 +294,25 @@ Scenario:
 ```
 
 This can manipulate a previously given body by exchanging a JSON element with the given value.
-**Requires the `Step` [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)!**
+**Requires to set the body before!**
+
+The property can be a single string or a JSON path. JSON paths can be written directly as `mystructure.myarray[0].element` or
+with the JSON path notation `$.mystructure.myarray[0].element`.
+
+##### bdd_lib_numbers
+If a numeric value is needed, it is possible to use the reserved word `bdd_lib_numbers` in the value fields like this:
+```gherkin
+Scenario:
+  When I set the value of the previously given body property "mynumber" to "4 bdd_lib_numbers"
+```
+
+This sets the field `mynumber` to `1234`. The first number is then the number of how many numbers should be used.
+With the `bdd_lib_numbers` it creates a number that repeats `1234567890` until the limit is reached (or cuts it off before).
+
+
+##### bdd_lib_uuid
+This reserved word creates a random uuid for the field.
+
 
 #### Execute requests
 
