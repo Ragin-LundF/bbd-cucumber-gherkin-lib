@@ -5,6 +5,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
 import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher;
+import com.ragin.bdd.cucumber.matcher.UUIDMatcher;
 import com.ragin.bdd.cucumber.matcher.ValidDateMatcher;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +36,7 @@ public final class JsonUtils {
             Configuration configuration = JsonAssert.withTolerance(0)
                     .when(TREATING_NULL_AS_ABSENT)
                     .withMatcher("isValidDate", new ValidDateMatcher())
+                    .withMatcher("isValidUUID", new UUIDMatcher())
                     .withMatcher("isEqualToScenarioContext", new ScenarioStateContextMatcher());
 
             if (jsonMatcher != null && ! jsonMatcher.isEmpty()) {

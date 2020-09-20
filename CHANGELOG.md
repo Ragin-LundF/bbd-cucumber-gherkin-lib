@@ -1,5 +1,7 @@
 # Release 1.16.0
 - Changing the body manipulation with creating numbers from `<number> characters` to `<number> bdd_lib_numbers` (e.g. `10 bdd_lib_numbers`).
+- Adding `bdd_lib_uuid` to generate random UUIDs
+- Adding a `${json-unit.matches:isValidUUID}` which checks, if the string is a valid UUID
 - Fixed Authorization header, that this header is only available once, when it is overwritten
 - Adding a lot of tests as examples
 

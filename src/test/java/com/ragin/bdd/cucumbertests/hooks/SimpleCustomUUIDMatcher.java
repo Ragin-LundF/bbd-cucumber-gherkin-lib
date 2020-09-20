@@ -19,7 +19,7 @@ public class SimpleCustomUUIDMatcher extends BaseMatcher<String> implements BddC
     @Override
     public boolean matches(final @NonNull Object actual) {
         if (actual instanceof String) {
-            String actualString = String.valueOf(actual);
+            final String actualString = String.valueOf(actual);
             return actualString.matches("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
         }
         return false;

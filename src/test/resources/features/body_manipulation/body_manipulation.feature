@@ -125,3 +125,20 @@ Feature: Manipulation of the body
       ]
     }
     """
+
+  Scenario: Manipulate the body with name as UUID
+    Given that the file "requests/request.json" is used as the body
+    And I set the value of the previously given body property "name" to "bdd_lib_uuid"
+    When executing an authorized POST call to "/api/v1/body/manipulate" with previously given body
+    Then I ensure that the status code of the response is 201
+    And I ensure that the body of the response is equal to
+    """
+    {
+      "newName": "${json-unit.matches:isValidUUID}",
+      "newIds" : [
+        "first",
+        "second",
+        "third"
+      ]
+    }
+    """

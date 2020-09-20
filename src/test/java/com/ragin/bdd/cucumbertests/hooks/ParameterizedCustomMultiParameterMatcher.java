@@ -25,7 +25,7 @@ public class ParameterizedCustomMultiParameterMatcher extends BaseMatcher<Object
     @Override
     public void setParameter(String parameter) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
+            final ObjectMapper objectMapper = new ObjectMapper();
             this.jsonParameter = objectMapper.readValue(parameter, JsonParameter.class);
         } catch (Exception e) {}
     }

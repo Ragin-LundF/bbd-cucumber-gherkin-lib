@@ -2,6 +2,7 @@ package com.ragin.bdd.cucumber.glue;
 
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.java.en.When;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -37,6 +38,14 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
                             ScenarioStateContext.current().getEditableBody(),
                             propertyPath,
                             newValue
+                    )
+            );
+        } else if (newValue.matches("bdd_lib_uuid")) {
+            ScenarioStateContext.current().setEditableBody(
+                    jsonUtils.editJsonField(
+                            ScenarioStateContext.current().getEditableBody(),
+                            propertyPath,
+                            UUID.randomUUID().toString()
                     )
             );
         } else {
