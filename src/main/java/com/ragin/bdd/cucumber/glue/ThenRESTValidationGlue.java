@@ -65,7 +65,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * @param expectedStatusCode expected response status code
      * @param expectedBody expected JSON body
      */
-    @Then("^I ensure that the response code is {string} and the body is equal to$")
+    @Then("I ensure that the response code is {int} and the body is equal to")
     public void thenEnsureTheResponseCodeAndBodyIsEqualTo(final @NotNull Integer expectedStatusCode, final @NotNull String expectedBody) {
         Assert.assertEquals(
                 expectedStatusCode,
@@ -85,7 +85,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      * @param expectedStatusCode expected response status code
      * @param pathToFile expected file that contains the JSON body
      */
-    @Then("I ensure that the response code is {string} and the body is equal to the file {string}")
+    @Then("I ensure that the response code is {int} and the body is equal to the file {string}")
     public void thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(
             final @NotNull Integer expectedStatusCode,
             final @NotNull String pathToFile

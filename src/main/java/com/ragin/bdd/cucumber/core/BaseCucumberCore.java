@@ -39,7 +39,11 @@ public class BaseCucumberCore {
     protected String readFile(final String path) throws IOException {
         final String name;
         if (path != null && path.startsWith(KEYWORD_ABSOLUTE_PATH)) {
-            name = path.substring(KEYWORD_ABSOLUTE_PATH.length());
+            int prefixLength = KEYWORD_ABSOLUTE_PATH.length();
+            if (path.startsWith(KEYWORD_ABSOLUTE_PATH + "/")) {
+                prefixLength = prefixLength+1;
+            }
+            name = path.substring(prefixLength);
         } else {
             name = ScenarioStateContext.current().getFileBasePath() + path;
         }

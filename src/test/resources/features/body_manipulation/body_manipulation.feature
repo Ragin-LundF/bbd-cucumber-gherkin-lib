@@ -33,7 +33,7 @@ Feature: Manipulation of the body
 
 
   Scenario: Manipulate the body from a context variable
-    Given that the file "requests/request.json" is used as the body
+    Given that the file "absolutePath:/features/body_manipulation/requests/request.json" is used as the body
     And that the context contains the key "newUserNameInContext" with the value "Max Done"
     Given that the context contains the key "secondEntry" with the value "unknown"
     Then I set the value of the previously given body property "name" to "newUserNameInContext"
