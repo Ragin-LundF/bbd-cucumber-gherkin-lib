@@ -367,7 +367,7 @@ Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/Json
 #### Validate response http code and body together
 ```gherkin
 Scenario:
-  Then Then I ensure that the response code is 201 and the body is equal to
+  Then I ensure that the response code is 201 and the body is equal to
     """
     {
       "field": "value",
@@ -377,7 +377,7 @@ Scenario:
 
 In this case, the response status code is part of the sentence, and the JSON is written directly under the sentence and enclosed in three double quotation marks.
 Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
- 
+
 
 #### Validate response http code and body together with a JSON file
 ```gherkin
@@ -387,7 +387,7 @@ Scenario:
 
 In this case, the response status code, and the JSON file are written together in one sentence.
 Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
- 
+
 
 #### Read from Response and set it to a `Feature` context
 ```gherkin
