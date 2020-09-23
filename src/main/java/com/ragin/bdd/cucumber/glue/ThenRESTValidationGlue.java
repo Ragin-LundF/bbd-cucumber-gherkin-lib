@@ -43,7 +43,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
     }
 
     /**
-     * Ensure, that the response is equal to a file.
+     * Ensure, that the response is equal to a directly given body.
      * <p>This evaluates also JSON unit statements</p>
      * <p>see https://github.com/lukas-krecan/JsonUnit</p>
      *
@@ -51,6 +51,50 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      */
     @Then("^I ensure that the body of the response is equal to$")
     public void thenEnsureTheBodyOfTheResponseIsEqualTo(final @NotNull String expectedBody) {
+        assertJSONisEqual(
+                expectedBody,
+                ScenarioStateContext.current().getLatestResponse().getBody()
+        );
+    }
+
+    /**
+     * Ensure, that the response code and body is equal to directly given status code and body
+     * <p>This evaluates also JSON unit statements</p>
+     * <p>see https://github.com/lukas-krecan/JsonUnit</p>
+     *
+     * @param expectedStatusCode expected response status code
+     * @param expectedBody expected JSON body
+     */
+    @Then("I ensure that the response code is {int} and the body is equal to")
+    public void thenEnsureTheResponseCodeAndBodyIsEqualTo(final @NotNull Integer expectedStatusCode, final @NotNull String expectedBody) {
+        Assert.assertEquals(
+                expectedStatusCode,
+                Integer.valueOf(ScenarioStateContext.current().getLatestResponse().getStatusCode().value())
+        );
+        assertJSONisEqual(
+                expectedBody,
+                ScenarioStateContext.current().getLatestResponse().getBody()
+        );
+    }
+
+    /**
+     * Ensure, that the response code and body is equal to directly given status code and body as file
+     * <p>This evaluates also JSON unit statements</p>
+     * <p>see https://github.com/lukas-krecan/JsonUnit</p>
+     *
+     * @param expectedStatusCode expected response status code
+     * @param pathToFile expected file that contains the JSON body
+     */
+    @Then("I ensure that the response code is {int} and the body is equal to the file {string}")
+    public void thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(
+            final @NotNull Integer expectedStatusCode,
+            final @NotNull String pathToFile
+    ) throws IOException {
+        final String expectedBody = readFile(pathToFile);
+        Assert.assertEquals(
+                expectedStatusCode,
+                Integer.valueOf(ScenarioStateContext.current().getLatestResponse().getStatusCode().value())
+        );
         assertJSONisEqual(
                 expectedBody,
                 ScenarioStateContext.current().getLatestResponse().getBody()

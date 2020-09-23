@@ -1,3 +1,31 @@
+# Release 1.17.0
+
+## Absolute file path support
+
+Files can be added as relative path to a previously given base path or with an "absolute" path with the prefix `absolutePath:`.
+In the last case the system is using the base classpath as root.
+
+## Validate response http code and body together
+```gherkin
+Scenario:
+  Then Then I ensure that the response code is 201 and the body is equal to
+    """
+    {
+      "field": "value",
+    }
+    """
+```
+
+In this case, the response status code is part of the sentence, and the JSON is written directly under the sentence and enclosed in three double quotation marks.
+Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
+ 
+
+## Validate response http code and body together with a JSON file
+```gherkin
+Scenario:
+  Then I ensure that the response code is 200 and the body is equal to the file "response.json"
+```
+
 # Release 1.16.0
 - Changing the body manipulation with creating numbers from `<number> characters` to `<number> bdd_lib_numbers` (e.g. `10 bdd_lib_numbers`).
 - Adding `bdd_lib_uuid` to generate random UUIDs

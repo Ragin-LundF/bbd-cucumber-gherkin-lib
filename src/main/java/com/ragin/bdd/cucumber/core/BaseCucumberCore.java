@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 public class BaseCucumberCore {
+    private final static String KEYWORD_ABSOLUTE_PATH = "absolutePath:";
     @Autowired
     protected JsonUtils jsonUtils;
 
@@ -28,14 +29,24 @@ public class BaseCucumberCore {
     }
 
     /**
-     * Read file and return content as String
+     * Read file and return content as String.
+     * If the path contains the reserved word "absolutePath:" it tries to resolve the file from the classpath root.
      *
      * @param path              Path to file
      * @return                  Content of file as String
      * @throws IOException      Error while reading file
      */
     protected String readFile(final String path) throws IOException {
-        final String name = ScenarioStateContext.current().getFileBasePath() + path;
+        final String name;
+        if (path != null && path.startsWith(KEYWORD_ABSOLUTE_PATH)) {
+            int prefixLength = KEYWORD_ABSOLUTE_PATH.length();
+            if (path.startsWith(KEYWORD_ABSOLUTE_PATH + "/")) {
+                prefixLength = prefixLength+1;
+            }
+            name = path.substring(prefixLength);
+        } else {
+            name = ScenarioStateContext.current().getFileBasePath() + path;
+        }
         final InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(name);
         if (resourceAsStream == null) {
             throw new FileNotFoundException("Could not find the file " + name + " in the class path.");

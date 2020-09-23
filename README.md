@@ -49,6 +49,8 @@ See [src/test](src/test) folder for examples.
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
       - [Validate response body with given String](#validate-response-body-with-given-string)
+      - [Validate response HTTP code and body together](#validate-response-http-code-and-body-together)
+      - [Validate response HTTP code and body together with a JSON file](#validate-response-http-code-and-body-together-with-a-json-file)
       - [Read from Response and set it to a `Feature` context](#read-from-response-and-set-it-to-a-feature-context)
 - [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher)
   - [Simple matcher](#simple-matcher)
@@ -135,6 +137,9 @@ The conversion of the database result to CSV is done internally.
 The REST API steps can be prepared with some given steps.
 
 If a path contains a template placeholder with `${}` like `${elementFromContext}` the library tries to replace this with `elementFromContext` in the context, if it exists. 
+
+Files can be added as relative path to a previously given base path or with an "absolute" path with the prefix `absolutePath:`.
+In the last case the system is using the base classpath as root.
 
 ### JSON-Unit
 
@@ -358,6 +363,31 @@ Scenario:
 
 In this case, the JSON is written directly under the sentence and enclosed in three double quotation marks.
 Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
+
+#### Validate response http code and body together
+```gherkin
+Scenario:
+  Then Then I ensure that the response code is 201 and the body is equal to
+    """
+    {
+      "field": "value",
+    }
+    """
+```
+
+In this case, the response status code is part of the sentence, and the JSON is written directly under the sentence and enclosed in three double quotation marks.
+Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
+ 
+
+#### Validate response http code and body together with a JSON file
+```gherkin
+Scenario:
+  Then I ensure that the response code is 200 and the body is equal to the file "response.json"
+```
+
+In this case, the response status code, and the JSON file are written together in one sentence.
+Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
+ 
 
 #### Read from Response and set it to a `Feature` context
 ```gherkin
