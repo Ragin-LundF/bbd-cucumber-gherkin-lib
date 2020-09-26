@@ -13,6 +13,8 @@ import org.springframework.http.HttpMethod;
 public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
     /**
      * Execute a {httpMethod} call with previously given URI and body
+     *
+     * @param httpMethod HTTP Method
      */
     @When("executing a {httpMethod} call with previously given URI and body")
     public void whenExecutingCallWithPreviouslyGivenUriAndBody(final HttpMethod httpMethod) {
@@ -21,6 +23,8 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
 
     /**
      * Execute an authorized {httpMethod} call with previously given URI and body
+     *
+     * @param httpMethod HTTP Method
      */
     @When("executing an authorized {httpMethod} call with previously given URI and body")
     public void whenExecutingAuthorizedCallWithPreviouslyGivenUriAndBody(final HttpMethod httpMethod) {
@@ -30,6 +34,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
     /**
      * Execute a {httpMethod} call to an URL with previously given body
      *
+     * @param httpMethod HTTP Method
      * @param uri to the endpoint URI
      */
     @When("executing a {httpMethod} call to {string} with previously given body")
@@ -42,6 +47,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
     /**
      * Execute an authorized {httpMethod} call to an URL with previously given body
      *
+     * @param httpMethod HTTP Method
      * @param uri to the endpoint URI
      */
     @When("executing an authorized {httpMethod} call to {string} with previously given body")
@@ -54,6 +60,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
     /**
      * Execute a {httpMethod} call to the defined URL with body from file
      *
+     * @param httpMethod HTTP Method
      * @param uri to the endpoint URI
      * @param pathToFile path to file to read
      * @throws java.io.IOException error while reading file
@@ -70,6 +77,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
     /**
      * Execute an authorized {httpMethod} call to the defined URL with body from file
      *
+     * @param httpMethod HTTP Method
      * @param uri to the endpoint URI
      * @param pathToFile path to file to read
      * @throws java.io.IOException error while reading file
@@ -103,6 +111,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      *
+     * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
@@ -130,6 +139,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      *
+     * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")

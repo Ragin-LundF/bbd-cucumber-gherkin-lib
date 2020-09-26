@@ -11,6 +11,8 @@ import org.springframework.http.HttpMethod;
 public class WhenRESTExecutionShortcutGlue extends BaseRESTExecutionGlue {
     /**
      * Execute a {httpMethod} call with previously given URI (short sentence)
+     *
+     * @param httpMethod HTTP Method
      */
     @When("executing a {httpMethod} call with previously given URI")
     public void whenExecutingCall(final HttpMethod httpMethod) {
@@ -19,6 +21,8 @@ public class WhenRESTExecutionShortcutGlue extends BaseRESTExecutionGlue {
 
     /**
      * Execute an authorized {httpMethod} call with previously given URI (short sentence)
+     *
+     * @param httpMethod HTTP Method
      */
     @When("executing an authorized {httpMethod} call with previously given URI")
     public void whenExecutingAuthorizedCall(final HttpMethod httpMethod) {
@@ -28,6 +32,7 @@ public class WhenRESTExecutionShortcutGlue extends BaseRESTExecutionGlue {
     /**
      * Execute a {httpMethod} call to the defined REST URL
      *
+     * @param httpMethod HTTP Method
      * @param uri   URI path to call.
      */
     @When("executing a {httpMethod} call to {string}")
@@ -40,6 +45,7 @@ public class WhenRESTExecutionShortcutGlue extends BaseRESTExecutionGlue {
     /**
      * Execute an authorized {httpMethod} call to the defined URL
      *
+     * @param httpMethod HTTP Method
      * @param uri to the endpoint URI
      */
     @When("executing an authorized {httpMethod} call to {string}")
@@ -69,6 +75,7 @@ public class WhenRESTExecutionShortcutGlue extends BaseRESTExecutionGlue {
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      *
+     * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing an authorized {httpMethod} call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'")
@@ -96,6 +103,7 @@ public class WhenRESTExecutionShortcutGlue extends BaseRESTExecutionGlue {
      * </ul>
      * <p>!!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      *
+     * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
     @When("executing a {httpMethod} call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
