@@ -17,9 +17,9 @@ The library tests with itself and with a dummy application in the test sources t
 There you can also find custom matcher for JSON-Assert.
 See [src/test](src/test) folder for examples.
 
-## How to use
+## How to integrate
 
-Integrate the library as dependency.
+The library is available on jcenter. Please add jcenter to your build tool.
 
 ### Maven
 ```xml
@@ -33,7 +33,9 @@ Integrate the library as dependency.
 
 ### Gradle
 ```groovy
-testImplementation "com.ragin.bdd:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+dependencies {
+    testImplementation "com.ragin.bdd:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+}
 ```
 
 # Table of content
