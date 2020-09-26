@@ -45,6 +45,7 @@ public final class RESTCommunicationUtils {
      * @param dataTable     DataTable from Cucumber file
      * @return              path with replaced values
      */
+    @SuppressWarnings("squid:S5960")
     public static String prepareDynamicURLWithDataTable(final DataTable dataTable) {
         // Prepare request
         String path = ScenarioStateContext.current().getUriPath();
