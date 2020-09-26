@@ -12,6 +12,7 @@ import org.junit.Assert;
 /**
  * This class contains HTTP response validations.
  */
+@SuppressWarnings("squid:S5960")
 public class ThenRESTValidationGlue extends BaseCucumberCore {
     /**
      * Ensure, that the response code is valid

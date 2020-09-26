@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.utils;
 import static net.javacrumbs.jsonunit.core.Option.TREATING_NULL_AS_ABSENT;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
 import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher;
 import com.ragin.bdd.cucumber.matcher.UUIDMatcher;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import lombok.extern.apachecommons.CommonsLog;
 import net.javacrumbs.jsonunit.JsonAssert;
 import net.javacrumbs.jsonunit.core.Configuration;
+import net.javacrumbs.jsonunit.core.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,17 +35,7 @@ public final class JsonUtils {
      */
     public void assertJsonEquals(final String expectedJSON, final String actualJSON) {
         try {
-            Configuration configuration = JsonAssert.withTolerance(0)
-                    .when(TREATING_NULL_AS_ABSENT)
-                    .withMatcher("isValidDate", new ValidDateMatcher())
-                    .withMatcher("isValidUUID", new UUIDMatcher())
-                    .withMatcher("isEqualToScenarioContext", new ScenarioStateContextMatcher());
-
-            if (jsonMatcher != null && ! jsonMatcher.isEmpty()) {
-                for (BddCucumberJsonMatcher matcher : jsonMatcher) {
-                    configuration = addMatcherConfiguration(configuration, matcher);
-                }
-            }
+            Configuration configuration = createJsonAssertConfiguration();
 
             JsonAssert.assertJsonEquals(
                     expectedJSON,
@@ -58,6 +50,29 @@ public final class JsonUtils {
             // rethrow error to make the test fail
             throw error;
         }
+    }
+
+    private Configuration createJsonAssertConfiguration() {
+        // base configuration
+        Configuration configuration = JsonAssert.withTolerance(0)
+                .when(TREATING_NULL_AS_ABSENT)
+                .withMatcher("isValidDate", new ValidDateMatcher())
+                .withMatcher("isValidUUID", new UUIDMatcher())
+                .withMatcher("isEqualToScenarioContext", new ScenarioStateContextMatcher());
+
+        // add additional options
+        for (Option jsonOption : ScenarioStateContext.current().getJsonPathOptions()) {
+            configuration = configuration.when(jsonOption);
+        }
+
+        // add additional matcher
+        if (jsonMatcher != null && ! jsonMatcher.isEmpty()) {
+            for (BddCucumberJsonMatcher matcher : jsonMatcher) {
+                configuration = addMatcherConfiguration(configuration, matcher);
+            }
+        }
+
+        return configuration;
     }
 
     /**

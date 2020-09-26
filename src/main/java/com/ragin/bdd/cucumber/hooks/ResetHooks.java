@@ -43,4 +43,19 @@ public class ResetHooks {
         log.info(String.format("Cleanup test state for scenario %s", scenario.getName()));
         ScenarioStateContext.current().reset();
     }
+
+    @Before(order = 10, value = "@bdd_lib_json_ignore_new_array_elements")
+    public void jsonIgnoreExtraArrayElements(final Scenario scenario) {
+        ScenarioStateContext.current().addJsonIgnoringExtraArrayElements();
+    }
+
+    @Before(order = 10, value = "@bdd_lib_json_ignore_extra_fields")
+    public void jsonIgnoreNewFields(final Scenario scenario) {
+        ScenarioStateContext.current().addJsonIgnoringExtraFields();
+    }
+
+    @Before(order = 10, value = "@bdd_lib_json_ignore_array_order")
+    public void jsonIgnoreArrayOrder(final Scenario scenario) {
+        ScenarioStateContext.current().addJsonIgnoringArrayOrder();
+    }
 }
