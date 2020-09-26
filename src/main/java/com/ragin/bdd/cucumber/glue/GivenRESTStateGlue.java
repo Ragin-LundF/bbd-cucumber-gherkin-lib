@@ -5,7 +5,6 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
