@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.apachecommons.CommonsLog;
 
-@SuppressWarnings("WeakerAccess") // Methods are public to be used by the project.
+@SuppressWarnings({"WeakerAccess", "squid:S1192"}) // Methods are public to be used by the project.
 @CommonsLog
 public final class DateUtils {
     private DateUtils() {

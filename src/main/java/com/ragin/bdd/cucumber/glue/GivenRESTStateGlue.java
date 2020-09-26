@@ -109,4 +109,28 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
             ScenarioStateContext.current().getScenarioContextMap().put(key, contextDataTableMap.get(key));
         }
     }
+
+    /**
+     * Configure the JSON assertion, that arrays can contain more elements than the expected JSON has
+     */
+    @Given("that the response JSON can contain arrays with extra elements")
+    public void givenThatJsonCanContainExtraArrayElements() {
+        ScenarioStateContext.current().addJsonIgnoringExtraArrayElements();
+    }
+
+    /**
+     * Configure the JSON assertion, that arrays can contain more fields than the expected JSON has
+     */
+    @Given("that the response JSON can contain extra fields")
+    public void givenThatJsonCanContainExtraFields() {
+        ScenarioStateContext.current().addJsonIgnoringExtraFields();
+    }
+
+    /**
+     * Configure the JSON assertion, that arrays have a different order than the expected JSON has
+     */
+    @Given("that the response JSON can contain arrays in different order")
+    public void givenThatJsonHasDifferentArrayOrders() {
+        ScenarioStateContext.current().addJsonIgnoringArrayOrder();
+    }
 }

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 public class BaseCucumberCore {
-    private final static String KEYWORD_ABSOLUTE_PATH = "absolutePath:";
+    private static final String KEYWORD_ABSOLUTE_PATH = "absolutePath:";
     @Autowired
     protected JsonUtils jsonUtils;
 
