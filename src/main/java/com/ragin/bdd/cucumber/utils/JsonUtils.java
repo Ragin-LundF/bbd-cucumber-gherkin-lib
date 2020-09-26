@@ -3,6 +3,8 @@ package com.ragin.bdd.cucumber.utils;
 import static net.javacrumbs.jsonunit.core.Option.TREATING_NULL_AS_ABSENT;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
+import com.ragin.bdd.cucumber.BddLibConstants;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
 import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher;
@@ -10,11 +12,15 @@ import com.ragin.bdd.cucumber.matcher.UUIDMatcher;
 import com.ragin.bdd.cucumber.matcher.ValidDateMatcher;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.extern.apachecommons.CommonsLog;
 import net.javacrumbs.jsonunit.JsonAssert;
 import net.javacrumbs.jsonunit.core.Configuration;
 import net.javacrumbs.jsonunit.core.Option;
+import org.hamcrest.Matcher;
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,6 +58,11 @@ public final class JsonUtils {
         }
     }
 
+    /**
+     * Configure JSON Assert
+     *
+     * @return Configuration class with default configuration
+     */
     private Configuration createJsonAssertConfiguration() {
         // base configuration
         Configuration configuration = JsonAssert.withTolerance(0)
@@ -96,8 +107,6 @@ public final class JsonUtils {
 
     /**
      * Remove an element from a JSON file.
-     * <p>Implements the <b>Remove</b> operation as specified in
-     * <a href="https://tools.ietf.org/html/rfc6902#section-4.2">RFC 6902</a></p>
      *
      * @param originalJson the JSON file in which the field should be removed
      * @param fieldPath    the JSON path to the field that should be removed
@@ -109,8 +118,6 @@ public final class JsonUtils {
 
     /**
      * Edit an element from a JSON file.
-     * <p>Implements the <b>Add</b> operation as specified in
-     * <a href="https://tools.ietf.org/html/rfc6902#section-4.1">RFC 6902</a></p>
      *
      * @param originalJson the JSON file in which the field should be edited
      * @param fieldPath    the field path to the field that should be edited
@@ -129,6 +136,81 @@ public final class JsonUtils {
         documentContext.set(fieldJSONPath, newValue);
 
         return documentContext.jsonString();
+    }
+
+    /**
+     * Validate an element from a JSON file.
+     *
+     * @param originalJson  the JSON file in which the field should be edited
+     * @param fieldPath     the field path to the field that should be edited
+     * @param expectedValue the new value for the field
+     */
+    @SuppressWarnings("squid:S5960")
+    public void validateJsonField(final String originalJson, @NotNull final String fieldPath, @NotNull final String expectedValue) {
+        // set a JSON path
+        String fieldJSONPath = fieldPath;
+        if (! fieldJSONPath.startsWith("$.")) {
+            fieldJSONPath = "$." + fieldJSONPath;
+        }
+
+        // try to resolve value from context. If nothing was found, reset to original
+        String expectedValueToCompare = ScenarioStateContext.current().getScenarioContextMap().get(expectedValue);
+        if (expectedValueToCompare == null) {
+            expectedValueToCompare = expectedValue;
+        }
+
+        // read document
+        final DocumentContext documentContext = JsonPath.parse(originalJson);
+        Object fieldValue = null;
+        try {
+            fieldValue = documentContext.read(fieldJSONPath, Object.class);
+            assertFieldValidation(expectedValueToCompare, fieldValue.toString());
+        } catch (PathNotFoundException pnfe) {
+            if (BddLibConstants.BDD_LIB_NOT_EXISTS.equalsIgnoreCase(expectedValueToCompare)) {
+                Assert.assertNull(fieldValue);
+            } else {
+                throw pnfe;
+            }
+        }
+    }
+
+    private void assertFieldValidation(final String expectedValueToCompare, final String fieldValue) {
+        final Configuration assertConfig = createJsonAssertConfiguration();
+        Optional<Matcher<?>> matcher = Optional.empty();
+        Optional<String> matcherName = findMatcherName(expectedValueToCompare);
+        if (matcherName.isPresent()) {
+            matcher = Optional.ofNullable(assertConfig.getMatcher(matcherName.get()));
+        }
+
+        if (expectedValueToCompare.startsWith(BddLibConstants.BDD_LIB_NOT)) {
+            if (matcher.isPresent()) {
+                final boolean fieldMatches = matcher.get().matches(fieldValue);
+                Assert.assertFalse(fieldMatches);
+            } else {
+                Assert.assertNotEquals(expectedValueToCompare.substring(BddLibConstants.BDD_LIB_NOT.length()), fieldValue);
+            }
+        } else {
+            if (matcher.isPresent()) {
+                final boolean fieldMatches = matcher.get().matches(fieldValue);
+                Assert.assertTrue(fieldMatches);
+            } else {
+                Assert.assertEquals(expectedValueToCompare, fieldValue);
+            }
+        }
+    }
+
+    /**
+     * Find custom matcher
+     *
+     * @param possibleMatcherName   string which possibly contains a matcher name
+     * @return  if matcher name was found the matcher name
+     */
+    private Optional<String> findMatcherName(final String possibleMatcherName) {
+        java.util.regex.Matcher matcher = BddLibConstants.BDD_LIB_MATCHER_PATTERN.matcher(possibleMatcherName);
+        if (matcher.find() && matcher.groupCount() == 3) {
+            return Optional.of(matcher.group(2));
+        }
+        return Optional.empty();
     }
 
     /**

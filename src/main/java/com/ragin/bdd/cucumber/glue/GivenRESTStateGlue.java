@@ -5,6 +5,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
@@ -132,5 +133,10 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
     @Given("that the response JSON can contain arrays in different order")
     public void givenThatJsonHasDifferentArrayOrders() {
         ScenarioStateContext.current().addJsonIgnoringArrayOrder();
+    }
+
+    @Given("that the stored data in the scenario context map has been reset")
+    public void givenThatStoredDataInContextMapHasBeenReset() {
+        ScenarioStateContext.current().setScenarioContextMap(new HashMap<>());
     }
 }

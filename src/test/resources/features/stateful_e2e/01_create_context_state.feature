@@ -1,6 +1,7 @@
 Feature: E2E Stateful 01 - Execute calls against an API and store it to the context for later usage
 
   Scenario: Call the dynamic path endpoints and remember value in context for other features
+    Given that the stored data in the scenario context map has been reset
     Given that the API path is "/api/v1/{resourceId}/{subResourceId}"
     When executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
       | URI Elements  | URI Values            |

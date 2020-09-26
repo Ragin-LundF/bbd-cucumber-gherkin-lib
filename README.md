@@ -54,6 +54,7 @@ See [src/test](src/test) folder for examples.
       - [Validate response body with given String](#validate-response-body-with-given-string)
       - [Validate response HTTP code and body together](#validate-response-http-code-and-body-together)
       - [Validate response HTTP code and body together with a JSON file](#validate-response-http-code-and-body-together-with-a-json-file)
+      - [Validate only special fields of the response body](#validate-only-special-fields-of-the-response-body)
       - [Read from Response and set it to a `Feature` context](#read-from-response-and-set-it-to-a-feature-context)
 - [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher)
   - [Simple matcher](#simple-matcher)
@@ -163,6 +164,8 @@ For the comparison of the results the library uses `JSON` files, which can be en
 - Custom matchers
 - ...
 
+**_ATTENTION: Only unparameterized custom matchers or bdd lib-matchers can be used for field validation!_**
+
 ### Given
 #### Set path base directory for request/result/database files
 ```gherkin
@@ -212,6 +215,14 @@ Scenario: Test with static key/value added to the context via table
 ```
 
 It adds the key/value pairs to the context. Please ensure, that those static values are unique to avoid overwriting them in later steps.
+
+#### Reset the scenario context
+```gherkin
+Scenario: Reset the scenario context
+    Given that the stored data in the scenario context map has been reset
+```
+
+Reset the context state map.
 
 #### Set base path for URLs
 ```gherkin
@@ -365,15 +376,7 @@ This reserved word creates a random uuid for the field.
 
 #### Execute requests
 
-A list and description of sentences to execute a request is linked in the next table.
-
-| Request type | Link |
-| --- | --- |
-| GET Requests | [docs/get_sentences.md](docs/get_sentences.md) |
-| POST Requests | [docs/post_sentences.md](docs/post_sentences.md) |
-| DELETE Requests | [docs/delete_sentences.md](docs/delete_sentences.md) |
-| PUT Requests | [docs/put_sentences.md](docs/put_sentences.md) |
-| PATCH Requests | [docs/patch_sentences.md](docs/patch_sentences.md) |
+A list and description of sentences to execute a request can be found at [docs/httpmethod_sentences.md](docs/httpmethod_sentences.md).
 
 ### Then
 #### Validate HTTP response code
@@ -422,7 +425,6 @@ Scenario:
 In this case, the response status code is part of the sentence, and the JSON is written directly under the sentence and enclosed in three double quotation marks.
 Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
 
-
 #### Validate response HTTP code and body together with a JSON file
 ```gherkin
 Scenario:
@@ -431,6 +433,56 @@ Scenario:
 
 In this case, the response status code, and the JSON file are written together in one sentence.
 Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
+
+
+#### Validate only special fields of the response body
+##### Validation of one field
+```gherkin
+  Scenario: Validate field of the body
+    Then I ensure that the body of the response contains a field "list[0]" with the value "First"
+    And I ensure that the body of the response contains a field "$.list[1]" with the value "Second"
+    Then I ensure that the body of the response contains a field "shouldNotExist" with the value "@bdd_lib_not_exist"
+```
+
+##### Validation of multiple fields
+```gherkin
+  Scenario: Validate multiple fields
+    And I ensure that the body of the response contains the following fields and values
+    | string           | is a string                 |
+    | number           | 12                          |
+    | uuid             | ${json-unit.matches:isUUID} |
+    | $.number         | @bdd_lib_not 15             |
+    | list             | ["First","Second"]          |
+    | list[0]          | First                       |
+    | $.list[0]        | BDD_TEST_LIST_FIRST_ELEMENT |
+    | $.list[1]        | Second                      |
+    | object.firstname | John                        |
+    | object.lastname  | Doe                         |
+    | shouldNotExist   | @bdd_lib_not_exist          |
+```
+
+In this case the fields that should be compared can be given as data table map.
+The first column is the field name, the second the expected value.
+
+##### Description
+This sentence compares only the given field of the response.
+The field can be a JSON path. The library checks if it starts with `$.`.
+If it does not start with `$.` it will be added internally.
+
+To test if a field is NOT present, the reserved word `@bdd_lib_not_exist` can be used as value.
+
+To test if a value is NOT the expected value, the reserved word `@bdd_lib_not ` can be used to negate the compare.
+It is not possible to use a `!` as negation prefix, because it can also be a valid result.
+
+The library also tries to resolve the value from the context map.
+If nothing was found, the original value is used.
+
+It is also possible to use JSON-Matcher (user defined and bdd-cucumber-lib).
+These are written with the notation `${json-unit.matches:isUUID}` (as an example for the UUID-Matcher).
+
+**_ATTENTION: Only unparameterized custom matchers or bdd lib-matchers can be used for field validation!_**
+
+Find examples for this feature under: [src/test/resources/features/body_validation/](src/test/resources/features/body_validation/).
 
 
 #### Read from Response and set it to a `Feature` context

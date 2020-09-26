@@ -4,8 +4,11 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.ragin.bdd.cucumber.core.BaseCucumberCore;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.junit.Assert;
 
@@ -56,6 +59,20 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
                 expectedBody,
                 ScenarioStateContext.current().getLatestResponse().getBody()
         );
+    }
+
+    @Then("I ensure that the body of the response contains a field {string} with the value {string}")
+    public void thenEnsureTheBodyOfTheResponseContainsFieldWithValue(final @NotNull String fieldName, final String value) {
+        jsonUtils.validateJsonField(ScenarioStateContext.current().getLatestResponse().getBody(), fieldName, value);
+    }
+
+    @Then("I ensure that the body of the response contains the following fields and values")
+    public void thenEnsureTheBodyOfTheResponseContainsFieldWithValues(@NotNull final DataTable dataTable) {
+        final Map<String, String> contextDataTableMap = dataTable.asMap(String.class, String.class);
+        final Set<String> keySet = contextDataTableMap.keySet();
+        for (String key : keySet) {
+            jsonUtils.validateJsonField(ScenarioStateContext.current().getLatestResponse().getBody(), key, contextDataTableMap.get(key));
+        }
     }
 
     /**
