@@ -13,7 +13,6 @@ import com.ragin.bdd.cucumber.matcher.ValidDateMatcher;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.extern.apachecommons.CommonsLog;
@@ -24,7 +23,6 @@ import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.security.krb5.Config;
 
 /**
  * Utility class used to work with JSON objects.
