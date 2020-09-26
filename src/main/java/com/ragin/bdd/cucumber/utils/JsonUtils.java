@@ -145,7 +145,8 @@ public final class JsonUtils {
      * @param fieldPath     the field path to the field that should be edited
      * @param expectedValue the new value for the field
      */
-    public void validateJsonField(@NotNull final String originalJson, @NotNull final String fieldPath, @NotNull final String expectedValue) {
+    @SuppressWarnings("squid:S5960")
+    public void validateJsonField(final String originalJson, @NotNull final String fieldPath, @NotNull final String expectedValue) {
         // set a JSON path
         String fieldJSONPath = fieldPath;
         if (! fieldJSONPath.startsWith("$.")) {
