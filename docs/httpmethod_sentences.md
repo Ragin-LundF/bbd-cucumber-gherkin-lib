@@ -58,7 +58,7 @@ The following examples are using only one method.
 ## Execute a {httpMethod} request to an endpoint with previously given URI and body
 ```gherkin
 Scenario:
-  When executing a POST call with previously given URI and body
+  When executing a {httpMethod} call with previously given URI and body
 ```
 
 Calls a previously given URI path as a REST request without `Authorization` header, and a previously given body.
@@ -66,7 +66,7 @@ Calls a previously given URI path as a REST request without `Authorization` head
 ## Execute an authorized {httpMethod} request call to an endpoint with previously given URI and body
 ```gherkin
 Scenario:
-  When executing an authorized POST call with previously given URI and body
+  When executing an authorized {httpMethod} call with previously given URI and body
 ```
 
 Calls a previously given URL path as a REST request with `Authorization` header, and a previously given body.
@@ -74,7 +74,7 @@ Calls a previously given URL path as a REST request with `Authorization` header,
 ## Execute a {httpMethod} request call to a URL with a previously given body
 ```gherkin
 Scenario:
-  When executing a POST call to {string} with previously given body
+  When executing a {httpMethod} call to {string} with previously given body
 ```
 
 Calls the given URL path with a previously given Body as a REST request.
@@ -82,7 +82,7 @@ Calls the given URL path with a previously given Body as a REST request.
 ## Execute an authorized {httpMethod} request call to a URL with a previously given body
 ```gherkin
 Scenario:
-  When executing an authorized POST call to {string} with previously given body
+  When executing an authorized {httpMethod} call to {string} with previously given body
 ```
 
 Calls the given URL path with a previously given Body as a REST request.
@@ -93,7 +93,7 @@ The used token depends on [Define that a token without scopes should be used](..
 ## Execute a {httpMethod} request call to an endpoint with body from file
 ```gherkin
 Scenario:
-  When executing a POST call to {string} with the body from file {string}
+  When executing a {httpMethod} call to {string} with the body from file {string}
 ```
 
 Calls the given URL path as a REST request without `Authorization` header, and a body defined in the given file.
@@ -101,7 +101,7 @@ Calls the given URL path as a REST request without `Authorization` header, and a
 ## Execute an authorized {httpMethod} request call to an endpoint with body from file
 ```gherkin
 Scenario:
-  When executing an authorized POST call to {string} with the body from file {string}
+  When executing an authorized {httpMethod} call to {string} with the body from file {string}
 ```
 
 Calls the given URL path as a REST request with `Authorization` header, and a body defined in the given file.
@@ -110,7 +110,7 @@ The used token depends on [Define that a token without scopes should be used](..
 ## Execute an authorized {httpMethod} request call to previously given URL and body with dynamic URI elements
 ```gherkin
 Scenario:
-  When executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+  When executing an authorized {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
     | URI Elements  | URI Values |
     | resourceId    | abc-def-gh |
     | subResourceId | abc-def-gh |
@@ -135,7 +135,7 @@ The used token depends on [Define that a token without scopes should be used](..
 ### Execute a {httpMethod} request call to previously given URL and body with dynamic URI elements
 ```gherkin
 Scenario:
-  When executing a POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
+  When executing a {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
     | URI Elements  | URI Values |
     | resourceId    | abc-def-gh |
     | subResourceId | abc-def-gh |
@@ -160,7 +160,7 @@ But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/
 ## Execute a {httpMethod} request call with previously given URI
 ```gherkin
 Scenario:
-  When executing a GET call with previously given URI
+  When executing a {httpMethod} call with previously given URI
 ```
 
 Calls a previously given URL path as a REST request without `Authorization` header.
@@ -168,7 +168,7 @@ Calls a previously given URL path as a REST request without `Authorization` head
 ## Execute an authorized {httpMethod} request call with previously given URI
 ```gherkin
 Scenario:
-  When executing an authorized GET call with previously given URI
+  When executing an authorized {httpMethod} call with previously given URI
 ```
 
 Calls a previously given URL path as a REST request with `Authorization` header.
@@ -176,7 +176,7 @@ Calls a previously given URL path as a REST request with `Authorization` header.
 ## Execute a {httpMethod} request call to an endpoint
 ```gherkin
 Scenario:
-  When executing a GET call to {string}
+  When executing a {httpMethod} call to {string}
 ```
 
 Calls the given URL path as a REST request without `Authorization` header.
@@ -184,7 +184,7 @@ Calls the given URL path as a REST request without `Authorization` header.
 ## Execute an authorized {httpMethod} request call
 ```gherkin
 Scenario:
-  When executing an authorized GET call to {string}
+  When executing an authorized {httpMethod} call to {string}
 ```
 
 Calls the given URL path as a REST request with `Authorization` header and `Bearer` token.
@@ -194,7 +194,7 @@ The used token depends on [Define that a token without scopes should be used](..
 ## Execute an authorized {httpMethod} request call to previously given URL with dynamic URI elements
 ```gherkin
 Scenario:
-  When executing an authorized GET call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'
+  When executing an authorized {httpMethod} call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'
     | URI Elements  | URI Values |
     | resourceId    | abc-def-gh |
     | subResourceId | abc-def-gh |
@@ -220,7 +220,7 @@ The used token depends on [Define that a token without scopes should be used](..
 ## Execute a {httpMethod} request call to previously given URL with dynamic URI elements
 ```gherkin
 Scenario:
-  When executing a GET call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'
+  When executing a {httpMethod} call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'
     | URI Elements  | URI Values |
     | resourceId    | abc-def-gh |
     | subResourceId | abc-def-gh |
