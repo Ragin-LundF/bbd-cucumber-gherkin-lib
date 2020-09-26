@@ -1,7 +1,7 @@
 # Release 1.19.0
 
-## Less sentences but still compatible and more possibilities
-This release introduces the parameter `{httpMethod}` which replaces all sentences with a HTTP method in the name.
+## Fewer sentences but still compatible and more possibilities
+This release introduces the parameter `{httpMethod}` which replaces all sentences with an HTTP method in the name.
 Allowed values are:
 - GET
 - POST
@@ -9,7 +9,7 @@ Allowed values are:
 - PUT
 - PATCH
 
-This reduces the number of Gherkin sentences by 24 and adds 24 new possible sentences, because the shorter GET sentences are now also available for all other methods.
+This reduces the number of Gherkin sentences by 24 and adds 24 new possible sentences because the shorter GET sentences are now also available for all other methods.
 
 
 ## Validate only special fields of the response body
@@ -38,7 +38,7 @@ This reduces the number of Gherkin sentences by 24 and adds 24 new possible sent
     | shouldNotExist   | @bdd_lib_not_exist          |
 ```
 
-In this case the fields that should be compared can be given as data table map.
+In this case, the fields that should be compared can be given as a data table map.
 The first column is the field name, the second the expected value.
 
 ### Description
@@ -46,15 +46,15 @@ This sentence compares only the given field of the response.
 The field can be a JSON path. The library checks if it starts with `$.`.
 If it does not start with `$.` it will be added internally.
 
-To test if a field is NOT present, the reserved word `@bdd_lib_not_exist` can be used as value.
+To test if a field is NOT present, the reserved word `@bdd_lib_not_exist` can be used as the value.
 
-To test if a value is NOT the expected value, the reserved word `@bdd_lib_not ` can be used to negate the compare.
-It is not possible to use a `!` as negation prefix, because it can also be a valid result.
+To test if a value is NOT the expected value, the reserved word `@bdd_lib_not ` can be used to negate the comparison.
+It is not possible to use a `!` as a negation prefix, because it can also be a valid result.
 
 The library also tries to resolve the value from the context map.
 If nothing was found, the original value is used.
 
-It is also possible to use JSON-Matcher (user defined and bdd-cucumber-lib).
+It is also possible to use JSON-Matcher (user-defined and bdd-cucumber-lib).
 These are written with the notation `${json-unit.matches:isUUID}` (as an example for the UUID-Matcher).
 
 **_ATTENTION: Only unparameterized custom matchers or bdd lib-matchers can be used for field validation!_**
@@ -69,7 +69,6 @@ Scenario: Reset the scenario context
 ```
 
 Reset the context state map.
-
 
 
 # Release 1.18.0

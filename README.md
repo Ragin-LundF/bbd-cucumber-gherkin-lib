@@ -461,7 +461,7 @@ Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/Json
     | shouldNotExist   | @bdd_lib_not_exist          |
 ```
 
-In this case the fields that should be compared can be given as data table map.
+In this case, the fields that should be compared can be given as a data table map.
 The first column is the field name, the second the expected value.
 
 ##### Description
@@ -469,15 +469,15 @@ This sentence compares only the given field of the response.
 The field can be a JSON path. The library checks if it starts with `$.`.
 If it does not start with `$.` it will be added internally.
 
-To test if a field is NOT present, the reserved word `@bdd_lib_not_exist` can be used as value.
+To test if a field is NOT present, the reserved word `@bdd_lib_not_exist` can be used as the value.
 
-To test if a value is NOT the expected value, the reserved word `@bdd_lib_not ` can be used to negate the compare.
-It is not possible to use a `!` as negation prefix, because it can also be a valid result.
+To test if a value is NOT the expected value, the reserved word `@bdd_lib_not ` can be used to negate the comparison.
+It is not possible to use a `!` as a negation prefix, because it can also be a valid result.
 
 The library also tries to resolve the value from the context map.
 If nothing was found, the original value is used.
 
-It is also possible to use JSON-Matcher (user defined and bdd-cucumber-lib).
+It is also possible to use JSON-Matcher (user-defined and bdd-cucumber-lib).
 These are written with the notation `${json-unit.matches:isUUID}` (as an example for the UUID-Matcher).
 
 **_ATTENTION: Only unparameterized custom matchers or bdd lib-matchers can be used for field validation!_**
