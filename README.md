@@ -17,6 +17,27 @@ The library tests with itself and with a dummy application in the test sources t
 There you can also find custom matcher for JSON-Assert.
 See [src/test](src/test) folder for examples.
 
+## How to integrate
+
+The library is available on jcenter. Please add jcenter to your build tool.
+
+### Maven
+```xml
+<dependency>
+	<groupId>com.ragin.bdd</groupId>
+	<artifactId>bdd-cucumber-gherkin-lib</artifactId>
+	<version>${version.bdd-cucumber-gherkin-lib}</version>
+	<scope>test</scope>
+</dependency>
+```
+
+### Gradle
+```groovy
+dependencies {
+    testImplementation "com.ragin.bdd:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
 # Table of content
 
 - [Cucumber REST Gherkin library](#cucumber-rest-gherkin-library)
