@@ -9,7 +9,7 @@ Scenario:
 _It is also possible to use the `@bdd_lib_json_ignore_new_array_elements` annotation on `Feature` or `Scenario` level._
 
 
-With this sentence or annotation the JSON compare will ignore new array elements.
+With this sentence or annotation, the JSON comparison will ignore new array elements.
 
 See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
 
@@ -17,13 +17,13 @@ See [src/test/resources/features/flexible_json/](src/test/resources/features/fle
 ## Configure the JSON compare to ignore the order of arrays
 ```gherkin
 Scenario:
-  Given that the response JSON can contain arrays in different order
+  Given that the response JSON can contain arrays in a different order
 ```
 
 _It is also possible to use the `@bdd_lib_json_ignore_array_order` annotation on `Feature` or `Scenario` level._
 
 
-With this sentence or annotation the JSON compare will ignore the order of arrays.
+With this sentence or annotation, the JSON comparison will ignore the order of arrays.
 
 See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
 
@@ -37,10 +37,9 @@ Scenario:
 _It is also possible to use the `@bdd_lib_json_ignore_extra_fields` annotation on `Feature` or `Scenario` level._
 
 
-With this sentence or annotation the JSON compare will ignore new/not defined fields in the response.
+With this sentence or annotation, the JSON comparison will ignore new/not defined fields in the response.
 
 See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
-
 
 
 # Release 1.17.0
