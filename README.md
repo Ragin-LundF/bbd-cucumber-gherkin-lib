@@ -365,15 +365,7 @@ This reserved word creates a random uuid for the field.
 
 #### Execute requests
 
-A list and description of sentences to execute a request is linked in the next table.
-
-| Request type | Link |
-| --- | --- |
-| GET Requests | [docs/get_sentences.md](docs/get_sentences.md) |
-| POST Requests | [docs/post_sentences.md](docs/post_sentences.md) |
-| DELETE Requests | [docs/delete_sentences.md](docs/delete_sentences.md) |
-| PUT Requests | [docs/put_sentences.md](docs/put_sentences.md) |
-| PATCH Requests | [docs/patch_sentences.md](docs/patch_sentences.md) |
+A list and description of sentences to execute a request can be found at [docs/httpmethod_sentences.md](docs/httpmethod_sentences.md).
 
 ### Then
 #### Validate HTTP response code

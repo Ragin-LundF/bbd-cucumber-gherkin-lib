@@ -1,3 +1,17 @@
+# Release 1.19.0
+
+## Less sentences but still compatible and more possibilities
+This release introduces the parameter `{httpMethod}` which replaces all sentences with a HTTP method in the name.
+Allowed values are:
+- GET
+- POST
+- DELETE
+- PUT
+- PATCH
+
+This reduces the number of Gherkin sentences by 24 and adds 24 new possible sentences, because the shorter GET sentences are now also available for all other methods.
+
+
 # Release 1.18.0
 
 ## Configure the JSON compare to ignore extra elements in arrays
