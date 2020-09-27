@@ -53,8 +53,8 @@ Feature: Authorization with PATCH tests
 
   Scenario: Authorized PATCH call with previously given API path and dynamic path elements from context is successful
     Given that the context contains the key "apiPath" with the value "unauthorized"
-    And that the API path is "/api/v1/${apiPath}"
-    And that the file "requests/request.json" is used as the body
+        * that the API path is "/api/v1/${apiPath}"
+        * that the file "requests/request.json" is used as the body
     When executing a PATCH call with previously given URI and body
     Then I ensure that the status code of the response is 401
     And I ensure that the body of the response is equal to the file "responses/response_unauthorized.json"
@@ -87,8 +87,8 @@ Feature: Authorization with PATCH tests
 
   Scenario: Authorized PATCH call with previously given API path and dynamic path elements from context is successful
     Given that the context contains the key "apiPath" with the value "authorized"
-    And that the file "requests/request.json" is used as the body
-    And that the API path is "/api/v1/${apiPath}"
+        * that the file "requests/request.json" is used as the body
+        * that the API path is "/api/v1/${apiPath}"
     When executing an authorized PATCH call with previously given URI and body
     Then I ensure that the status code of the response is 200
     And I ensure that the body of the response is equal to the file "responses/response_authorized.json"

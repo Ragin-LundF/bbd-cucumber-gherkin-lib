@@ -2,13 +2,13 @@ Feature: E2E Stateful 01 - Execute calls against an API and store it to the cont
 
   Scenario: Call the dynamic path endpoints and remember value in context for other features
     Given that the stored data in the scenario context map has been reset
-    Given that the API path is "/api/v1/{resourceId}/{subResourceId}"
+    And that the API path is "/api/v1/{resourceId}/{subResourceId}"
     When executing an authorized POST call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'
       | URI Elements  | URI Values            |
       | resourceId    | myStaticResourceId    |
       | subResourceId | myStaticSubResourceId |
     Then I ensure that the status code of the response is 201
-    And I ensure that the body of the response is equal to
+       * I ensure that the body of the response is equal to
     """
     {
       "resourceId": "${json-unit.ignore}",
@@ -18,8 +18,8 @@ Feature: E2E Stateful 01 - Execute calls against an API and store it to the cont
       "validDate": "${json-unit.matches:isValidDate}"
     }
     """
-    And I store the string of the field "resourceId" in the context "staticResourceId" for later usage
-    And I store the string of the field "subResourceId" in the context "staticSubResourceId" for later usage
+      * I store the string of the field "resourceId" in the context "staticResourceId" for later usage
+      * I store the string of the field "subResourceId" in the context "staticSubResourceId" for later usage
 
 
   Scenario Outline: Call the dynamic path endpoints with outlines and remember value in context for other features
@@ -29,8 +29,8 @@ Feature: E2E Stateful 01 - Execute calls against an API and store it to the cont
       | resourceId    | <resource>    |
       | subResourceId | <subresource> |
     Then I ensure that the status code of the response is 201
-    And I store the string of the field "resourceId" in the context "<contextResourceName>" for later usage
-    And I store the string of the field "subResourceId" in the context "<contextSubResourceName>" for later usage
+       * I store the string of the field "resourceId" in the context "<contextResourceName>" for later usage
+       * I store the string of the field "subResourceId" in the context "<contextSubResourceName>" for later usage
     Examples:
       | resource | subresource | contextResourceName      | contextSubResourceName      |
       | abc-def  | ghi-jkl     | firstOutlineCtxResource  | firstOutlineCtxSubResource  |

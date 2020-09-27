@@ -15,8 +15,8 @@ Feature: Manipulation of the body
       ]
     }
     """
-    And I set the value of the previously given body property "name" to "Max Doe"
-    And I set the value of the previously given body property "ids[1]" to "2."
+      * I set the value of the previously given body property "name" to "Max Doe"
+      * I set the value of the previously given body property "ids[1]" to "2."
     When executing an authorized POST call to "/api/v1/body/manipulate" with previously given body
     Then I ensure that the status code of the response is 201
     And I ensure that the body of the response is equal to
@@ -34,8 +34,8 @@ Feature: Manipulation of the body
 
   Scenario: Manipulate the body from a context variable
     Given that the file "absolutePath:/features/body_manipulation/requests/request.json" is used as the body
-    And that the context contains the key "newUserNameInContext" with the value "Max Done"
-    Given that the context contains the key "secondEntry" with the value "unknown"
+        * that the context contains the key "newUserNameInContext" with the value "Max Done"
+        * that the context contains the key "secondEntry" with the value "unknown"
     Then I set the value of the previously given body property "name" to "newUserNameInContext"
     And I set the value of the previously given body property "ids[1]" to "secondEntry"
     When executing an authorized POST call to "/api/v1/body/manipulate" with previously given body
@@ -55,12 +55,12 @@ Feature: Manipulation of the body
 
   Scenario: Manipulate the body from a context variable and compare it by context matcher
     Given that the file "requests/request.json" is used as the body
-    And that the context contains the key "newUserNameInContext" with the value "Max Done"
-    Given that the context contains the key "secondEntry" with the value "unknown"
+        * that the context contains the key "newUserNameInContext" with the value "Max Done"
+        * that the context contains the key "secondEntry" with the value "unknown"
     Then I set the value of the previously given body property "name" to "newUserNameInContext"
-    And I set the value of the previously given body property "ids[1]" to "secondEntry"
-    # It is also possible to write the JSON path with official notation.
-    And I set the value of the previously given body property "$.ids[2]" to "thirdEntry"
+       * I set the value of the previously given body property "ids[1]" to "secondEntry"
+         # It is also possible to write the JSON path with official notation.
+       * I set the value of the previously given body property "$.ids[2]" to "thirdEntry"
     When executing an authorized POST call to "/api/v1/body/manipulate" with previously given body
     Then I ensure that the status code of the response is 201
     And I ensure that the body of the response is equal to
