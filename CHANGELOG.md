@@ -1,3 +1,9 @@
+# Release 1.20.1
+
+The REST template has thrown an exception in case of `5xx` response codes.
+
+This version fixes the issue and returns the correct HTTP code and message. 
+
 # Release 1.20.0
 
 ## Introducing user
