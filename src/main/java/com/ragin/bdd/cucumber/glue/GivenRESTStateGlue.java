@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class GivenRESTStateGlue extends BaseCucumberCore {
 
-    @Value("${cucumberTest.authorization.bearerToken.noscope}")
+    @Value("${cucumberTest.authorization.bearerToken.noscope:none}")
     private String noScopeBearerToken;
 
     /**

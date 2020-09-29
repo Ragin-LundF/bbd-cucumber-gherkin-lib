@@ -20,7 +20,7 @@ public class BaseCucumberCore {
      *
      * @param defaultBearerToken default Bearer token
      */
-    @Value("${cucumberTest.authorization.bearerToken.default}")
+    @Value("${cucumberTest.authorization.bearerToken.default:none}")
     public void setDefaultBearerToken(final String defaultBearerToken) {
         ScenarioStateContext.current().setDefaultBearerToken(defaultBearerToken);
         if (StringUtils.isEmpty(ScenarioStateContext.current().getBearerToken())) {
