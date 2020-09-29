@@ -40,6 +40,28 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
     }
 
     /**
+     * Set a list of users and tokens.
+     *
+     * @param userDataTable     data table which contains the user in the first row and token in the second
+     */
+    @Given("that the following users and tokens are existing")
+    public void givenThatUsersAndTokensExisting(final DataTable userDataTable) {
+        final Map<String, String> userDataMap = userDataTable.asMap(String.class, String.class);
+        final Set<String> keySet = userDataMap.keySet();
+        for (String key : keySet) {
+            ScenarioStateContext.current().getUserTokenMap().put(key, userDataMap.get(key));
+        }
+    }
+
+    /**
+     * Defines to use a bearer token without scopes
+     */
+    @Given("that the user is {string}")
+    public void givenThatTheUserIs(final String user) {
+        ScenarioStateContext.current().setBearerToken(ScenarioStateContext.current().getUserTokenMap().get(user));
+    }
+
+    /**
      * Defines to use a bearer token without scopes
      */
     @Given("that a bearer token without scopes is used")

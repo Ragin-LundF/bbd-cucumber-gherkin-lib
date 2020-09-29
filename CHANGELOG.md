@@ -1,3 +1,36 @@
+# Release 1.20.0
+
+## Introducing user
+
+### Define user(s)
+With the following sentence it is possible to define multiple users:
+```gherkin
+Feature: User features
+  Background:
+    Given that the following users and tokens are existing
+    | john_doe    | my_auth_token_for_john_doe    |
+    | johana_doe  | my_auth_token_for_johana_doen |
+```
+
+Now every scenario in this feature can use the user with:
+```gherkin
+  Scenario: Using authorized user john_doe
+    Given that the user is "john_doe"
+```
+
+The library selects the right token from the given list and executes the calls with this user.
+It is also possible to define both in the `Background` specification. Then all tests will have this user as default:
+
+```gherkin
+Feature: User features in global context
+  Background:
+    Given that the following users and tokens are existing
+    | john_doe    | my_auth_token_for_john_doe    |
+    And that the user is "john_doe"
+```
+
+Please have a look to the examples at: [src/test/resources/features/user/](src/test/resources/features/user/)
+
 # Release 1.19.0
 
 ## Fewer sentences but still compatible and more possibilities

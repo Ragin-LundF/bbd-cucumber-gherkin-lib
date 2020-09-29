@@ -25,6 +25,7 @@ public class ScenarioStateContext {
     private String defaultBearerToken = "";
     private Map<String, String> headerValues = new HashMap<>();
     private Map<String, String> scenarioContextMap = new HashMap<>();
+    private Map<String, String> userTokenMap = new HashMap<>();
     private List<Option> jsonPathOptions = new ArrayList<>(0);
 
     private ScenarioStateContext() {}
