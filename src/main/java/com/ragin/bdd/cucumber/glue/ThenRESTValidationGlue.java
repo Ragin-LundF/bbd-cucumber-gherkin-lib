@@ -102,6 +102,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
      *
      * @param expectedStatusCode expected response status code
      * @param pathToFile expected file that contains the JSON body
+     * @throws java.io.IOException if the file can not be read
      */
     @Then("I ensure that the response code is {int} and the body is equal to the file {string}")
     public void thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(
