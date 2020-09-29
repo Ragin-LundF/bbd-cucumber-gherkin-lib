@@ -55,6 +55,8 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
 
     /**
      * Defines to use a bearer token without scopes
+     *
+     * @param user name of the user
      */
     @Given("that the user is {string}")
     public void givenThatTheUserIs(final String user) {

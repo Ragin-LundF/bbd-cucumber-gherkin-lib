@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.HttpServerErrorException;
 
 public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
     protected static final String SERVER_URL = "http://localhost:";
@@ -91,14 +92,19 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
             httpEntity = new HttpEntity<>(body, headers);
         }
 
-        setLatestResponse(
-                restTemplate.exchange(
-                        fullURLFor(path),
-                        httpMethod,
-                        httpEntity,
-                        String.class
-                )
-        );
+        try {
+            setLatestResponse(
+                    restTemplate.exchange(
+                            fullURLFor(path),
+                            httpMethod,
+                            httpEntity,
+                            String.class
+                    )
+            );
+        } catch (HttpServerErrorException hsee) {
+            ResponseEntity<String> response = new ResponseEntity<>(hsee.getResponseBodyAsString(), hsee.getStatusCode());
+            setLatestResponse(response);
+        }
     }
 
     /**
