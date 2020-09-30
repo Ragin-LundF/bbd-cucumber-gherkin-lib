@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class Authentication {
-    @Value("${cucumberTest.authorization.bearerToken.default}")
+    @Value("${cucumberTest.authorization.bearerToken.default:none}")
     private String token;
 
     @GetMapping("/api/v1/unauthorized")

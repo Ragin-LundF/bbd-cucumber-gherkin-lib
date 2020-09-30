@@ -64,6 +64,10 @@ public class WhenRESTManipulationGlue extends BaseRESTExecutionGlue {
      */
     @When("I set the header {string} to {string}")
     public void whenISetTheHeaderValueTo(final String header, final String headerValue) {
-        ScenarioStateContext.current().getHeaderValues().put(header, headerValue);
+        String resolvedHeader = ScenarioStateContext.current().getScenarioContextMap().get(headerValue);
+        if (resolvedHeader == null) {
+            resolvedHeader = headerValue;
+        }
+        ScenarioStateContext.current().getHeaderValues().put(header, resolvedHeader);
     }
 }
