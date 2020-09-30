@@ -41,6 +41,8 @@ public class DatabaseExecutorService {
                     new LabelExpression(),
                     false
             );
+        } catch (Exception e) {
+            throw e;
         } finally {
             connection.close();
         }
