@@ -50,6 +50,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
      * @param httpMethod HTTP Method
      * @param uri to the endpoint URI
      */
+    @SuppressWarnings("squid:S4144")
     @When("executing an authorized {httpMethod} call to {string} with previously given body")
     public void whenExecutingAuthorizedCallToUriWithPreviouslyGivenBody(final HttpMethod httpMethod, final String uri) {
         ScenarioStateContext.current().setUriPath(uri);
@@ -185,6 +186,7 @@ public class WhenRESTExecutionGlue extends BaseRESTExecutionGlue {
      * @param httpMethod HTTP Method
      * @param uri to the endpoint URI
      */
+    @SuppressWarnings("squid:S4144")
     @When("executing an authorized {httpMethod} call to {string}")
     public void whenExecutingAuthorizedCallToUri(final HttpMethod httpMethod, final String uri) {
         ScenarioStateContext.current().setUriPath(uri);
