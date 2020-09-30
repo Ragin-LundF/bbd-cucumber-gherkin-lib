@@ -30,11 +30,12 @@ public class DatabaseExecutorService {
      */
     public void executeLiquibaseScript(final String liquibaseScript) throws Exception {
         final JdbcConnection connection = new JdbcConnection(datasource.getConnection());
-        try (Liquibase liquibase = new Liquibase(
-                liquibaseScript,
-                new ClassLoaderResourceAccessor(),
-                DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection)
-        )) {
+        try {
+            Liquibase liquibase = new Liquibase(
+                    liquibaseScript,
+                    new ClassLoaderResourceAccessor(),
+                    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection)
+            );
             liquibase.update(
                     new Contexts(""),
                     new LabelExpression(),

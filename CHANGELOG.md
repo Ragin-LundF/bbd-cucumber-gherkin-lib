@@ -1,3 +1,13 @@
+# Release 1.20.2
+
+This release fixes the problem, that the sentence to set a header value does not resolve the value first from the context.
+
+Now it is possible to use static values or (if the value matches to the context) previously stored parameters.
+
+Example:
+
+[src/test/resources/features/header/](src/test/resources/features/header/)
+
 # Release 1.20.1
 
 The REST template has thrown an exception in case of `5xx` response codes.
