@@ -29,20 +29,17 @@ public class DatabaseExecutorService {
      * @throws Exception        Unable to execute liquibase script
      */
     public void executeLiquibaseScript(final String liquibaseScript) throws Exception {
-        final JdbcConnection connection = new JdbcConnection(datasource.getConnection());
+        JdbcConnection connection = new JdbcConnection(datasource.getConnection());
         try {
-            Liquibase liquibase = new Liquibase(
+            new Liquibase(
                     liquibaseScript,
                     new ClassLoaderResourceAccessor(),
                     DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection)
-            );
-            liquibase.update(
+            ).update(
                     new Contexts(""),
                     new LabelExpression(),
                     false
             );
-        } catch (Exception e) {
-            throw e;
         } finally {
             connection.close();
         }
