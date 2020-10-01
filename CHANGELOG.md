@@ -1,10 +1,10 @@
 # Release 1.20.3
 
-Now it is allowed to use full pathes instead of only URIs.
-This may help, if between some external systems has to be called.
+Now it is allowed to use full paths instead of only URIs.
+This may help if between some external systems has to be called.
 
 The library checks if the path starts with `http://` or `https://`.
-In these cases it does not add `localhost`.
+In these cases, it does not add `localhost`.
 
 # Release 1.20.2
 
