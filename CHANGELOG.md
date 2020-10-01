@@ -1,3 +1,21 @@
+# Release 1.20.5
+
+The executor of the Liquibase scripts has sometimes problems with H2 memory databases, that the H2 connection is closed after the JDBC connection is closed.
+
+This problem can now be solved by setting the following properties:
+
+```properties
+cucumberTest.liquibase.closeConnection=false
+```
+or
+```yaml
+cucumberTest:
+    liquibase:
+      closeConnection: false
+```
+
+The default value is `false`, which means, that the connection will not be closed.
+
 # Release 1.20.4
 
 Adds support to define the target server, if the test library should be used for various tests in an outsourced test repository.

@@ -10,11 +10,15 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DatabaseExecutorService {
+    @Value("${cucumberTest.liquibase.closeConnection:false}")
+    private boolean closeConnection;
+
     @Autowired
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     DataSource datasource;
@@ -41,7 +45,9 @@ public class DatabaseExecutorService {
                     false
             );
         } finally {
-            connection.close();
+            if (closeConnection) {
+                connection.close();
+            }
         }
     }
 
