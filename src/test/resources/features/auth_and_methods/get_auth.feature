@@ -2,6 +2,10 @@ Feature: Authorization with GET tests
   Background:
     Given that all file paths are relative to "features/auth_and_methods/responses/"
 
+  Scenario: Unauthorized GET data from an external source
+    When executing a GET call to "https://www.googleapis.com/fitness/v1/users/me/dataSources"
+    Then I ensure that the status code of the response is 401
+    And I ensure that the body of the response contains a field "$.error.code" with the value "401"
 
   Scenario: Unauthorized GET call with direct API path should be rejected with a 401 error
     When executing a GET call to "/api/v1/unauthorized"
