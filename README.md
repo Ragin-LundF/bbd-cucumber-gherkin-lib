@@ -184,6 +184,23 @@ This sounds much better, didn't it?
 Before every Scenario the library looks for a `database/reset_database.xml` file (`$projectDir/src/test/resources/database/reset_database.xml`).
 This file has to be a [Liquibase](https://www.liquibase.org) definition, which can contain everything to reset a database (`truncate`, `delete`, `insert`...).
 
+The executor of the Liquibase scripts has sometimes problems with H2 memory databases, that the H2 connection is closed after the JDBC connection is closed.
+
+This problem can now be solved by setting the following properties:
+
+```properties
+cucumberTest.liquibase.closeConnection=false
+```
+or
+```yaml
+cucumberTest:
+    liquibase:
+      closeConnection: false
+```
+
+The default value is `false`, which means, that the connection will not be closed.
+
+
 ### Given
 #### Liquibase script initialization
 ```gherkin
