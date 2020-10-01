@@ -43,10 +43,10 @@ dependencies {
 - [Cucumber REST Gherkin library](#cucumber-rest-gherkin-library)
 - [Table of content](#table-of-content)
 - [Support JUnit 5](#support-junit-5)
-- [Basic Concept](#basic-concept)
 - [Base Configuration](#base-configuration)
   - [Base token definition](#base-token-definition)
   - [Base URL definition](#base-url-definition)
+- [Basic Concept](#basic-concept)
 - [Steps](#steps)
   - [Database](#database)
     - [Given](#given)
@@ -95,19 +95,6 @@ testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
 }
 ```
 
-# Basic Concept
-
-This library defines a set of sentences and tries to harmonize them and provide a context-related beginning of sentences.
-This is very helpful for IDEs with code completion.
-
-| Step | Sentence start | Main usage |
-| --- | --- | --- |
-| `Given` | `that` | Prepare something |
-| `When` | `executing a` or `I set` | Do something |
-| `Then` | `I ensure` or `I store` | Validate something |
-
-There are some basic examples in the [src/test](src/test) directory.
-
 # Base Configuration
 
 ## Base token definition
@@ -155,6 +142,19 @@ cucumberTest:
 ```
 
 _All parameters are optional. If nothing is being defined, it uses the default `http://localhost:<LocalServerPort>`._
+
+# Basic Concept
+
+This library defines a set of sentences and tries to harmonize them and provide a context-related beginning of sentences.
+This is very helpful for IDEs with code completion.
+
+| Step | Sentence start | Main usage |
+| --- | --- | --- |
+| `Given` | `that` | Prepare something |
+| `When` | `executing a` or `I set` | Do something |
+| `Then` | `I ensure` or `I store` | Validate something |
+
+There are some basic examples in the [src/test](src/test) directory.
 
 
 # Steps
