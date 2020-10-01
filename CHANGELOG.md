@@ -1,3 +1,11 @@
+# Release 1.20.3
+
+Now it is allowed to use full pathes instead of only URIs.
+This may help, if between some external systems has to be called.
+
+The library checks if the path starts with `http://` or `https://`.
+In these cases it does not add `localhost`.
+
 # Release 1.20.2
 
 This release fixes the problem, that the sentence to set a header value does not resolve the value first from the context.

@@ -128,6 +128,9 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
      * @return  full URL as protocol:server_host:port/basePath/path
      */
     protected String fullURLFor(final String path) {
+        if (path.startsWith("http://") || path.startsWith("https://")) {
+            return path;
+        }
         return SERVER_URL + port + ScenarioStateContext.current().getUrlBasePath() + path;
     }
 }
