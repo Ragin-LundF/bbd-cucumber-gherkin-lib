@@ -1,3 +1,29 @@
+# Release 1.20.4
+
+Adds support to define the target server, if the test library should be used for various tests in an outsourced test repository.
+
+It is now possible to overwrite the `protocol`, `host` and `port` in the `application.yaml`/`application.properties`:
+
+application.properties:
+```properties
+cucumberTest.server.protocol=http
+cucumberTest.server.host=localhost
+cucumberTest.server.port=80
+```
+
+or
+
+application.yaml:
+```yaml
+cucumberTest:
+    server:
+      protocol: "http"
+      host: "localhost"
+      port: 80
+```
+
+_All parameters are optional. If nothing is being defined, it uses the default `http://localhost:<LocalServerPort>`._
+
 # Release 1.20.3
 
 Now it is allowed to use full paths instead of only URIs.
