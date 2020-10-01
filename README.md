@@ -43,6 +43,9 @@ dependencies {
 - [Cucumber REST Gherkin library](#cucumber-rest-gherkin-library)
 - [Table of content](#table-of-content)
 - [Support JUnit 5](#support-junit-5)
+- [Base Configuration](#base-configuration)
+  - [Base token definition](#base-token-definition)
+  - [Base URL definition](#base-url-definition)
 - [Basic Concept](#basic-concept)
 - [Steps](#steps)
   - [Database](#database)
@@ -92,6 +95,54 @@ testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
 }
 ```
 
+# Base Configuration
+
+## Base token definition
+To define a default token those two parameters can be set in the properties:
+
+`application.properties`:
+```properties
+cucumberTest.authorization.bearerToken.default=default_token_for_authorized_endpoints 
+cucumberTest.authorization.bearerToken.noscope=second_token_for_alternatives
+```
+
+or
+
+`application.yaml`:
+```yaml
+cucumberTest:
+  authorization:
+    bearerToken:
+      default: "default_token_for_authorized_endpoints" 
+      noscope: "second_token_for_alternatives"
+```
+
+
+## Base URL definition
+If the test library should be used for various tests in an outsourced test repository.
+
+It is possible to overwrite the `protocol`, `host` and `port` in the `application.yaml`/`application.properties`:
+
+application.properties:
+```properties
+cucumberTest.server.protocol=http
+cucumberTest.server.host=localhost
+cucumberTest.server.port=80
+```
+
+or
+
+application.yaml:
+```yaml
+cucumberTest:
+    server:
+      protocol: "http"
+      host: "localhost"
+      port: 80
+```
+
+_All parameters are optional. If nothing is being defined, it uses the default `http://localhost:<LocalServerPort>`._
+
 # Basic Concept
 
 This library defines a set of sentences and tries to harmonize them and provide a context-related beginning of sentences.
@@ -104,6 +155,7 @@ This is very helpful for IDEs with code completion.
 | `Then` | `I ensure` or `I store` | Validate something |
 
 There are some basic examples in the [src/test](src/test) directory.
+
 
 # Steps
 It is a best-practice to not use syntax like this:

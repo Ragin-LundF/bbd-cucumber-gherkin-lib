@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -23,9 +24,18 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpServerErrorException;
 
 public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
-    protected static final String SERVER_URL = "http://localhost:";
+    protected static final String PLACEHOLDER = "none";
+
     @LocalServerPort
     protected int port;
+
+    @Value("${cucumberTest.server.protocol:http}")
+    private String serverProtocol;
+    @Value("${cucumberTest.server.host:localhost}")
+    private String serverHost;
+    @Value("${cucumberTest.server.port:none}")
+    private String serverPort;
+
     @Autowired
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     protected TestRestTemplate restTemplate;
@@ -131,6 +141,21 @@ public abstract class BaseRESTExecutionGlue extends BaseCucumberCore {
         if (path.startsWith("http://") || path.startsWith("https://")) {
             return path;
         }
-        return SERVER_URL + port + ScenarioStateContext.current().getUrlBasePath() + path;
+
+        final StringBuilder basePath = new StringBuilder();
+        basePath.append(serverProtocol);
+        basePath.append("://");
+        basePath.append(serverHost);
+
+        if (PLACEHOLDER.equals(serverPort)) {
+            basePath.append(":").append(port);
+        } else if (serverPort != null && ! serverPort.trim().equals("")) {
+            basePath.append(":").append(serverPort);
+        }
+
+        if (! ScenarioStateContext.current().getUrlBasePath().startsWith("/")) {
+            basePath.append("/");
+        }
+        return basePath.toString() + ScenarioStateContext.current().getUrlBasePath() + path;
     }
 }
