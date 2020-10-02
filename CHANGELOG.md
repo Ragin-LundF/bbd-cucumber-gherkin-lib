@@ -1,3 +1,6 @@
+# Release 1.20.6
+The relative file paths and the `absolutePath:` keyword are now also valid for loading liquibase scripts.
+
 # Release 1.20.5
 
 The executor of the Liquibase scripts has sometimes problems with H2 memory databases, that the H2 connection is closed after the JDBC connection is closed.

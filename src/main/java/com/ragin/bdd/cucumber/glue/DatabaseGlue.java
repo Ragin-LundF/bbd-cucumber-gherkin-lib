@@ -40,7 +40,7 @@ public class DatabaseGlue extends BaseCucumberCore {
     @Given("that the database was initialized with the liquibase file {string}")
     @Transactional
     public void givenThatTheDatabaseWasInitializedWithLiquibaseFile(final String pathToFile) throws Exception {
-        databaseExecutorService.executeLiquibaseScript(pathToFile);
+        databaseExecutorService.executeLiquibaseScript(getFilePath(pathToFile));
     }
 
     /**
