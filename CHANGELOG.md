@@ -1,3 +1,6 @@
+# Release 1.20.7
+Added new DateFormatter for database comparison: `yyyy-MM-dd HH:mm:ss.SSSSSS`.
+
 # Release 1.20.6
 The relative file paths and the `absolutePath:` keyword are now also valid for loading liquibase scripts.
 

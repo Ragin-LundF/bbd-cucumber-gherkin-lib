@@ -405,7 +405,7 @@ It is required to use this `Given` step in cases when it is necessary to manipul
 #### Set a body directly for later execution
 ```gherkin
 Scenario:
-  Given that the body of the response is
+  Given that the body of the request is
     """
     {
       "key": "value"
