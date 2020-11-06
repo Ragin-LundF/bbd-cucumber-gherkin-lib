@@ -33,6 +33,7 @@ public final class DateUtils {
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"));
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.S", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSSSSS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"));
 
         return Collections.unmodifiableMap(dateTimeFormatterMap);
     }
