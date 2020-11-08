@@ -1,3 +1,19 @@
+# Release 1.21.0
+## Dependencies
+Update of dependencies and Cucumber library 6.8.1.
+
+## Add own patterns for `${json-unit.matches:isValidDate}`
+To add own `DateTimeFormatter` patterns to extend the `${json-unit.matches:isValidDate}` range
+a new class is required that implements the interface `BddCucumberDateTimeFormat`.
+The method `pattern()` must return the date patterns as `List<String>`.
+
+To register this custom class it is necessary to add it `@ContextConfiguration` `classes` definition.
+
+Example:
+
+- [Configuration context](src/test/java/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.java)
+- [Test feature](src/test/resources/features/body_validation/field_compare.feature)
+
 # Release 1.20.7
 Added new DateFormatter for database comparison: `yyyy-MM-dd HH:mm:ss.SSSSSS`.
 

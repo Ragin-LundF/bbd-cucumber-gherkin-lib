@@ -56,6 +56,7 @@ dependencies {
       - [Database data comparison](#database-data-comparison)
   - [REST](#rest)
     - [JSON-Unit](#json-unit)
+      - [Adding own pattern for `${json-unit.matches:isValidDate}`](#adding-own-pattern-for-json-unitmatchesisvaliddate)
     - [Given](#given-1)
       - [Define user(s)](#define-users)
       - [Set path base directory for request/result/database files](#set-path-base-directory-for-requestresultdatabase-files)
@@ -256,6 +257,20 @@ For the comparison of the results the library uses `JSON` files, which can be en
 - ...
 
 **_ATTENTION: Only unparameterized custom matchers or bdd lib-matchers can be used for field validation!_**
+
+#### Adding own pattern for `${json-unit.matches:isValidDate}`
+
+To add own `DateTimeFormatter` patterns to extend the `${json-unit.matches:isValidDate}` range
+a new class is required that implements the interface `BddCucumberDateTimeFormat`.
+The method `pattern()` must return the date patterns as `List<String>`.
+
+To register this custom class it is necessary to add it `@ContextConfiguration` `classes` definition.
+
+Example:
+
+- [Configuration context](src/test/java/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.java)
+- [Test feature](src/test/resources/features/body_validation/field_compare.feature)
+
 
 ### Given
 

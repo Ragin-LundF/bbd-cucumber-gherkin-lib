@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.utils;
 
+import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.apachecommons.CommonsLog;
@@ -16,13 +17,22 @@ import lombok.extern.apachecommons.CommonsLog;
 @SuppressWarnings({"WeakerAccess", "squid:S1192"}) // Methods are public to be used by the project.
 @CommonsLog
 public final class DateUtils {
-    private DateUtils() {
-    }
-
     /**
      * available dateFormats
      */
     private static final Map<String, DateTimeFormatter> dateFormats = createDateList();
+
+    /**
+     * Check, that mandatory date is valid.
+     * <p>Transforms date also if it is in another timezone</p>
+     *
+     * @param dateObject    Object with date
+     * @return              true = valid | false = invalid
+     */
+    public static boolean isValidMandatoryDate(final Object dateObject,
+                                               final Collection<BddCucumberDateTimeFormat> bddDateTimeFormats) {
+        return transformToLocalDateTime(dateObject, bddDateTimeFormats) != null;
+    }
 
     private static Map<String, DateTimeFormatter> createDateList() {
         final Map<String, DateTimeFormatter> dateTimeFormatterMap = new HashMap<>();
@@ -35,28 +45,20 @@ public final class DateUtils {
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.S", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
         dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSSSSS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"));
 
-        return Collections.unmodifiableMap(dateTimeFormatterMap);
-    }
-
-    /**
-     * Check, that mandatory date is valid.
-     * <p>Transforms date also if it is in another timezone</p>
-     *
-     * @param dateObject    Object with date
-     * @return              true = valid | false = invalid
-     */
-    public static boolean isValidMandatoryDate(final Object dateObject) {
-        return transformToLocalDateTime(dateObject) != null;
+        return dateTimeFormatterMap;
     }
 
     /**
      * transform object to LocalDateTime
      *
      * @param dateObject    object with possible date
+     * @param bddDateTimeFormats Datetime formatter
      * @return              LocalDateTime if valid date, else null
      * @throws DateTimeParseException   Exception, when date is not parseable
      */
-    private static LocalDateTime transformToLocalDateTime(final Object dateObject) {
+    private static LocalDateTime transformToLocalDateTime(
+            final Object dateObject,
+            final Collection<BddCucumberDateTimeFormat> bddDateTimeFormats) {
         LocalDateTime localDateTime = null;
 
         if (dateObject instanceof Long) {
@@ -78,7 +80,7 @@ public final class DateUtils {
             }
 
             // check known date formats if one fits to the object
-            for (Map.Entry<String, DateTimeFormatter> entry : dateFormats.entrySet()) {
+            for (Map.Entry<String, DateTimeFormatter> entry : createDateFormatters(bddDateTimeFormats).entrySet()) {
                 log.debug("Try to parse " + dateObject.toString() + " with the format " + entry.getKey());
                 localDateTime = parseDate(dateObject.toString(), entry);
 
@@ -131,5 +133,23 @@ public final class DateUtils {
             log.debug("Failed to parse as dateTime " + dateTime + " with the format " + entry.getKey());
             return null;
         }
+    }
+
+    private static Map<String, DateTimeFormatter> createDateFormatters(
+            final Collection<BddCucumberDateTimeFormat> bddDateTimeFormats
+    ) {
+        final Map<String, DateTimeFormatter> dateTimeFormatsResult = dateFormats;
+
+        if (bddDateTimeFormats != null && ! bddDateTimeFormats.isEmpty()) {
+            bddDateTimeFormats.forEach(bddDateTimeFormat -> {
+                // Pattern
+                if (bddDateTimeFormat.pattern() != null && ! bddDateTimeFormat.pattern().isEmpty()) {
+                    bddDateTimeFormat.pattern().forEach(pattern -> {
+                        dateTimeFormatsResult.put(pattern, DateTimeFormatter.ofPattern(pattern));
+                    });
+                }
+            });
+        }
+        return dateTimeFormatsResult;
     }
 }
