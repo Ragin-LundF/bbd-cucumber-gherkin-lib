@@ -143,13 +143,16 @@ public final class DateUtils {
         if (bddDateTimeFormats != null && ! bddDateTimeFormats.isEmpty()) {
             bddDateTimeFormats.forEach(bddDateTimeFormat -> {
                 // Pattern
-                if (bddDateTimeFormat.pattern() != null && ! bddDateTimeFormat.pattern().isEmpty()) {
-                    bddDateTimeFormat.pattern().forEach(pattern -> {
-                        dateTimeFormatsResult.put(pattern, DateTimeFormatter.ofPattern(pattern));
-                    });
+                if (! bddDateTimeFormat.pattern().isEmpty()) {
+                    bddDateTimeFormat.pattern().forEach(
+                            pattern -> dateTimeFormatsResult.put(
+                                    pattern, DateTimeFormatter.ofPattern(pattern))
+                    );
                 }
             });
         }
         return dateTimeFormatsResult;
     }
+
+    private DateUtils() {}
 }

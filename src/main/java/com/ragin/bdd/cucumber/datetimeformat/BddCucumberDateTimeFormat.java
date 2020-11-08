@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.datetimeformat;
 
+import java.util.Collections;
 import java.util.List;
 
 public interface BddCucumberDateTimeFormat {
@@ -9,6 +10,6 @@ public interface BddCucumberDateTimeFormat {
      * @return List of patterns to add
      */
     default List<String> pattern() {
-        return null;
+        return Collections.emptyList();
     }
 }
