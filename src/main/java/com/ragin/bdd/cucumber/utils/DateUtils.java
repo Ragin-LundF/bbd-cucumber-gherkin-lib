@@ -27,6 +27,7 @@ public final class DateUtils {
      * <p>Transforms date also if it is in another timezone</p>
      *
      * @param dateObject    Object with date
+     * @param bddDateTimeFormats Collection of BddCucumberDateFormat classes
      * @return              true = valid | false = invalid
      */
     public static boolean isValidMandatoryDate(final Object dateObject,
