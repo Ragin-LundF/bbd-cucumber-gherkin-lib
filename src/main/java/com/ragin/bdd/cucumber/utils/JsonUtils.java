@@ -6,6 +6,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.ragin.bdd.cucumber.BddLibConstants;
 import com.ragin.bdd.cucumber.core.ScenarioStateContext;
+import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat;
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
 import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher;
 import com.ragin.bdd.cucumber.matcher.UUIDMatcher;
@@ -32,6 +33,8 @@ import org.springframework.stereotype.Component;
 public final class JsonUtils {
     @Autowired(required = false)
     Collection<BddCucumberJsonMatcher> jsonMatcher;
+    @Autowired(required = false)
+    Collection<BddCucumberDateTimeFormat> bddCucumberDateTimeFormatter;
 
     /**
      * Assert that two JSON Strings are equal
@@ -67,7 +70,7 @@ public final class JsonUtils {
         // base configuration
         Configuration configuration = JsonAssert.withTolerance(0)
                 .when(TREATING_NULL_AS_ABSENT)
-                .withMatcher("isValidDate", new ValidDateMatcher())
+                .withMatcher("isValidDate", new ValidDateMatcher(bddCucumberDateTimeFormatter))
                 .withMatcher("isValidUUID", new UUIDMatcher())
                 .withMatcher("isEqualToScenarioContext", new ScenarioStateContextMatcher());
 

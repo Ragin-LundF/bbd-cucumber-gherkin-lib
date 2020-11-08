@@ -3,7 +3,6 @@ package com.ragin.bdd.cucumbertests.hooks;
 import com.ragin.bdd.Application;
 import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
 import com.ragin.bdd.cucumber.utils.JsonUtils;
-import com.ragin.bdd.cucumbertests.library.test.Authentication;
 import io.cucumber.java.Before;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.junit.Ignore;
@@ -20,9 +19,10 @@ import org.springframework.test.context.ContextConfiguration;
                 Application.class,
                 DatabaseExecutorService.class,
                 JsonUtils.class,
-                ParameterizedCustomScenarioContextMatcher.class,
                 SimpleCustomUUIDMatcher.class,
-                ParameterizedCustomMultiParameterMatcher.class
+                ParameterizedCustomScenarioContextMatcher.class,
+                ParameterizedCustomMultiParameterMatcher.class,
+                CustomDateTimeFormatter.class
         },
         loader = SpringBootContextLoader.class
 )

@@ -15,39 +15,38 @@ apply plugin: 'io.spring.dependency-management'
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:2.3.1.RELEASE"
+        mavenBom "org.springframework.boot:spring-boot-dependencies:2.3.4.RELEASE"
     }
 }
 
 dependencies {
-    api 'org.apache.httpcomponents:httpclient'
-    api 'org.glassfish:javax.json:1.1.4'
-    api 'net.javacrumbs.json-unit:json-unit:2.19.0'
+    api "org.apache.httpcomponents:httpclient"
+    api "org.glassfish:javax.json:${versionJavaxJson}"
+    api "net.javacrumbs.json-unit:json-unit:${versionJsonUnit}"
 
-    api 'io.cucumber:cucumber-java:6.6.1'
-    api 'io.cucumber:cucumber-spring:6.6.1'
-    api 'io.cucumber:cucumber-junit:6.6.1'
+    api "io.cucumber:cucumber-java:${versionCucumber}"
+    api "io.cucumber:cucumber-spring:${versionCucumber}"
+    api "io.cucumber:cucumber-junit:${versionCucumber}"
 
-    api 'javax.validation:validation-api:2.0.1.Final'
+    api "javax.validation:validation-api:${versionValidationApi}"
 
-    api 'org.apache.commons:commons-text:1.9'
+    api "org.apache.commons:commons-text:${versionCommonsText}"
 
-    implementation 'org.liquibase:liquibase-core'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-test"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
 
-    implementation 'commons-io:commons-io:2.7'
-    implementation 'org.apache.commons:commons-lang3:3.11'
-    compileOnly 'org.projectlombok:lombok:1.18.12'
-    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    implementation "commons-io:commons-io:${versionCommonsIo}"
+    implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+    compileOnly "org.projectlombok:lombok:${versionLombok}"
+    annotationProcessor "org.projectlombok:lombok:${versionLombok}"
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.12'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
-    testImplementation 'com.h2database:h2:1.4.200'
-    testImplementation 'junit:junit:4.13'
+    testCompileOnly "org.projectlombok:lombok:${versionLombok}"
+    testAnnotationProcessor "org.projectlombok:lombok:${versionLombok}"
+    testImplementation "com.h2database:h2:${versionH2}"
 }
 
 def pomConfig = {
