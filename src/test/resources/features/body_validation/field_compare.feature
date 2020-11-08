@@ -72,3 +72,14 @@ Feature: Field validation instead of full JSON comparison
       | object.firstname | John                        |
       | object.lastname  | Doe                         |
       | shouldNotExist   | @bdd_lib_not_exist          |
+
+  Rule: It must be possible to add custom dateTime pattern and validate them with isValidDate()
+    Scenario: Validate a date in format "yyyy.MM.dd" with the configured custom dateTime pattern
+      When executing a GET call to "/api/v1/customDateTime"
+      Then I ensure that the status code of the response is 200
+      And I ensure that the body of the response is equal to
+      """
+      {
+      "validDate": "${json-unit.matches:isValidDate}"
+      }
+      """
