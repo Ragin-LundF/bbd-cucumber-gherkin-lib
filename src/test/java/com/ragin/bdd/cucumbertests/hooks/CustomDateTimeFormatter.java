@@ -1,6 +1,8 @@
 package com.ragin.bdd.cucumbertests.hooks;
 
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat;
+
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,9 +11,9 @@ import java.util.List;
  */
 public class CustomDateTimeFormatter implements BddCucumberDateTimeFormat {
     @Override
-    public List<String> pattern() {
+    public List<DateTimeFormatter> formatters() {
         return Collections.singletonList(
-                "yyyy.MM.dd"
+                DateTimeFormatter.ofPattern("yyyy.MM.dd")
         );
     }
 }
