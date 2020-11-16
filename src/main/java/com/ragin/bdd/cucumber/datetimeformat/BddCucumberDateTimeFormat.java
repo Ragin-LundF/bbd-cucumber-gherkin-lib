@@ -1,15 +1,14 @@
 package com.ragin.bdd.cucumber.datetimeformat;
 
-import java.util.Collections;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@FunctionalInterface
 public interface BddCucumberDateTimeFormat {
     /**
      * Pattern to add to the Date(Time)Parser.
      *
      * @return List of patterns to add
      */
-    default List<String> pattern() {
-        return Collections.emptyList();
-    }
+    List<DateTimeFormatter> formatters();
 }
