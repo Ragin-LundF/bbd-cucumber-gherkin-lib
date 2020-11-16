@@ -256,13 +256,13 @@ For the comparison of the results the library uses `JSON` files, which can be en
 - Custom matchers
 - ...
 
-**_ATTENTION: Only unparameterized custom matchers or bdd lib-matchers can be used for field validation!_**
+**_ATTENTION: Only parameterized custom matchers or bdd lib-matchers can be used for field validation!_**
 
 #### Adding own pattern for `${json-unit.matches:isValidDate}`
 
 To add own `DateTimeFormatter` patterns to extend the `${json-unit.matches:isValidDate}` range
 a new class is required that implements the interface `BddCucumberDateTimeFormat`.
-The method `pattern()` must return the date patterns as `List<String>`.
+The method `pattern()` must return the date patterns as `List<DateTimeFormatter>`.
 
 To register this custom class it is necessary to add it `@ContextConfiguration` `classes` definition.
 

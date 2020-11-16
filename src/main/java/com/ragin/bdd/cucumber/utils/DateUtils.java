@@ -1,6 +1,9 @@
 package com.ragin.bdd.cucumber.utils;
 
-import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat;
+import static java.time.format.DateTimeFormatter.ISO_DATE;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static java.util.Optional.ofNullable;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -8,10 +11,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat;
+
 import lombok.extern.apachecommons.CommonsLog;
 
 @SuppressWarnings({"WeakerAccess", "squid:S1192"}) // Methods are public to be used by the project.
@@ -20,7 +30,7 @@ public final class DateUtils {
     /**
      * available dateFormats
      */
-    private static final Map<String, DateTimeFormatter> dateFormats = createDateList();
+    private static final List<DateTimeFormatter> dateFormats = createDateList();
 
     /**
      * Check, that mandatory date is valid.
@@ -35,22 +45,24 @@ public final class DateUtils {
         return transformToLocalDateTime(dateObject, bddDateTimeFormats) != null;
     }
 
-    private static Map<String, DateTimeFormatter> createDateList() {
-        final Map<String, DateTimeFormatter> dateTimeFormatterMap = new HashMap<>();
-        dateTimeFormatterMap.put("yyyy-MM-dd", DateTimeFormatter.ISO_LOCAL_DATE);
-        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS000", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS000"));
-        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS000+HH:mm", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        dateTimeFormatterMap.put("yyyy-MM-dd'T'HH:mm:ss.SSS", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"));
-        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.S", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
-        dateTimeFormatterMap.put("yyyy-MM-dd HH:mm:ss.SSSSSS", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"));
-
-        return dateTimeFormatterMap;
+    /**
+     * create a list of default date and datetime formats.
+     *
+     * @return  List with default date/time formatters
+     */
+    private static List<DateTimeFormatter> createDateList() {
+        return Arrays.asList(
+            ISO_DATE,
+            ISO_DATE_TIME,
+            new DateTimeFormatterBuilder()
+                .append(DateTimeFormatter.ISO_LOCAL_DATE)
+                .appendLiteral(' ')
+                .append(DateTimeFormatter.ISO_LOCAL_TIME)
+                .toFormatter());
     }
 
     /**
-     * transform object to LocalDateTime
+     * Transform object to LocalDateTime.
      *
      * @param dateObject    object with possible date
      * @param bddDateTimeFormats Datetime formatter
@@ -81,13 +93,13 @@ public final class DateUtils {
             }
 
             // check known date formats if one fits to the object
-            for (Map.Entry<String, DateTimeFormatter> entry : createDateFormatters(bddDateTimeFormats).entrySet()) {
-                log.debug("Try to parse " + dateObject.toString() + " with the format " + entry.getKey());
-                localDateTime = parseDate(dateObject.toString(), entry);
+            for (DateTimeFormatter formatter : createDateFormatters(bddDateTimeFormats)) {
+                log.debug("Try to parse " + dateObject.toString() + " with the format " + formatter);
+                localDateTime = parseDate(dateObject.toString(), formatter);
 
                 // if parsing date was null, parse String as dateTime
                 if (null == localDateTime) {
-                    localDateTime = parseDateTime(dateObject.toString(), entry);
+                    localDateTime = parseDateTime(dateObject.toString(), formatter);
                 }
 
                 // if it is not null the String was parsed and is valid!
@@ -107,15 +119,15 @@ public final class DateUtils {
     /**
      * Try to parse String as date to LocalDateTime
      *
-     * @param date      date as string
-     * @param entry     entry which contains format (for logging) and DateTimeFormatter for parsing
-     * @return          LocalDateTime if valid, null if not parseable
+     * @param date          date as string
+     * @param formatter     entry which contains format (for logging) and DateTimeFormatter for parsing
+     * @return              LocalDateTime if valid, null if not parseable
      */
-    private static LocalDateTime parseDate(final String date, final Map.Entry<String, DateTimeFormatter> entry) {
+    private static LocalDateTime parseDate(final String date, final DateTimeFormatter formatter) {
         try {
-            return LocalDateTime.of(LocalDate.parse(date, entry.getValue()), LocalTime.MIN);
+            return LocalDateTime.of(LocalDate.parse(date, formatter), LocalTime.MIN);
         } catch (DateTimeParseException e) {
-            log.debug("Failed to parse as date " + date + " with the format " + entry.getKey());
+            log.debug("Failed to parse as date " + date + " with the format " + formatter);
             return null;
         }
     }
@@ -123,35 +135,34 @@ public final class DateUtils {
     /**
      * Try to parse String as date to LocalDateTime
      *
-     * @param dateTime  datetime as string
-     * @param entry     entry which contains format (for logging) and DateTimeFormatter for parsing
-     * @return          LocalDateTime if valid, null if not parseable
+     * @param dateTime      datetime as string
+     * @param formatter     entry which contains format (for logging) and DateTimeFormatter for parsing
+     * @return              LocalDateTime if valid, null if not parseable
      */
-    private static LocalDateTime parseDateTime(final String dateTime, final Map.Entry<String, DateTimeFormatter> entry) {
+    private static LocalDateTime parseDateTime(final String dateTime, final DateTimeFormatter formatter) {
         try {
-            return LocalDateTime.parse(dateTime, entry.getValue());
+            return LocalDateTime.parse(dateTime, formatter);
         } catch (DateTimeParseException e) {
-            log.debug("Failed to parse as dateTime " + dateTime + " with the format " + entry.getKey());
+            log.debug("Failed to parse as dateTime " + dateTime + " with the format " + formatter);
             return null;
         }
     }
 
-    private static Map<String, DateTimeFormatter> createDateFormatters(
+    /**
+     * Create a set of all DateTimeFormatters (default + custom).
+     *
+     * @param bddDateTimeFormats    Collection of custom DateTimeFormatters
+     * @return                      Set which contains all DateTimeFormatters
+     */
+    private static Set<DateTimeFormatter> createDateFormatters(
             final Collection<BddCucumberDateTimeFormat> bddDateTimeFormats
     ) {
-        final Map<String, DateTimeFormatter> dateTimeFormatsResult = dateFormats;
-
-        if (bddDateTimeFormats != null && ! bddDateTimeFormats.isEmpty()) {
-            bddDateTimeFormats.forEach(bddDateTimeFormat -> {
-                // Pattern
-                if (! bddDateTimeFormat.pattern().isEmpty()) {
-                    bddDateTimeFormat.pattern().forEach(
-                            pattern -> dateTimeFormatsResult.put(
-                                    pattern, DateTimeFormatter.ofPattern(pattern))
-                    );
-                }
-            });
-        }
+        final Set<DateTimeFormatter> dateTimeFormatsResult = new LinkedHashSet<>(dateFormats);
+        ofNullable(bddDateTimeFormats).ifPresent(formats -> formats.stream()
+                .map(BddCucumberDateTimeFormat::formatters)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .forEach(dateTimeFormatsResult::add));
         return dateTimeFormatsResult;
     }
 

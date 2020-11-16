@@ -1,3 +1,8 @@
+# Release 1.22.0
+The `BddCucumberDateTimeFormat` for custom date/time formatters has been changed from `List<String>` with a list 
+of patterns as string to `List<DateTimeFormatter>`.
+
+
 # Release 1.21.0
 ## Dependencies
 Update of dependencies and Cucumber library 6.8.1.
