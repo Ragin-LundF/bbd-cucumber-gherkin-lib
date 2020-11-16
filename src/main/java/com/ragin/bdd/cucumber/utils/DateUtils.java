@@ -45,6 +45,11 @@ public final class DateUtils {
         return transformToLocalDateTime(dateObject, bddDateTimeFormats) != null;
     }
 
+    /**
+     * create a list of default date and datetime formats.
+     *
+     * @return  List with default date/time formatters
+     */
     private static List<DateTimeFormatter> createDateList() {
         return Arrays.asList(
             ISO_DATE,
@@ -57,7 +62,7 @@ public final class DateUtils {
     }
 
     /**
-     * transform object to LocalDateTime
+     * Transform object to LocalDateTime.
      *
      * @param dateObject    object with possible date
      * @param bddDateTimeFormats Datetime formatter
@@ -114,9 +119,9 @@ public final class DateUtils {
     /**
      * Try to parse String as date to LocalDateTime
      *
-     * @param date      date as string
-     * @param entry     entry which contains format (for logging) and DateTimeFormatter for parsing
-     * @return          LocalDateTime if valid, null if not parseable
+     * @param date          date as string
+     * @param formatter     entry which contains format (for logging) and DateTimeFormatter for parsing
+     * @return              LocalDateTime if valid, null if not parseable
      */
     private static LocalDateTime parseDate(final String date, final DateTimeFormatter formatter) {
         try {
@@ -130,9 +135,9 @@ public final class DateUtils {
     /**
      * Try to parse String as date to LocalDateTime
      *
-     * @param dateTime  datetime as string
-     * @param entry     entry which contains format (for logging) and DateTimeFormatter for parsing
-     * @return          LocalDateTime if valid, null if not parseable
+     * @param dateTime      datetime as string
+     * @param formatter     entry which contains format (for logging) and DateTimeFormatter for parsing
+     * @return              LocalDateTime if valid, null if not parseable
      */
     private static LocalDateTime parseDateTime(final String dateTime, final DateTimeFormatter formatter) {
         try {
@@ -143,6 +148,12 @@ public final class DateUtils {
         }
     }
 
+    /**
+     * Create a set of all DateTimeFormatters (default + custom).
+     *
+     * @param bddDateTimeFormats    Collection of custom DateTimeFormatters
+     * @return                      Set which contains all DateTimeFormatters
+     */
     private static Set<DateTimeFormatter> createDateFormatters(
             final Collection<BddCucumberDateTimeFormat> bddDateTimeFormats
     ) {

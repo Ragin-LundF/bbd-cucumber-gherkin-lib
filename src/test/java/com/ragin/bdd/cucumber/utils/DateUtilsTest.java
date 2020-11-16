@@ -1,15 +1,10 @@
 package com.ragin.bdd.cucumber.utils;
 
-import static java.util.Arrays.asList;
-
-import java.util.stream.Stream;
-
-import org.junit.Test;
-
 import com.ragin.bdd.cucumbertests.hooks.CustomDateTimeFormatter;
-
+import java.util.Collections;
+import java.util.stream.Stream;
 import junit.framework.TestCase;
-
+import org.junit.Test;
 
 public class DateUtilsTest {
     
@@ -43,7 +38,7 @@ public class DateUtilsTest {
                 "2020-11-11T17:53:37.1234678",
                 "2020-11-11T17:53:37.12346789")
             .forEach(sample -> TestCase.assertTrue(
-                    DateUtils.isValidMandatoryDate(sample, 
-                            asList(new CustomDateTimeFormatter()))));
+                    DateUtils.isValidMandatoryDate(sample,
+                            Collections.singletonList(new CustomDateTimeFormatter()))));
     }
 }
