@@ -303,6 +303,20 @@ Feature: User features in global context
 
 Please have a look to the examples at: [src/test/resources/features/user/](src/test/resources/features/user/)
 
+#### Set the Bearer token dynamically
+To be able to set dynamic bearer token, the following sentence can be used:
+
+```gherkin
+Feature: Bearer Token
+  Scenario: Set bearer token directly
+    Given that the Bearer token is "abcdefg"
+```
+
+This sentence is primary looking into the context map, if there is a key with the given value.
+If this is not the case, it uses the given string directly as the token.
+
+Please have a look to the examples at: [src/test/resources/features/header/](src/test/resources/features/header/)
+
 
 #### Set path base directory for request/result/database files
 ```gherkin

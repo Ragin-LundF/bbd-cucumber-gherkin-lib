@@ -48,3 +48,26 @@ Feature: Header manipulation
     }
     """
 
+
+  Scenario: Set bearer token from context
+    Given that the context contains the key "NEW_BEARER" with the value "abcdefghij"
+    Given that the Bearer token is "NEW_BEARER"
+    When executing an authorized GET call to "/api/v1/overwrittenAuthHeader"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to
+    """
+    {
+      "header": "Bearer abcdefghij"
+    }
+    """
+
+  Scenario: Set bearer token directly
+    Given that the Bearer token is "eyabcedfg"
+    When executing an authorized GET call to "/api/v1/overwrittenAuthHeader"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to
+    """
+    {
+      "header": "Bearer eyabcedfg"
+    }
+    """

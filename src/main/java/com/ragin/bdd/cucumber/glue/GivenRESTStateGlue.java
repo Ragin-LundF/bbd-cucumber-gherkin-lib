@@ -7,6 +7,7 @@ import io.cucumber.java.en.Given;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -162,5 +163,15 @@ public class GivenRESTStateGlue extends BaseCucumberCore {
     @Given("that the stored data in the scenario context map has been reset")
     public void givenThatStoredDataInContextMapHasBeenReset() {
         ScenarioStateContext.current().setScenarioContextMap(new HashMap<>());
+    }
+
+    @Given("that the Bearer token is {string}")
+    public void givenThatBearerTokenIsUsed(final String bearerToken) {
+        final String bearerFromContext = ScenarioStateContext.current().getScenarioContextMap().get(bearerToken);
+        if (Objects.isNull(bearerFromContext)) {
+            ScenarioStateContext.current().setBearerToken(bearerToken);
+        } else {
+            ScenarioStateContext.current().setBearerToken(bearerFromContext);
+        }
     }
 }
