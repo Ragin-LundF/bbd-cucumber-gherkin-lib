@@ -121,7 +121,7 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
     }
 
     /**
-     * Store a string of the response to the context to reuse them later
+     * Store a string of the response to the context to reuse them later.
      * <p>!!!ATTENTION!!! This is an Anti-Pattern, but sometimes it can be necessary if Cucumber should work as Test-Suite.</p>
      * <p>For better separation use the database initializer and use static values instead of transporting them between scenarios!</p>
      *
@@ -154,6 +154,18 @@ public class ThenRESTValidationGlue extends BaseCucumberCore {
                 replaceTrailingAndLeadingQuotes(contextName),
                 field
         );
+    }
+
+    /**
+     * Ensure that the execution time is less than a value in ms.
+     *
+     * @param expectedExecutionTime     expected time in ms
+     */
+    @Then("I ensure that the execution time is less than {long} ms")
+    public void ensureThatExecutionTimeIsLessThan(long expectedExecutionTime) {
+        final long executionTime = System.currentTimeMillis() - ScenarioStateContext.current().getExecutionTime();
+        final boolean executionTimeValid = executionTime <= expectedExecutionTime;
+        Assert.assertTrue("The performance was poor with [" + executionTime + " ms]", executionTimeValid);
     }
 
     /**
