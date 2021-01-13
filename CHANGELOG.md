@@ -1,3 +1,16 @@
+# Release 1.24.0
+
+## New features
+### Validate execution time of requests
+```gherkin
+Scenario:
+  Then I ensure that the execution time is less than {long} ms
+```
+
+Validates, that the execution of the Scenario has taken less than [n] ms.
+
+Please have a look to the examples at: [src/test/resources/features/performance/](src/test/resources/features/performance/).
+
 # Release 1.23.0
 
 ## Dependency updates

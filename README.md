@@ -530,6 +530,17 @@ This reserved word creates a random uuid for the field.
 A list and description of sentences to execute a request can be found at [docs/httpmethod_sentences.md](docs/httpmethod_sentences.md).
 
 ### Then
+
+#### Validate execution time of requests
+```gherkin
+Scenario:
+  Then I ensure that the execution time is less than {long} ms
+```
+
+Validates, that the execution of the Scenario has taken less than [n] ms.
+
+Please have a look to the examples at: [src/test/resources/features/performance/](src/test/resources/features/performance/).
+
 #### Validate HTTP response code
 ```gherkin
 Scenario:

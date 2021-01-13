@@ -27,6 +27,7 @@ public class ScenarioStateContext {
     private Map<String, String> scenarioContextMap = new HashMap<>();
     private Map<String, String> userTokenMap = new HashMap<>();
     private List<Option> jsonPathOptions = new ArrayList<>(0);
+    private long executionTime = -1L;
 
     private ScenarioStateContext() {}
 
@@ -62,6 +63,7 @@ public class ScenarioStateContext {
      * Reset states
      */
     public void reset() {
+        executionTime = System.currentTimeMillis();
         latestResponse = null;
         fileBasePath = "";
         urlBasePath = "";
