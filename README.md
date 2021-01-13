@@ -75,6 +75,7 @@ dependencies {
       - [Body manipulation](#body-manipulation)
       - [Execute requests](#execute-requests)
     - [Then](#then-1)
+      - [Validate execution time of requests](#validate-execution-time-of-requests)
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
       - [Validate response body with given String](#validate-response-body-with-given-string)
