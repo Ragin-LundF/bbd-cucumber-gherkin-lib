@@ -1,4 +1,4 @@
-# Release 1.25.0
+# Release 1.26.0
 
 Small bugfix release for proper mismatch messages of the matchers.
 
