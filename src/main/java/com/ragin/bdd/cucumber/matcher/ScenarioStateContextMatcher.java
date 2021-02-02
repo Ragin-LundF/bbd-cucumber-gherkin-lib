@@ -11,15 +11,27 @@ public class ScenarioStateContextMatcher extends BaseMatcher<Object> implements 
     private String parameter;
 
     @Override
-    public boolean matches(Object actual) {
-        String parameterFromContext = ScenarioStateContext.current().getScenarioContextMap().get(parameter);
-        String actualAsString = String.valueOf(actual);
+    public boolean matches(final Object actual) {
+        final String parameterFromContext = ScenarioStateContext.current().getScenarioContextMap().get(parameter);
+        final String actualAsString = String.valueOf(actual);
         return (actualAsString.equals(parameterFromContext));
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText("The actual value is not equal to the parameter [" + parameter + "]");
+    }
+
+    @Override
+    public void describeMismatch(final Object item, final Description description) {
+        description
+                .appendText("BDD Context value was [")
+                .appendValue(ScenarioStateContext.current().getScenarioContextMap().get(parameter))
+                .appendText("].")
+                .appendText(" JSON Value was [")
+                .appendValue(item)
+                .appendText("]");
+        super.describeMismatch(item, description);
     }
 
     @Override
