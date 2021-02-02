@@ -30,8 +30,7 @@ public class ScenarioStateContextMatcher extends BaseMatcher<Object> implements 
                 .appendText("].")
                 .appendText(" JSON Value was [")
                 .appendValue(item)
-                .appendText("]");
-        super.describeMismatch(item, description);
+                .appendText("].");
     }
 
     @Override
