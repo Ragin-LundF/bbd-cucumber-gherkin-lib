@@ -19,7 +19,7 @@ public class UUIDMatcher extends BaseMatcher<Object> {
 
     @Override
     public void describeMismatch(Object item, Description description) {
-        description.appendText("Is not a valid date: ").appendValue(item);
+        description.appendText("Is not a valid UUID: ").appendValue(item);
     }
 
     @Override

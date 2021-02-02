@@ -1,3 +1,7 @@
+# Release 1.25.0
+
+Small bugfix release for proper mismatch messages of the matchers.
+
 # Release 1.24.0
 
 ## New features
