@@ -27,6 +27,10 @@ import java.io.IOException
 import javax.annotation.PostConstruct
 
 abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTemplate: TestRestTemplate) : BaseCucumberCore(jsonUtils) {
+    companion object {
+        protected const val PLACEHOLDER = "none"
+    }
+
     @LocalServerPort
     protected var port = 0
 
@@ -62,10 +66,7 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
      * @param httpMethod    HttpMethod of the request
      * @param authorized    should the request executed authorized or unauthorized (true = authorized)
      */
-    protected fun executeRequest(
-            httpMethod: HttpMethod,
-            authorized: Boolean
-    ) {
+    protected fun executeRequest(httpMethod: HttpMethod, authorized: Boolean) {
         executeRequest(DataTable.emptyDataTable(), httpMethod, authorized)
     }
 
@@ -76,11 +77,7 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
      * @param httpMethod    HttpMethod of the request
      * @param authorized    should the request executed authorized or unauthorized (true = authorized)
      */
-    protected fun executeRequest(
-            dataTable: DataTable,
-            httpMethod: HttpMethod,
-            authorized: Boolean
-    ) {
+    protected fun executeRequest(dataTable: DataTable, httpMethod: HttpMethod, authorized: Boolean) {
         // Prepare path with dynamic URLs from datatable
         var path: String = if (!dataTable.isEmpty) {
             prepareDynamicURLWithDataTable(dataTable)
@@ -109,8 +106,7 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
                     )
             )
         } catch (hsee: HttpServerErrorException) {
-            val response = ResponseEntity(hsee.responseBodyAsString, hsee.statusCode)
-            setLatestResponse(response)
+            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
         }
     }
 
@@ -151,9 +147,5 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
             basePath.append("/")
         }
         return basePath.toString() + urlBasePath + path
-    }
-
-    companion object {
-        protected const val PLACEHOLDER = "none"
     }
 }

@@ -59,10 +59,7 @@ open class DatabaseGlue(jsonUtils: JsonUtils, private val databaseExecutorServic
     @Then("I ensure that the result of the query of the file {string} is equal to the CSV file {string}")
     @Transactional
     @Throws(IOException::class)
-    open fun thenEnsureThatResultOfQueryOfFileIsEqualToCSV(
-            pathToQueryFile: String,
-            pathToCsvFile: String
-    ) {
+    open fun thenEnsureThatResultOfQueryOfFileIsEqualToCSV(pathToQueryFile: String, pathToCsvFile: String) {
         // read file
         val sqlStatements = readFile(pathToQueryFile)
         // execute query

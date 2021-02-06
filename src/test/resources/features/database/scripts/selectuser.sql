@@ -1,0 +1,1 @@
+SELECT * from USER WHERE USER_NAME='mytestuser';
