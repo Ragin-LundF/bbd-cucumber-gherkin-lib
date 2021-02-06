@@ -12,6 +12,10 @@ import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWith
 import io.cucumber.datatable.DataTable
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.StringSubstitutor
+import org.apache.http.HttpHost
+import org.apache.http.conn.ssl.NoopHostnameVerifier
+import org.apache.http.impl.client.CloseableHttpClient
+import org.apache.http.impl.client.HttpClientBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.server.LocalServerPort
@@ -19,12 +23,15 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.HttpServerErrorException
 import java.io.IOException
+import java.net.Proxy
 import javax.annotation.PostConstruct
+
 
 abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTemplate: TestRestTemplate) : BaseCucumberCore(jsonUtils) {
     companion object {
@@ -42,6 +49,16 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
 
     @Value("\${cucumberTest.server.port:none}")
     private val serverPort: String? = null
+
+    @Value("\${cucumberTest.proxy.host:null}")
+    private val proxyHost: String? = null
+
+    @Value("\${cucumberTest.proxy.port:-1}")
+    private val proxyPort: Int? = null
+
+    @Value("\${cucumberTest.ssl.disableCheck:false}")
+    private val sslDisableCheck: Boolean = false
+
     protected fun setLatestResponse(latestResponse: ResponseEntity<String>?) {
         ScenarioStateContext.latestResponse = latestResponse
     }
@@ -50,7 +67,7 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
     fun init() {
         // https://stackoverflow.com/questions/16748969/java-net-httpretryexception-cannot-retry-due-to-server-authentication-in-strea
         // https://github.com/spring-projects/spring-framework/issues/14004
-        restTemplate.restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory()
+        restTemplate.restTemplate.requestFactory = createRequestFactory()
         restTemplate.restTemplate.errorHandler = object : DefaultResponseErrorHandler() {
             @Throws(IOException::class)
             override fun hasError(response: ClientHttpResponse): Boolean {
@@ -58,6 +75,24 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
                 return statusCode.series() == HttpStatus.Series.SERVER_ERROR
             }
         }
+    }
+
+    protected fun createRequestFactory() : ClientHttpRequestFactory {
+        return HttpComponentsClientHttpRequestFactory(
+            createHttpClient()
+        )
+    }
+
+    protected fun createHttpClient() : CloseableHttpClient {
+        val httpClientBuilder = HttpClientBuilder.create()
+
+        if (sslDisableCheck) {
+            httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier())
+        }
+        if (! StringUtils.isEmpty(proxyHost) && proxyPort!! > 0) {
+            httpClientBuilder.setProxy(HttpHost(proxyHost, proxyPort, Proxy.Type.HTTP.name))
+        }
+        return httpClientBuilder.build()
     }
 
     /**

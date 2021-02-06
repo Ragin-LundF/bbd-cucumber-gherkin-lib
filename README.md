@@ -46,6 +46,8 @@ dependencies {
 - [Base Configuration](#base-configuration)
   - [Base token definition](#base-token-definition)
   - [Base URL definition](#base-url-definition)
+  - [Proxy support](#proxy-support)
+  - [Disable SSL verification](#disable-ssl-verification)
 - [Basic Concept](#basic-concept)
 - [Steps](#steps)
   - [Database](#database)
@@ -144,6 +146,52 @@ cucumberTest:
 ```
 
 _All parameters are optional. If nothing is being defined, it uses the default `http://localhost:<LocalServerPort>`._
+
+## Proxy support
+This can be useful to use the cucumber tests together with [burp-scanner](https://portswigger.net/burp/vulnerability-scanner).
+
+The proxy can be configured with:
+
+application.properties:
+```properties
+cucumberTest.proxy.host=localhost
+cucumberTest.proxy.port=8866
+```
+
+or
+
+application.yaml:
+```yaml
+cucumberTest:
+  proxy:
+    host: localhost
+    port: 8866
+```
+The host can be an IP or a domain. The port must be higher than 0.
+If a condition is not met, the proxy is not set.
+
+_Default is deactivated._
+
+## Disable SSL verification
+Along with proxy support, it may be necessary to disable SSL validation as well.
+
+This can be configured via:
+
+application.properties:
+```properties
+cucumberTest.ssl.disableCheck=true
+```
+
+or
+
+application.yaml:
+```yaml
+cucumberTest:
+  ssl:
+    disableCheck: true
+```
+
+_Default is false._
 
 # Basic Concept
 
