@@ -1,11 +1,17 @@
-package com.ragin.bdd.cucumber.glue;
+package com.ragin.bdd.cucumber.glue
 
-import com.ragin.bdd.cucumber.core.ScenarioStateContext;
-import io.cucumber.java.en.When;
-import java.util.UUID;
-import org.apache.commons.lang3.StringUtils;
+import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
+import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
+import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
+import com.ragin.bdd.cucumber.utils.JsonUtils
+import io.cucumber.java.en.When
+import org.apache.commons.lang3.StringUtils
+import org.springframework.boot.test.web.client.TestRestTemplate
+import java.util.*
 
-public class WhenRESTManipulationGlue extends BaseRESTExecutionGlue {
+class WhenRESTManipulationGlue(jsonUtils: JsonUtils, restTemplate: TestRestTemplate) : BaseRESTExecutionGlue(
+    jsonUtils, restTemplate
+) {
     /**
      * set the value of the previously given body property to a new value
      *
@@ -13,46 +19,37 @@ public class WhenRESTManipulationGlue extends BaseRESTExecutionGlue {
      * @param value         new value this element
      */
     @When("I set the value of the previously given body property {string} to {string}")
-    public void whenISetTheValueOfTheBodyPropertyTo(final String propertyPath, final String value) {
+    fun whenISetTheValueOfTheBodyPropertyTo(propertyPath: String, value: String) {
         // fetch new value from state context if possible. Else use the given value
-        String newValue = ScenarioStateContext.current().getScenarioContextMap().get(value);
+        var newValue = scenarioContextMap[value]
         if (newValue == null) {
-            newValue = value;
+            newValue = value
         }
-
-        if ("null".equals(newValue)) {
-            ScenarioStateContext.current().setEditableBody(
-                    jsonUtils.removeJsonField(
-                            ScenarioStateContext.current().getEditableBody(),
-                            propertyPath
-                    )
-            );
-        } else if (newValue.matches("\\d* bdd_lib_numbers")) {
-            final int numOfChars = Integer.parseInt(newValue.split(" ")[0]);
-            newValue = StringUtils.rightPad("", numOfChars, "1234567890");
-            ScenarioStateContext.current().setEditableBody(
-                    jsonUtils.editJsonField(
-                            ScenarioStateContext.current().getEditableBody(),
-                            propertyPath,
-                            newValue
-                    )
-            );
-        } else if (newValue.matches("bdd_lib_uuid")) {
-            ScenarioStateContext.current().setEditableBody(
-                    jsonUtils.editJsonField(
-                            ScenarioStateContext.current().getEditableBody(),
-                            propertyPath,
-                            UUID.randomUUID().toString()
-                    )
-            );
+        if ("null" == newValue) {
+            editableBody = jsonUtils.removeJsonField(
+                editableBody,
+                propertyPath
+            )
+        } else if (newValue.matches("\\d* bdd_lib_numbers".toRegex())) {
+            val numOfChars = newValue.split(" ").toTypedArray()[0].toInt()
+            newValue = StringUtils.rightPad("", numOfChars, "1234567890")
+            editableBody = jsonUtils.editJsonField(
+                editableBody,
+                propertyPath,
+                newValue
+            )
+        } else if (newValue.matches("bdd_lib_uuid".toRegex())) {
+            editableBody = jsonUtils.editJsonField(
+                editableBody,
+                propertyPath,
+                UUID.randomUUID().toString()
+            )
         } else {
-            ScenarioStateContext.current().setEditableBody(
-                    jsonUtils.editJsonField(
-                            ScenarioStateContext.current().getEditableBody(),
-                            propertyPath,
-                            newValue
-                    )
-            );
+            editableBody = jsonUtils.editJsonField(
+                editableBody,
+                propertyPath,
+                newValue
+            )
         }
     }
 
@@ -63,11 +60,11 @@ public class WhenRESTManipulationGlue extends BaseRESTExecutionGlue {
      * @param headerValue   Header value
      */
     @When("I set the header {string} to {string}")
-    public void whenISetTheHeaderValueTo(final String header, final String headerValue) {
-        String resolvedHeader = ScenarioStateContext.current().getScenarioContextMap().get(headerValue);
-        if (resolvedHeader == null) {
-            resolvedHeader = headerValue;
+    fun whenISetTheHeaderValueTo(header: String, headerValue: String) {
+        var resolvedHeader = scenarioContextMap[headerValue]
+        if (Objects.isNull(resolvedHeader)) {
+            resolvedHeader = headerValue
         }
-        ScenarioStateContext.current().getHeaderValues().put(header, resolvedHeader);
+        headerValues[header] = resolvedHeader!!
     }
 }
