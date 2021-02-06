@@ -1,3 +1,4 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/00-init/empty.yaml
+      file: 00-init/database-init.yaml
+      relativeToChangelogFile: true

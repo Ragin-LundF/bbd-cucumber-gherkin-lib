@@ -1,8 +1,7 @@
 package com.ragin.bdd.cucumbertests.library.test;
 
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,8 +34,7 @@ public class BodyManipulation {
         return jsonObject.toString();
     }
 
-    @Getter
-    @Setter
+    @Data
     public static class StubBody {
         private String name;
         private List<String> ids;

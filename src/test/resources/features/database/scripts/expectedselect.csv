@@ -1,0 +1,2 @@
+ID,USER_NAME,USER_ID
+1,mytestuser,${json-unit.ignore}
