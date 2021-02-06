@@ -212,6 +212,8 @@ Scenario:
 
 Executes a liquibase script to prepare the database.
 
+See examples under [src/test/resources/features/database/](src/test/resources/features/database/).
+
 #### SQL statement execution
 ```gherkin
 Scenario:
@@ -219,6 +221,8 @@ Scenario:
 ```
 
 Executes an SQL script to prepare/change the database.
+
+See examples under [src/test/resources/features/database/](src/test/resources/features/database/).
 
 ### Then
 #### Database data comparison
@@ -229,6 +233,8 @@ Scenario:
 
 Executes an SQL query from a file and compares the result in CSV format with the contents of the second file.
 The conversion of the database result to CSV is done internally.
+
+See examples under [src/test/resources/features/database/](src/test/resources/features/database/).
 
 ## REST
 The REST API steps can be prepared with some given steps.

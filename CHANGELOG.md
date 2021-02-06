@@ -1,3 +1,11 @@
+# Release 1.27.0
+## Code changes
+The Java code was refactored to Kotlin.
+This should make the code more robust and better maintainable.
+
+## Enhanced tests
+Tests for the database features were added under [src/test/resources/features/database/](src/test/resources/features/database/).
+
 # Release 1.26.0
 
 Small bugfix release for proper mismatch messages of the matchers.

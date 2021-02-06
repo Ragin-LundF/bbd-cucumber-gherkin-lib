@@ -25,14 +25,21 @@ cucumberTest:
 spring:
   datasource:
       platform: h2
-      url: jdbc:h2:mem:testdb;IGNORECASE=true;DATABASE_TO_UPPER=false
+      url: jdbc:h2:mem:testdb;IGNORECASE=true;DATABASE_TO_UPPER=true
       driver-class-name: org.h2.Driver
       username: cucumber
       password: cucumber
 
-#  liquibase:
-#      enabled: true
-#      change-log: classpath:/database/changelog-master.xml
+  jpa:
+    hibernate:
+      use-new-id-generator-mappings: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  liquibase:
+      enabled: true
+      change-log: classpath:/db/changelog/db.changelog-master.yaml
 
 logging.level:
   cucumberTest: info

@@ -1,4 +1,0 @@
-databaseChangeLog:
-  -  preConditions:
-  -  runningAs:
-       username:  liquibase
