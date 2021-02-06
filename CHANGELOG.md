@@ -1,3 +1,51 @@
+# Release 1.28.0
+
+## Proxy support
+This can be useful to use the cucumber tests together with [burp-scanner](https://portswigger.net/burp/vulnerability-scanner).
+
+The proxy can be configured with:
+
+application.properties:
+```properties
+cucumberTest.proxy.host=localhost
+cucumberTest.proxy.port=8866
+```
+
+or
+
+application.yaml:
+```yaml
+cucumberTest:
+  proxy:
+    host: localhost
+    port: 8866
+```
+The host can be an IP or a domain. The port must be higher than 0.
+If a condition is not met, the proxy is not set.
+
+_Default is deactivated._
+
+## Disable SSL verification
+Along with proxy support, it may be necessary to disable SSL validation as well.
+
+This can be configured via:
+
+application.properties:
+```properties
+cucumberTest.ssl.disableCheck=true
+```
+
+or
+
+application.yaml:
+```yaml
+cucumberTest:
+  ssl:
+    disableCheck: true
+```
+
+_Default is false._
+
 # Release 1.27.0
 ## Code changes
 The Java code was refactored to Kotlin.
