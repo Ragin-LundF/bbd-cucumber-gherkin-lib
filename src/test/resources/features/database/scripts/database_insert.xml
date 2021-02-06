@@ -9,7 +9,7 @@
 		<insert tableName="USER">
 			<column name="ID" valueNumeric="1" />
 			<column name="USER_ID" value="1f086281-d28d-4dfa-9cd9-4f609afb0295" />
-			<column name="USER_NAME" value="inserted user" />
+			<column name="USER_NAME" value="liquibase_user" />
 		</insert>
 	</changeSet>
 </databaseChangeLog>
