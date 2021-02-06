@@ -54,8 +54,7 @@ class WhenRESTExecutionGlue(jsonUtils: JsonUtils, restTemplate: TestRestTemplate
      */
     @When("executing an authorized {httpMethod} call to {string} with previously given body")
     fun whenExecutingAuthorizedCallToUriWithPreviouslyGivenBody(httpMethod: HttpMethod, uri: String) {
-        uriPath = uri
-        executeRequest(httpMethod, true)
+        whenExecutingAuthorizedCallToUri(httpMethod, uri)
     }
 
     /**
