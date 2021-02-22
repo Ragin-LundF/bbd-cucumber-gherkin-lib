@@ -8,13 +8,12 @@ import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.stereotype.Service
 import javax.sql.DataSource
 
-@Service
-class DatabaseExecutorService(private val datasource: DataSource, private val jdbcTemplate: JdbcTemplate) {
+class DatabaseExecutorService(private val datasource: DataSource, private val jdbcTemplate: JdbcTemplate) :
+    IDatabaseExecutorService {
     @Value("\${cucumberTest.liquibase.closeConnection:false}")
-    private val closeConnection = false
+    val closeConnection = false
 
     /**
      * Execute Liquibase script
@@ -23,7 +22,7 @@ class DatabaseExecutorService(private val datasource: DataSource, private val jd
      * @throws Exception        Unable to execute liquibase script
      */
     @Throws(Exception::class)
-    fun executeLiquibaseScript(liquibaseScript: String) {
+    override fun executeLiquibaseScript(liquibaseScript: String) {
         val connection = JdbcConnection(datasource.connection)
         try {
             Liquibase(
@@ -49,7 +48,7 @@ class DatabaseExecutorService(private val datasource: DataSource, private val jd
      *
      * @param sql   SQL statements that should be executed
      */
-    fun executeSQL(sql: String) {
+    override fun executeSQL(sql: String) {
         jdbcTemplate.execute(sql)
     }
 
@@ -59,7 +58,7 @@ class DatabaseExecutorService(private val datasource: DataSource, private val jd
      * @param sql   SQL statements that should be executed
      * @return      List with a map per row which contains the result
      */
-    fun executeQuerySQL(sql: String): List<Map<String, Any>> {
+    override fun executeQuerySQL(sql: String): List<Map<String, Any>> {
         return jdbcTemplate.queryForList(sql)
     }
 }

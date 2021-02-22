@@ -1,6 +1,6 @@
 package com.ragin.bdd.cucumber.hooks
 
-import com.ragin.bdd.cucumber.core.DatabaseExecutorService
+import com.ragin.bdd.cucumber.core.IDatabaseExecutorService
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.addJsonIgnoringArrayOrder
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.addJsonIgnoringExtraArrayElements
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.addJsonIgnoringExtraFields
@@ -10,7 +10,7 @@ import io.cucumber.java.Scenario
 import org.apache.commons.logging.LogFactory
 import org.springframework.transaction.annotation.Transactional
 
-open class ResetHooks(private val databaseExecutorService: DatabaseExecutorService) {
+open class ResetHooks(private val databaseExecutorService: IDatabaseExecutorService) {
     companion object {
         private const val RESET_DATABASE_FILE = "database/reset_database.xml"
         private val log = LogFactory.getLog(ResetHooks::class.java)
