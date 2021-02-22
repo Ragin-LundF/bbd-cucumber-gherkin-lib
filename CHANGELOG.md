@@ -1,4 +1,4 @@
-# Release 1.29.0
+# Release 1.29.1
 
 ## Support for database-less applications
 This version introduces support for applications that do not have a database.
