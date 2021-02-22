@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
-import com.ragin.bdd.cucumber.core.DatabaseExecutorService
+import com.ragin.bdd.cucumber.core.IDatabaseExecutorService
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
@@ -17,7 +17,7 @@ import java.util.stream.Collectors
 /**
  * This class contains database related steps.
  */
-open class DatabaseGlue(jsonUtils: JsonUtils, private val databaseExecutorService: DatabaseExecutorService) : BaseCucumberCore(jsonUtils) {
+open class DatabaseGlue(jsonUtils: JsonUtils, private val databaseExecutorService: IDatabaseExecutorService) : BaseCucumberCore(jsonUtils) {
     private val mapper = ObjectMapper()
 
     /**

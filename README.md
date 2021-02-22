@@ -44,6 +44,7 @@ dependencies {
 - [Table of content](#table-of-content)
 - [Support JUnit 5](#support-junit-5)
 - [Base Configuration](#base-configuration)
+  - [Support for database-less applications](#support-for-database-less-applications)
   - [Base token definition](#base-token-definition)
   - [Base URL definition](#base-url-definition)
   - [Proxy support](#proxy-support)
@@ -100,6 +101,55 @@ testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
 ```
 
 # Base Configuration
+
+## Support for database-less applications
+To configure the library to run database-less, it is necessary to set up the following configuration in the `application.yaml` file:
+
+application.properties:
+```properties
+cucumberTest.databaseless=true
+```
+
+or
+
+application.yaml:
+```yaml
+cucumberTest:
+  databaseless: true
+```
+
+If the `databaseless` key is not true or missing, the library tries to instantiate the database related beans.
+
+In some cases it is required to disable the database autoconfiguration of Spring Boot:
+
+
+application.properties:
+```properties
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+```
+
+or
+
+application.yaml:
+```yaml
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+```
+
+or as annotation:
+
+```java
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+@SpringBootApplication
+public class Application {
+  public static void main (String[] args) {
+    ApplicationContext ctx = SpringApplication.run(Application.class, args);
+  }
+}
+```
+
+Please also make sure that the `@ContextConfiguration` annotation does not contain the `DatabaseExecutorService.class`.
 
 ## Base token definition
 To define a default token those two parameters can be set in the properties:
