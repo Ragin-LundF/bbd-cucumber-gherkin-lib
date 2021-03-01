@@ -23,12 +23,6 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'kotlin'
 apply plugin: 'io.spring.dependency-management'
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:2.3.4.RELEASE"
-    }
-}
-
 dependencies {
     api "org.apache.httpcomponents:httpclient"
     api "org.glassfish:javax.json:${versionJavaxJson}"
