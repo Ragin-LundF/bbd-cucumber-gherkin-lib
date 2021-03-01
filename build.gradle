@@ -42,7 +42,7 @@ dependencies {
 
     api "org.apache.commons:commons-text:${versionCommonsText}"
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${versionLiquibase}"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
