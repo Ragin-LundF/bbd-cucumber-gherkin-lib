@@ -15,6 +15,7 @@ import java.io.IOException
  * This class contains HTTP response validations.
  */
 class ThenRESTValidationGlue(jsonUtils: JsonUtils) : BaseCucumberCore(jsonUtils) {
+
     /**
      * Ensure, that the response code is valid
      * @param expectedStatusCode HTTP status code that is expected
