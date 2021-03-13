@@ -1,3 +1,74 @@
+# Release 1.30.0
+## Support for polling APIs
+The polling configuration is automatically reset before each scenario.
+It can be configured via the background or directly in the scenario.
+
+When the expected HTTP status code and JSON structure has been sent as a response, polling will stop.
+This allows an endpoint to be polled until it changes state or fail if the state has not changed during the specified time and retry configuration.
+
+The configuration can be done in to ways.
+
+As a single line configuration:
+```gherkin
+Scenario: Single line configuration
+    Given that a request polls every 1 seconds for 5 times
+```
+
+Or as a multiline configuration that supports to specify one of the configurations in the `Background` and the other in the `Scenario` (or to have it more readable).
+
+```gherkin
+Scenario: Multiline configuration
+    Given that a requests polls every 1 seconds
+    And that a requests polls for 5 times
+```
+
+The `URL`/`URI` and (if required) body have to be preconfigured. Polling itself does simply use previous set body and path definition.
+To execute a request it supports the well known authorized and unauthorized phrases and it supports direct JSON or JSON from file:
+
+Authorized request with JSON response file:
+```gherkin
+Scenario: Authorized request with JSON response file
+  Given that a request polls every 1 seconds for 5 times
+  And that the API path is "/api/v1/polling"
+  When executing an authorized GET poll request until the response code is 200 and the body is equal to file "expected.json"
+```
+
+Unauthorized request with JSON response file:
+```gherkin
+Scenario: Unauthorized request with JSON response file
+  Given that a request polls every 1 seconds for 5 times
+  And that the API path is "/api/v1/polling"
+  When executing a GET poll request until the response code is 200 and the body is equal to file "expected.json"
+```
+
+Authorized request with direct JSON response:
+```gherkin
+Scenario: Authorized request with JSON response file
+  Given that a request polls every 1 seconds for 5 times
+  And that the API path is "/api/v1/polling"
+  When executing an authorized GET poll request until the response code is 200 and the body is equal to
+    """
+    {
+      "message": "SUCCESSFUL"
+    }
+    """
+```
+
+Unauthorized request with direct JSON response:
+```gherkin
+Scenario: Unauthorized request with JSON response file
+  Given that a request polls every 1 seconds for 5 times
+  And that the API path is "/api/v1/polling"
+  When executing a GET poll request until the response code is 200 and the body is equal to
+    """
+    {
+      "message": "SUCCESSFUL"
+    }
+    """
+```
+
+Examples can be found at [src/test/resources/features/polling/](src/test/resources/features/polling/).
+
 # Release 1.29.1
 
 ## Support for database-less applications

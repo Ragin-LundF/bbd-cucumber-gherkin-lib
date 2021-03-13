@@ -17,6 +17,7 @@ object ScenarioStateContext {
     var userTokenMap: HashMap<String, String> = HashMap()
     private var jsonPathOptions: MutableList<Option> = ArrayList(0)
     var executionTime = -1L
+    var polling = Polling()
 
     /**
      * Add IGNORING_EXTRA_ARRAY_ITEMS option to the jsonPathOptions
@@ -51,6 +52,7 @@ object ScenarioStateContext {
         headerValues = HashMap()
         jsonPathOptions = ArrayList(0)
         bearerToken = defaultBearerToken
+        polling = Polling()
     }
 
     fun getJsonPathOptions(): List<Option> {
@@ -64,5 +66,10 @@ object ScenarioStateContext {
     @JvmStatic
     fun current() : ScenarioStateContext {
         return this
+    }
+
+    class Polling {
+        var pollEverySeconds : Long = 0
+        var numberOfPolls : Int = -1
     }
 }

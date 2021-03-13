@@ -1,19 +1,28 @@
 package com.ragin.bdd.cucumber.glue
 
+import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.ParameterType
+import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
+import org.apache.commons.logging.LogFactory
+import org.junit.Assert
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpMethod
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 /**
  * This class contains common `When` execution of REST related steps.
  */
 class WhenRESTExecutionGlue(jsonUtils: JsonUtils, restTemplate: TestRestTemplate) : BaseRESTExecutionGlue(jsonUtils, restTemplate) {
+    companion object {
+        private val log = LogFactory.getLog(ThenRESTValidationGlue::class.java)
+    }
+
     /**
      * Execute a {httpMethod} call with previously given URI and body
      *
@@ -261,6 +270,98 @@ class WhenRESTExecutionGlue(jsonUtils: JsonUtils, restTemplate: TestRestTemplate
     @When("executing a {httpMethod} call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingCallToUriWithDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(dataTable, httpMethod, false)
+    }
+
+    /**
+     * Execute an authorized poll request, which has to be preconfigured until the response contains
+     * the status and response message from a file.
+     *
+     * @param httpMethod HTTP Method
+     * @param expectedStatusCode the expected HTTP status code
+     * @param pathToFile describes the path to the expected JSON response file
+     */
+    @Then("executing an authorized {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
+    @Throws(IOException::class)
+    fun whenExecutingAuthorizedPollingUntilResponseIsEqualToFile(httpMethod: HttpMethod,
+                                                                 expectedStatusCode: Int,
+                                                                 pathToFile: String
+    ) {
+        val expectedBody = readFile(pathToFile)
+        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
+    }
+
+    /**
+     * Execute a poll request, which has to be preconfigured until the response contains
+     * the status and response message from a file.
+     *
+     * @param httpMethod HTTP Method
+     * @param expectedStatusCode the expected HTTP status code
+     * @param pathToFile describes the path to the expected JSON response file
+     */
+    @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
+    @Throws(IOException::class)
+    fun whenExecutingPollingUntilResponseIsEqualToFile(httpMethod: HttpMethod,
+                                                       expectedStatusCode: Int,
+                                                       pathToFile: String
+    ) {
+        val expectedBody = readFile(pathToFile)
+        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
+    }
+
+    /**
+     * Execute an authorized poll request, which has to be preconfigured until the response contains
+     * the status and JSON response message.
+     *
+     * @param httpMethod HTTP Method
+     * @param expectedStatusCode the expected HTTP status code
+     * @param expectedBody describes the expected JSON body
+     */
+    @Then("executing an authorized {httpMethod} poll request until the response code is {int} and the body is equal to")
+    fun whenExecutingAuthorizedPollingUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String) {
+        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
+    }
+
+    /**
+     * Execute a poll request, which has to be preconfigured until the response contains
+     * the status and JSON response message.
+     *
+     * @param httpMethod HTTP Method
+     * @param expectedStatusCode the expected HTTP status code
+     * @param expectedBody describes the expected JSON body
+     */
+    @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to")
+    fun whenExecutingPollingUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String) {
+        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
+    }
+
+    private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String, authorized: Boolean) {
+        Assert.assertNotEquals("Please configure max number of polls!",
+            -1,
+            ScenarioStateContext.polling.numberOfPolls
+        )
+
+        var repeatLoop = 0
+        for (i in 1..ScenarioStateContext.polling.numberOfPolls) {
+            executeRequest(httpMethod, authorized)
+            try {
+                assertJSONisEqual(
+                    expectedBody,
+                    ScenarioStateContext.latestResponse!!.body
+                )
+                Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
+                repeatLoop = i
+                break
+            } catch (error: AssertionError) {
+                TimeUnit.SECONDS.sleep(ScenarioStateContext.polling.pollEverySeconds)
+            }
+        }
+
+        assertJSONisEqual(
+            expectedBody,
+            ScenarioStateContext.latestResponse!!.body
+        )
+        Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
+        log.info("Polling finished after $repeatLoop repeats")
     }
 
     /**

@@ -172,4 +172,20 @@ class GivenRESTStateGlue(jsonUtils: JsonUtils) : BaseCucumberCore(jsonUtils) {
             ScenarioStateContext.bearerToken = bearerFromContext
         }
     }
+
+    @Given("that a requests polls every {int} seconds")
+    fun givenPollingSeconds(seconds: Long) {
+        ScenarioStateContext.polling.pollEverySeconds = seconds
+    }
+
+    @Given("that a requests polls for {int} times")
+    fun givenPollingNumberOfPolls(numberOfPolls: Int) {
+        ScenarioStateContext.polling.numberOfPolls = numberOfPolls
+    }
+
+    @Given("that a request polls every {int} seconds for {int} times")
+    fun givenPollingSecondsAndNumberOfPolls(seconds: Long, numberOfPolls: Int) {
+        ScenarioStateContext.polling.pollEverySeconds = seconds
+        ScenarioStateContext.polling.numberOfPolls = numberOfPolls
+    }
 }
