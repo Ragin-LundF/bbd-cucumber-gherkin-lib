@@ -14,7 +14,7 @@ Read also about [Anti-Patterns](https://cucumber.io/docs/guides/anti-patterns/) 
 See [Changelog](CHANGELOG.md) for release information.
 
 The library tests with itself and with a dummy application in the test sources to have a lot of examples for the usage.
-There you can also find custom matcher for JSON-Assert.
+There you can also find custom-matcher for JSON-Assert.
 See [src/test](src/test) folder for examples.
 
 ## How to integrate
@@ -38,25 +38,20 @@ dependencies {
 }
 ```
 
+### Configuration
+
+The library supports some additional configurations to set up, for example, default tokens, base URL settings, proxy support, and SSL handling.
+
+To learn more, read the [docs/configuration.md](docs/configuration.md) Guide.
+
 # Table of content
 
 - [Cucumber REST Gherkin library](#cucumber-rest-gherkin-library)
 - [Table of content](#table-of-content)
-- [Support JUnit 5](#support-junit-5)
-- [Base Configuration](#base-configuration)
-  - [Support for database-less applications](#support-for-database-less-applications)
-  - [Base token definition](#base-token-definition)
-  - [Base URL definition](#base-url-definition)
-  - [Proxy support](#proxy-support)
-  - [Disable SSL verification](#disable-ssl-verification)
 - [Basic Concept](#basic-concept)
+- [JSONUnit extensions for better testing of JSON responses](#jsonunit-extensions-for-better-testing-of-json-responses)
 - [Steps](#steps)
   - [Database](#database)
-    - [Given](#given)
-      - [Liquibase script initialization](#liquibase-script-initialization)
-      - [SQL statement execution](#sql-statement-execution)
-    - [Then](#then)
-      - [Database data comparison](#database-data-comparison)
   - [REST](#rest)
     - [JSON-Unit](#json-unit)
       - [Adding own pattern for `${json-unit.matches:isValidDate}`](#adding-own-pattern-for-json-unitmatchesisvaliddate)
@@ -87,176 +82,32 @@ dependencies {
       - [Validate response HTTP code and body together with a JSON file](#validate-response-http-code-and-body-together-with-a-json-file)
       - [Validate only special fields of the response body](#validate-only-special-fields-of-the-response-body)
       - [Read from Response and set it to a `Feature` context](#read-from-response-and-set-it-to-a-feature-context)
-- [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher)
-  - [Simple matcher](#simple-matcher)
-  - [Matcher with parameter](#matcher-with-parameter)
-  
-# Support JUnit 5
-To support JUnit 5 add the `org.junit.vintage:junit-vintage-engine` dependency to your project.
-This allows JUnit 5 to execute JUnit 3 and 4 tests.
 
-```groovy
-testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
-    because("allows JUnit 3 and JUnit 4 tests to run")
-}
-```
-
-# Base Configuration
-
-## Support for database-less applications
-To configure the library to run database-less, it is necessary to set up the following configuration in the `application.yaml` file:
-
-application.properties:
-```properties
-cucumberTest.databaseless=true
-```
-
-or
-
-application.yaml:
-```yaml
-cucumberTest:
-  databaseless: true
-```
-
-If the `databaseless` key is not true or missing, the library tries to instantiate the database related beans.
-
-In some cases it is required to disable the database autoconfiguration of Spring Boot:
-
-
-application.properties:
-```properties
-spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-```
-
-or
-
-application.yaml:
-```yaml
-spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-```
-
-or as annotation:
-
-```java
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-@SpringBootApplication
-public class Application {
-  public static void main (String[] args) {
-    ApplicationContext ctx = SpringApplication.run(Application.class, args);
-  }
-}
-```
-
-Please also make sure that the `@ContextConfiguration` annotation does not contain the `DatabaseExecutorService.class`.
-
-## Base token definition
-To define a default token those two parameters can be set in the properties:
-
-`application.properties`:
-```properties
-cucumberTest.authorization.bearerToken.default=default_token_for_authorized_endpoints 
-cucumberTest.authorization.bearerToken.noscope=second_token_for_alternatives
-```
-
-or
-
-`application.yaml`:
-```yaml
-cucumberTest:
-  authorization:
-    bearerToken:
-      default: "default_token_for_authorized_endpoints" 
-      noscope: "second_token_for_alternatives"
-```
-
-
-## Base URL definition
-If the test library should be used for various tests in an outsourced test repository.
-
-It is possible to overwrite the `protocol`, `host` and `port` in the `application.yaml`/`application.properties`:
-
-application.properties:
-```properties
-cucumberTest.server.protocol=http
-cucumberTest.server.host=localhost
-cucumberTest.server.port=80
-```
-
-or
-
-application.yaml:
-```yaml
-cucumberTest:
-    server:
-      protocol: "http"
-      host: "localhost"
-      port: 80
-```
-
-_All parameters are optional. If nothing is being defined, it uses the default `http://localhost:<LocalServerPort>`._
-
-## Proxy support
-This can be useful to use the cucumber tests together with [burp-scanner](https://portswigger.net/burp/vulnerability-scanner).
-
-The proxy can be configured with:
-
-application.properties:
-```properties
-cucumberTest.proxy.host=localhost
-cucumberTest.proxy.port=8866
-```
-
-or
-
-application.yaml:
-```yaml
-cucumberTest:
-  proxy:
-    host: localhost
-    port: 8866
-```
-The host can be an IP or a domain. The port must be higher than 0.
-If a condition is not met, the proxy is not set.
-
-_Default is deactivated._
-
-## Disable SSL verification
-Along with proxy support, it may be necessary to disable SSL validation as well.
-
-This can be configured via:
-
-application.properties:
-```properties
-cucumberTest.ssl.disableCheck=true
-```
-
-or
-
-application.yaml:
-```yaml
-cucumberTest:
-  ssl:
-    disableCheck: true
-```
-
-_Default is false._
 
 # Basic Concept
 
 This library defines a set of sentences and tries to harmonize them and provide a context-related beginning of sentences.
 This is very helpful for IDEs with code completion.
 
-| Step | Sentence start | Main usage |
-| --- | --- | --- |
-| `Given` | `that` | Prepare something |
-| `When` | `executing a` or `I set` | Do something |
-| `Then` | `I ensure` or `I store` | Validate something |
+| Step    | Sentence start           | Main usage         |
+| ---     | ---                      | ---                |
+| `Given` | `that`                   | Prepare something  |
+| `When`  | `executing a` or `I set` | Do something       |
+| `Then`  | `I ensure` or `I store`  | Validate something |
 
-There are some basic examples in the [src/test](src/test) directory.
+There are a lot of examples in the [src/test](src/test) directory.
 
+## JSONUnit extensions for better testing of JSON responses
+
+To compare and validate JSON responses, JSONUnit is used.
+
+Also included in the library are some extensions that make it possible to write more readable validations in JSON for example:
+
+- Date validator
+- UUID validator
+- ...
+
+To learn more about JSONUnit integration and the ability to extend and write your own validators, see [docs/json_matcher.md](docs/json_matcher.md).
 
 # Steps
 It is a best-practice to not use syntax like this:
@@ -280,60 +131,16 @@ Scenario:
 
 This sounds much better, didn't it?
 
-
 ## Database
-Before every Scenario the library looks for a `database/reset_database.xml` file (`$projectDir/src/test/resources/database/reset_database.xml`).
-This file has to be a [Liquibase](https://www.liquibase.org) definition, which can contain everything to reset a database (`truncate`, `delete`, `insert`...).
 
-The executor of the Liquibase scripts has sometimes problems with H2 memory databases, that the H2 connection is closed after the JDBC connection is closed.
+To enable end-to-end testing from the REST API to the database, the library supports various functionalities for database operations.
 
-This problem can now be solved by setting the following properties:
+For example:
+- Execution of Liquibase scripts.
+- Validation of SQL select results
 
-```properties
-cucumberTest.liquibase.closeConnection=false
-```
-or
-```yaml
-cucumberTest:
-    liquibase:
-      closeConnection: false
-```
+[docs/database.md](docs/database.md)
 
-The default value is `false`, which means, that the connection will not be closed.
-
-
-### Given
-#### Liquibase script initialization
-```gherkin
-Scenario:
-  Given that the database was initialized with the liquibase file {string}
-```
-
-Executes a liquibase script to prepare the database.
-
-See examples under [src/test/resources/features/database/](src/test/resources/features/database/).
-
-#### SQL statement execution
-```gherkin
-Scenario:
-    Given that the SQL statements from the SQL file {string} was executed
-```
-
-Executes an SQL script to prepare/change the database.
-
-See examples under [src/test/resources/features/database/](src/test/resources/features/database/).
-
-### Then
-#### Database data comparison
-```gherkin
-Scenario:
-  Then I ensure that the result of the query of the file {string} is equal to the CSV file {string}
-```
-
-Executes an SQL query from a file and compares the result in CSV format with the contents of the second file.
-The conversion of the database result to CSV is done internally.
-
-See examples under [src/test/resources/features/database/](src/test/resources/features/database/).
 
 ## REST
 The REST API steps can be prepared with some given steps.
@@ -351,7 +158,7 @@ The library contains already two matchers:
 - `${json-unit.matches:isEqualToScenarioContext}create_id` which compares the content of the actual JSON to a variable in the ScenarioContext.
   The context has to be set before with the [I store the string of the field "<field>" in the context "<context-id>" for later usage](#read-from-response-and-set-it-to-a-feature-context) sentence.
 
-There are more details about how to extend it at the [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher) section.
+There are more details about how to extend it at the [Extension of JSON Unit Matcher](docs/json_matcher.md) section.
 
 For the comparison of the results the library uses `JSON` files, which can be enhanced with [JSON Unit](https://github.com/lukas-krecan/JsonUnit) to validate dynamic responses with things like
 - Regex compare
@@ -837,122 +644,3 @@ This can be used to write the value of a JSON element of the response to a conte
 
 Use this with caution, because at the point where the element is reused, the `Scenario` is hard coupled to this `Step` which ultimately makes it not executable as single `Step`.
 On the other hand, this can be useful to support cross-`Features` testing with dynamic values for end-to-end testing.
-
-# Extension of JSON Unit Matcher
-
-It is possible to extend the JSON matchers by creating a new matcher and extending the `org.hamcrest.BaseMatcher` class and implementing the `com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher` interface.
-
-After they are created, you have to add them to the `@ContextConfiguration` classes definition.
-See [CreateContextHooks.java](src/test/java/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.java) for an example how the configuration should look like.
-
-## Simple matcher
-A simple matcher to validate the current object as it is, can look like this:
-
-```java
-import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
-import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.springframework.stereotype.Component;
-
-@Component
-public class DividableByTwoMatcher extends BaseMatcher<Object> implements BddCucumberJsonMatcher {
-    public boolean matches(Object item) {
-        if (StringUtils.isNumeric(String.valueOf(item))) {
-            // never do that, but it should show something ;)
-            return Integer.parseInt((String) item) % 2 == 0;
-        }
-        return false;
-    }
-
-    @Override
-    public void describeTo(Description description) {
-        // nothing to describe here
-    }
-
-    @Override
-    public String matcherName() {
-        return "isDividableByTwo";
-    }
-
-    @Override
-    public Class<? extends BaseMatcher<?>> matcherClass() {
-        return this.getClass();
-    }
-}
-```
-
-Now you can use this matcher with the following statement in your expected JSON:
-
-```json
-{
-  "number": "${json-unit.matches:isDividableByTwo}"
-}
-```
-
-The `matcherName()` result is now part of the `json-unit.matches:` definition.
-
-## Matcher with parameter
-
-If you need parameter, you can implement also the `net.javacrumbs.jsonunit.core.ParametrizedMatcher` interface.
-If there are several arguments, you can pass the arguments as JSON to the matcher and parse it here.
- 
-```java
-import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher;
-import net.javacrumbs.jsonunit.core.ParametrizedMatcher;
-import org.apache.commons.lang3.StringUtils;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.springframework.stereotype.Component;
-
-@Component
-public class DividableByNumberMatcher extends BaseMatcher<Object> implements ParametrizedMatcher, BddCucumberJsonMatcher {
-    private String parameter;
-
-    public boolean matches(Object item) {
-        if (StringUtils.isNumeric(String.valueOf(item))) {
-            // never do that, but it should show something ;)
-            return Integer.parseInt((String) item) % Integer.parseInt(parameter) == 0;
-        }
-        return false;
-    }
-
-    @Override
-    public void describeTo(Description description) {
-        // nothing to describe here
-    }
-
-    @Override
-    public String matcherName() {
-        return "isDividableByNumber";
-    }
-
-    @Override
-    public Class<? extends BaseMatcher<?>> matcherClass() {
-        return this.getClass();
-    }
-
-    @Override
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
-    }
-}
-```
-
-To pass the parameter to the matcher, the JSON has to look like this:
-
-
-```json
-{
-  "number": "${json-unit.matches:isDividableByNumber}5"
-}
-```
-
-If you want to pass a JSON, you have to do it with single quotes:
-
-
-```json
-{
-  "number": "${json-unit.matches:isDividableByNumber}{\"myarg1\": \"A\"}"
-}
-```
