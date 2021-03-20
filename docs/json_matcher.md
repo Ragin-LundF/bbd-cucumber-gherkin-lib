@@ -1,10 +1,45 @@
-# JSONUnit Matcher support
+# JSON-Unit Matcher support
 
-- [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher)
+- [JSON-Unit](#json-unit)
+- [Extension of JSON-Unit Matcher](#extension-of-json-unit-matcher)
     - [Simple matcher](#simple-matcher)
     - [Matcher with parameter](#matcher-with-parameter)
 
-## Extension of JSON Unit Matcher
+
+## JSON-Unit
+The library contains already some matchers:
+- `${json-unit.matches:isValidDate}` which checks, if the date can be a valid date by parsing it into date formats
+- `${json-unit.matches:isValidUUID}` which checks, if the string is a valid UUID
+- `${json-unit.matches:isEqualToScenarioContext}create_id` which compares the content of the actual JSON to a variable in the ScenarioContext.
+  The context has to be set before with the [I store the string of the field "<field>" in the context "<context-id>" for later usage](../README.md#read-from-response-and-set-it-to-a-feature-context) sentence.
+
+There are more details about how to extend it at the [Extension of JSON Unit Matcher](#extension-of-json-unit-matcher) section.
+
+For the comparison of the results the library uses `JSON` files, which can be enhanced with [JSON Unit](https://github.com/lukas-krecan/JsonUnit) to validate dynamic responses with things like
+- Regex compare
+- Ignoring values
+- Ignoring elements
+- Ignoring paths
+- Type placeholders
+- Custom matchers
+- ...
+
+**_ATTENTION: Only parameterized custom matchers or bdd lib-matchers can be used for field validation!_**
+
+#### Adding own pattern for `${json-unit.matches:isValidDate}`
+
+To add own `DateTimeFormatter` patterns to extend the `${json-unit.matches:isValidDate}` range
+a new class is required that implements the interface `BddCucumberDateTimeFormat`.
+The method `pattern()` must return the date patterns as `List<DateTimeFormatter>`.
+
+To register this custom class it is necessary to add it `@ContextConfiguration` `classes` definition.
+
+Example:
+
+- [Configuration context](../src/test/java/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.java)
+- [Test feature](../src/test/resources/features/body_validation/field_compare.feature)
+
+## Extension of JSON-Unit Matcher
 
 It is possible to extend the JSON matchers by creating a new matcher and extending the `org.hamcrest.BaseMatcher` class and implementing the `com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher` interface.
 
