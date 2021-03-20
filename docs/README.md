@@ -28,6 +28,18 @@ This documentation discusses the possibilities of sending HTTP requests using di
 
 [httpmethod_sentences.md](httpmethod_sentences.md)
 
+## Advanced JSON Validator configuration
+
+Partly there is a requirement to be more flexible with JSON responses, such as:
+
+- Ignore additional fields in the response
+- Ignore sorting of arrays
+- Ignore additional array elements
+
+This can be achieved using annotations or sentences.
+
+[json_validation_configuration.md](json_validation_configuration.md)
+
 ## JSON Matcher
 
 Answers can be validated with the help of JSONUnit.

@@ -66,14 +66,12 @@ To learn more, read the [docs/configuration.md](docs/configuration.md) Guide.
       - [Set a URI path for later execution](#set-a-uri-path-for-later-execution)
       - [Set a body from JSON file for later execution](#set-a-body-from-json-file-for-later-execution)
       - [Set a body directly for later execution](#set-a-body-directly-for-later-execution)
-      - [Configure the JSON compare to ignore extra elements in arrays](#configure-the-json-compare-to-ignore-extra-elements-in-arrays)
-      - [Configure the JSON compare to ignore the order of arrays](#configure-the-json-compare-to-ignore-the-order-of-arrays)
-      - [Configure the JSON compare to ignore extra fields](#configure-the-json-compare-to-ignore-extra-fields)
     - [When](#when)
       - [Header manipulation](#header-manipulation)
       - [Body manipulation](#body-manipulation)
       - [Execute requests](#execute-requests)
     - [Then](#then-1)
+      - [Additional validation configuration](#additional-validation-configuration)
       - [Validate execution time of requests](#validate-execution-time-of-requests)
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
@@ -430,47 +428,6 @@ Scenario:
 This sets the JSON body for later execution.
 It is required to use this `Given` step in cases when it is necessary to manipulate e.g. dynamic elements in the URI.
 
-#### Configure the JSON compare to ignore extra elements in arrays
-```gherkin
-Scenario:
-  Given that the response JSON can contain arrays with extra elements
-```
-
-_It is also possible to use the `@bdd_lib_json_ignore_new_array_elements` annotation on `Feature` or `Scenario` level._
-
-
-With this sentence or annotation, the JSON comparison will ignore new array elements.
-
-See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
-
-
-#### Configure the JSON compare to ignore the order of arrays
-```gherkin
-Scenario:
-  Given that the response JSON can contain arrays in a different order
-```
-
-_It is also possible to use the `@bdd_lib_json_ignore_array_order` annotation on `Feature` or `Scenario` level._
-
-
-With this sentence or annotation, the JSON comparison will ignore the order of arrays.
-
-See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
-
-
-#### Configure the JSON compare to ignore extra fields
-```gherkin
-Scenario:
-  Given that the response JSON can contain extra fields
-```
-
-_It is also possible to use the `@bdd_lib_json_ignore_extra_fields` annotation on `Feature` or `Scenario` level._
-
-
-With this sentence or annotation, the JSON comparison will ignore new/not defined fields in the response.
-
-See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
-
 
 ### When
 The paths that are used here can be shortened by set a base URL path with [Set base path for URLs](#set-base-path-for-urls) with a `Given` Step before.
@@ -515,6 +472,19 @@ This reserved word creates a random uuid for the field.
 A list and description of sentences to execute a request can be found at [docs/httpmethod_sentences.md](docs/httpmethod_sentences.md).
 
 ### Then
+
+#### Additional validation configuration
+
+Partly there is a requirement to be more flexible with JSON responses, such as:
+
+- Ignore additional fields in the response
+- Ignore sorting of arrays
+- Ignore additional array elements
+
+This can be achieved using annotations or sentences.
+
+[docs/json_validation_configuration.md](docs/json_validation_configuration.md)
+
 
 #### Validate execution time of requests
 ```gherkin
