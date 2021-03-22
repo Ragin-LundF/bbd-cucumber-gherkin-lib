@@ -119,6 +119,12 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
         } else {
             uriPath
         }
+
+        val resolvedUri = scenarioContextMap[path]
+        if (resolvedUri != null) {
+            path = resolvedUri
+        }
+
         path = replacePathPlaceholders(path)
 
         // Prepare headers

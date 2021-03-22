@@ -89,7 +89,6 @@ Feature: Multiple resources
     When executing an authorized POST call with previously given URI and body
     Then I ensure that the response code is 201 and the body is equal to the file "responses/response.json"
 
-
   Scenario Outline: Execute API calls to endpoint with dynamic resources and manipulate them with the context from static keys
     Given that the context contains the key "resourceId" with the value "<resource>"
         * that the context contains the key "subResourceId" with the value "<subresource>"
@@ -109,3 +108,10 @@ Feature: Multiple resources
     | resource | subresource |
     | abc-def  | ghi-jkl     |
     | ghj-oid  | jks-dfg     |
+
+  Scenario: Execute API call to endpoint which comes from the context
+    Given that the context contains the key "${URL}" with the value "/api/v1/abc-def/ghi-jkl"
+    And that the API path is "${URL}"
+    When executing an authorized POST call with previously given URI and body
+    Then I ensure that the response code is 201 and the body is equal to the file "responses/response.json"
+

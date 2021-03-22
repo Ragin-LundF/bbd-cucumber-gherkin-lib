@@ -1,3 +1,16 @@
+# Release 1.31.0
+## Supports dynamic URL's
+This version supports the usage of `ScenarioContext` variables for all URI parameters.
+
+Now it is allowed to write sentences like:
+
+```gherkin
+Scenario: Use dynamic URL
+  Given that the context contains the following 'key' and 'value' pairs
+    | ${MY_DYNAMIC_URL} | https://google.com |
+  And that the API path is "${MY_DYNAMIC_URL}"
+```
+
 # Release 1.30.0
 ## Support for polling APIs
 The polling configuration is automatically reset before each scenario.
