@@ -3,7 +3,8 @@ Feature: This test was ignored
 
   Scenario: Unauthorized GET call with direct API path should be rejected with a 401 error
     When executing a GET call to "/api/v1/unauthorized"
-    Then I ensure that the status code of the response is 401
+    # this fails if @ignore tag was ignored
+    Then I ensure that the status code of the response is 200
     And I ensure that the body of the response is equal to
     """
     {

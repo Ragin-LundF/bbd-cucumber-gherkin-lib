@@ -40,6 +40,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
 
@@ -51,6 +52,7 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok:${versionLombok}"
     testAnnotationProcessor "org.projectlombok:lombok:${versionLombok}"
     testImplementation "com.h2database:h2:${versionH2}"
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
@@ -187,6 +189,7 @@ task cucumber(group: "verification") {
                     '-p', 'html:'+baseReportDir+'cucumber-html',
                     '-p', 'junit:'+baseReportDir+'cucumber-junit.xml',
                     '-p', 'json:'+baseReportDir+'cucumber-json.json',
+                    '--tags', 'not @ignore',
                     'src/test/resources/features'
             ]
         }
@@ -202,6 +205,7 @@ jacocoTestReport {
         html.enabled true
     }
 }
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"

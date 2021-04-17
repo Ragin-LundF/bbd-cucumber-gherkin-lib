@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.glue
 
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.utils.JsonUtils
@@ -12,7 +13,10 @@ import java.util.*
 /**
  * This class contains steps to edit the test state.
  */
-class GivenRESTStateGlue(jsonUtils: JsonUtils) : BaseCucumberCore(jsonUtils) {
+class GivenRESTStateGlue(
+    jsonUtils: JsonUtils,
+    bddProperties: BddProperties
+) : BaseCucumberCore(jsonUtils, bddProperties) {
     @Value("\${cucumberTest.authorization.bearerToken.noscope:none}")
     private val noScopeBearerToken: String? = null
 
