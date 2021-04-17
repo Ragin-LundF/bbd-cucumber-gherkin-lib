@@ -117,8 +117,8 @@ it doesn't make sense to copy and maintain it in every feature.
 By defining it in the `application` file, it can be defined once and used everywhere.
 
 For an example, please have a look at:
-- Configuration: [application.yml](src/test/resources/application.yml)
-- Test: [global_config/global_config.feature](src/test/resources/features/global_config/global_config.feature)
+- Configuration: [application.yml](../src/test/resources/application.yml)
+- Test: [global_config/global_config.feature](../src/test/resources/features/global_config/global_config.feature)
 
 
 ### Base URL definition
