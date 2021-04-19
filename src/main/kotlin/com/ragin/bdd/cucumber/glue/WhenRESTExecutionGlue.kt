@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.glue
 
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
@@ -18,7 +19,11 @@ import java.util.concurrent.TimeUnit
 /**
  * This class contains common `When` execution of REST related steps.
  */
-class WhenRESTExecutionGlue(jsonUtils: JsonUtils, restTemplate: TestRestTemplate) : BaseRESTExecutionGlue(jsonUtils, restTemplate) {
+class WhenRESTExecutionGlue(
+    jsonUtils: JsonUtils,
+    bddProperties: BddProperties,
+    restTemplate: TestRestTemplate
+) : BaseRESTExecutionGlue(jsonUtils, bddProperties, restTemplate) {
     companion object {
         private val log = LogFactory.getLog(ThenRESTValidationGlue::class.java)
     }

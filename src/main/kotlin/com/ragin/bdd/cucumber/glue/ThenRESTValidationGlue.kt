@@ -1,6 +1,7 @@
 package com.ragin.bdd.cucumber.glue
 
 import com.jayway.jsonpath.JsonPath
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.executionTime
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.latestResponse
@@ -14,8 +15,10 @@ import java.io.IOException
 /**
  * This class contains HTTP response validations.
  */
-class ThenRESTValidationGlue(jsonUtils: JsonUtils) : BaseCucumberCore(jsonUtils) {
-
+class ThenRESTValidationGlue(
+    jsonUtils: JsonUtils,
+    bddProperties: BddProperties
+) : BaseCucumberCore(jsonUtils, bddProperties) {
     /**
      * Ensure, that the response code is valid
      * @param expectedStatusCode HTTP status code that is expected

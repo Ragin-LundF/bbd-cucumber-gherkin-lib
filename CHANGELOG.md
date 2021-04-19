@@ -1,3 +1,33 @@
+# Release 1.32.0
+# Support for predefined ScenarioContext values
+In order to predefine some global `ScenarioContext` values outside the gherkin definition,
+it is now possible to add them to the `application.yaml`/`application.properties` file.
+
+The key `cucumberTests.scenario-context` allows to define a set of key/value pairs for the `ScenarioContext` map:
+
+application.yaml
+```yaml
+cucumberTests:
+  scenario-context:
+    CTX_PRE_DEFINED_USER: Pre Defined
+    CTX_PRE_DEFINED_FIRST_ID: abcdefg
+```
+
+application.properties
+```properties
+cucumberTests.scenario-context.CTX_PRE_DEFINED_USER=Pre Defined
+cucumberTests.scenario-context.CTX_PRE_DEFINED_FIRST_ID=abcdefg
+```
+
+If many tests require the same data over and over again,
+it doesn't make sense to copy and maintain it in every feature.
+
+By defining it in the `application` file, it can be defined once and used everywhere.
+
+For an example, please have a look at:
+- Configuration: [application.yml](src/test/resources/application.yml)
+- Test: [global_config/global_config.feature](src/test/resources/features/global_config/global_config.feature)
+
 # Release 1.31.0
 ## Supports dynamic URL's
 This version supports the usage of `ScenarioContext` variables for all URI parameters.
