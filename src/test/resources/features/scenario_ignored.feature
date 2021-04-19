@@ -14,7 +14,7 @@ Feature: Some scenarios are ignored
   @ignore
   Scenario: Ignored test
     When executing a GET call to "/api/v1/unauthorized"
-    Then I ensure that the status code of the response is 401
+    Then I ensure that the status code of the response is 200
     And I ensure that the body of the response is equal to
     """
     {

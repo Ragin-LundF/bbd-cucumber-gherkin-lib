@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.glue
 
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
@@ -16,7 +17,6 @@ import org.apache.http.HttpHost
 import org.apache.http.conn.ssl.NoopHostnameVerifier
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
@@ -32,8 +32,11 @@ import java.io.IOException
 import java.net.Proxy
 import javax.annotation.PostConstruct
 
-
-abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTemplate: TestRestTemplate) : BaseCucumberCore(jsonUtils) {
+abstract class BaseRESTExecutionGlue(
+    jsonUtils: JsonUtils,
+    bddProperties: BddProperties,
+    private val restTemplate: TestRestTemplate
+) : BaseCucumberCore(jsonUtils, bddProperties) {
     companion object {
         protected const val PLACEHOLDER = "none"
     }
@@ -41,30 +44,16 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
     @LocalServerPort
     protected var port = 0
 
-    @Value("\${cucumberTest.server.protocol:http}")
-    private val serverProtocol: String? = null
-
-    @Value("\${cucumberTest.server.host:localhost}")
-    private val serverHost: String? = null
-
-    @Value("\${cucumberTest.server.port:none}")
-    private val serverPort: String? = null
-
-    @Value("\${cucumberTest.proxy.host:null}")
-    private val proxyHost: String? = null
-
-    @Value("\${cucumberTest.proxy.port:-1}")
-    private val proxyPort: Int? = null
-
-    @Value("\${cucumberTest.ssl.disableCheck:false}")
-    private val sslDisableCheck: Boolean = false
-
     protected fun setLatestResponse(latestResponse: ResponseEntity<String>?) {
         ScenarioStateContext.latestResponse = latestResponse
     }
 
     @PostConstruct
     fun init() {
+        // init ScenarioContext
+        bddProperties.scenarioContext?.let { ScenarioStateContext.scenarioContextMap.putAll(it) }
+        setDefaultBearerToken(bddProperties.authorization?.bearerToken?.default!!)
+
         // https://stackoverflow.com/questions/16748969/java-net-httpretryexception-cannot-retry-due-to-server-authentication-in-strea
         // https://github.com/spring-projects/spring-framework/issues/14004
         restTemplate.restTemplate.requestFactory = createRequestFactory()
@@ -86,11 +75,15 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
     protected fun createHttpClient() : CloseableHttpClient {
         val httpClientBuilder = HttpClientBuilder.create()
 
-        if (sslDisableCheck) {
+        if (bddProperties.ssl?.disableCheck!!) {
             httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier())
         }
-        if (! StringUtils.isEmpty(proxyHost) && proxyPort!! > 0) {
-            httpClientBuilder.setProxy(HttpHost(proxyHost, proxyPort, Proxy.Type.HTTP.name))
+        if (! StringUtils.isEmpty(bddProperties.proxy?.host) && bddProperties.proxy?.port!! > 0) {
+            httpClientBuilder.setProxy(HttpHost(
+                bddProperties.proxy.host,
+                bddProperties.proxy.port,
+                Proxy.Type.HTTP.name
+            ))
         }
         return httpClientBuilder.build()
     }
@@ -176,13 +169,16 @@ abstract class BaseRESTExecutionGlue(jsonUtils: JsonUtils, private val restTempl
             return path
         }
         val basePath = StringBuilder()
-        basePath.append(serverProtocol)
-        basePath.append("://")
-        basePath.append(serverHost)
-        if (PLACEHOLDER == serverPort) {
-            basePath.append(":").append(port)
-        } else if (serverPort != null && serverPort.trim { it <= ' ' } != "") {
-            basePath.append(":").append(serverPort)
+
+        if (bddProperties.server != null) {
+            basePath.append(bddProperties.server.protocol)
+            basePath.append("://")
+            basePath.append(bddProperties.server.host)
+            if (PLACEHOLDER == bddProperties.server.port) {
+                basePath.append(":").append(port)
+            } else if (bddProperties.server.port != null && bddProperties.server.port.trim { it <= ' ' } != "") {
+                basePath.append(":").append(bddProperties.server.port)
+            }
         }
         if (!urlBasePath.startsWith("/")) {
             basePath.append("/")

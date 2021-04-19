@@ -1,8 +1,9 @@
 package com.ragin.bdd.cucumbertests.library.test;
 
+import com.ragin.bdd.cucumber.config.BddProperties;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -16,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class Authentication {
-    @Value("${cucumberTest.authorization.bearerToken.default:none}")
-    private String token;
+    private static final String BEARER = "Bearer ";
+    private final BddProperties bddProperties;
 
     @GetMapping("/api/v1/unauthorized")
     public ResponseEntity<String> stubUnauthorizedGet() {
@@ -49,7 +51,7 @@ public class Authentication {
     public ResponseEntity<String> stubAuthenticatedWithTokenGet(
             final @NonNull @RequestHeader("Authorization") String authToken
     ) {
-        if (authToken.equals("Bearer " + token)) {
+        if (authToken.equals(BEARER + bddProperties.getAuthorization().getBearerToken().getDefault())) {
             return ResponseEntity.ok().body(createAuthorizedResponse());
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());
@@ -60,7 +62,7 @@ public class Authentication {
             final @NonNull @RequestHeader("Authorization") String authToken,
             final @RequestBody String body
     ) {
-        if (authToken.equals("Bearer " + token)) {
+        if (authToken.equals(BEARER + bddProperties.getAuthorization().getBearerToken().getDefault())) {
             return ResponseEntity.ok().body(createAuthorizedResponse());
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());
@@ -71,7 +73,7 @@ public class Authentication {
             final @NonNull @RequestHeader("Authorization") String authToken,
             final @RequestBody String body
     ) {
-        if (authToken.equals("Bearer " + token)) {
+        if (authToken.equals(BEARER + bddProperties.getAuthorization().getBearerToken().getDefault())) {
             return ResponseEntity.ok().body(createAuthorizedResponse());
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());
@@ -82,7 +84,7 @@ public class Authentication {
             final @NonNull @RequestHeader("Authorization") String authToken,
             final @RequestBody String body
     ) {
-        if (authToken.equals("Bearer " + token)) {
+        if (authToken.equals(BEARER + bddProperties.getAuthorization().getBearerToken().getDefault())) {
             return ResponseEntity.ok().body(createAuthorizedResponse());
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());
@@ -93,7 +95,7 @@ public class Authentication {
             final @NonNull @RequestHeader("Authorization") String authToken,
             final @RequestBody String body
     ) {
-        if (authToken.equals("Bearer " + token)) {
+        if (authToken.equals(BEARER + bddProperties.getAuthorization().getBearerToken().getDefault())) {
             return ResponseEntity.ok().body(createAuthorizedResponse());
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse());

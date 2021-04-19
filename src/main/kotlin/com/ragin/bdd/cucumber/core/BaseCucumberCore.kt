@@ -1,18 +1,18 @@
 package com.ragin.bdd.cucumber.core
 
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.bearerToken
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.fileBasePath
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 @Component
-open class BaseCucumberCore(protected val jsonUtils: JsonUtils) {
+open class BaseCucumberCore(protected val jsonUtils: JsonUtils, protected val bddProperties: BddProperties) {
     companion object {
         private const val KEYWORD_ABSOLUTE_PATH = "absolutePath:"
     }
@@ -22,9 +22,8 @@ open class BaseCucumberCore(protected val jsonUtils: JsonUtils) {
      *
      * @param defaultBearerToken default Bearer token
      */
-    @Value("\${cucumberTest.authorization.bearerToken.default:none}")
     fun setDefaultBearerToken(defaultBearerToken: String?) {
-        ScenarioStateContext.defaultBearerToken = defaultBearerToken!!
+        ScenarioStateContext.defaultBearerToken = bddProperties.authorization?.bearerToken?.default!!
         if (StringUtils.isEmpty(bearerToken)) {
             bearerToken = defaultBearerToken
         }

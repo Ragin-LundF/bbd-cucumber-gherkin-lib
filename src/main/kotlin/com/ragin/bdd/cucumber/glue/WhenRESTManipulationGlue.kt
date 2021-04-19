@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.glue
 
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
@@ -9,9 +10,11 @@ import org.apache.commons.lang3.StringUtils
 import org.springframework.boot.test.web.client.TestRestTemplate
 import java.util.*
 
-class WhenRESTManipulationGlue(jsonUtils: JsonUtils, restTemplate: TestRestTemplate) : BaseRESTExecutionGlue(
-    jsonUtils, restTemplate
-) {
+class WhenRESTManipulationGlue(
+    jsonUtils: JsonUtils,
+    bddProperties: BddProperties,
+    restTemplate: TestRestTemplate
+) : BaseRESTExecutionGlue(jsonUtils, bddProperties, restTemplate) {
     /**
      * set the value of the previously given body property to a new value
      *

@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.glue
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.IDatabaseExecutorService
 import com.ragin.bdd.cucumber.utils.JsonUtils
@@ -11,13 +12,16 @@ import io.cucumber.java.en.Then
 import org.apache.commons.lang3.StringUtils
 import org.springframework.transaction.annotation.Transactional
 import java.io.IOException
-import java.util.*
 import java.util.stream.Collectors
 
 /**
  * This class contains database related steps.
  */
-open class DatabaseGlue(jsonUtils: JsonUtils, private val databaseExecutorService: IDatabaseExecutorService) : BaseCucumberCore(jsonUtils) {
+open class DatabaseGlue(
+    jsonUtils: JsonUtils,
+    bddProperties: BddProperties,
+    private val databaseExecutorService: IDatabaseExecutorService
+) : BaseCucumberCore(jsonUtils, bddProperties) {
     private val mapper = ObjectMapper()
 
     /**
@@ -67,9 +71,9 @@ open class DatabaseGlue(jsonUtils: JsonUtils, private val databaseExecutorServic
 
         // Generify the results to be database independent
         val iterator: Iterator<Map<String, Any?>> = CsvMapper()
-                .readerFor(MutableMap::class.java)
-                .with(CsvSchema.emptySchema().withHeader())
-                .readValues(readFile(pathToCsvFile))
+            .readerFor(MutableMap::class.java)
+            .with(CsvSchema.emptySchema().withHeader())
+            .readValues(readFile(pathToCsvFile))
 
         // write data into list
         val csvList: MutableList<Map<String, Any?>> = ArrayList()
@@ -99,14 +103,14 @@ open class DatabaseGlue(jsonUtils: JsonUtils, private val databaseExecutorServic
     private fun generifyDatabaseJSONFiles(data: List<Map<String, Any?>>): List<Map<String, Any>> {
         return data.stream().map { original: Map<String, Any?> ->
             original
-                    .entries
-                    .stream()
-                    .filter { entry: Map.Entry<String, Any?> -> entry.value != null }
-                    .filter { entry: Map.Entry<String, Any?> -> entry.value !is String || StringUtils.isNotEmpty(entry.value as String?) }
-                    .collect(Collectors.toMap(
-                            { columnName: Map.Entry<String, Any?> -> generifyDatabaseColumnName(columnName.key) },
-                            { columnValue: Map.Entry<String, Any?> -> generifyDatabaseColumnValue(columnValue.value) }
-                    ))
+                .entries
+                .stream()
+                .filter { entry: Map.Entry<String, Any?> -> entry.value != null }
+                .filter { entry: Map.Entry<String, Any?> -> entry.value !is String || StringUtils.isNotEmpty(entry.value as String?) }
+                .collect(Collectors.toMap(
+                    { columnName: Map.Entry<String, Any?> -> generifyDatabaseColumnName(columnName.key) },
+                    { columnValue: Map.Entry<String, Any?> -> generifyDatabaseColumnValue(columnValue.value) }
+                ))
         }.collect(Collectors.toList())
     }
 
