@@ -24,7 +24,7 @@ The library is available on jcenter. Please add jcenter to your build tool.
 ### Maven
 ```xml
 <dependency>
-	<groupId>com.ragin.bdd</groupId>
+	<groupId>io.github.ragin-lundf</groupId>
 	<artifactId>bdd-cucumber-gherkin-lib</artifactId>
 	<version>${version.bdd-cucumber-gherkin-lib}</version>
 	<scope>test</scope>
@@ -34,7 +34,7 @@ The library is available on jcenter. Please add jcenter to your build tool.
 ### Gradle
 ```groovy
 dependencies {
-    testImplementation "com.ragin.bdd:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
 }
 ```
 
