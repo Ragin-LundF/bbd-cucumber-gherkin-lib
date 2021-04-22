@@ -1,5 +1,28 @@
+# Release 1.34.0
+This release has no code changes.
+It releases only to Maven Central, because of deprecation of jcenter.
+
+With this, the `groupId` is changing to:
+
+### Maven
+```xml
+<dependency>
+	<groupId>io.github.ragin-lundf</groupId>
+	<artifactId>bdd-cucumber-gherkin-lib</artifactId>
+	<version>${version.bdd-cucumber-gherkin-lib}</version>
+	<scope>test</scope>
+</dependency>
+```
+
+### Gradle
+```groovy
+dependencies {
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
 # Release 1.32.0
-# Support for predefined ScenarioContext values
+## Support for predefined ScenarioContext values
 In order to predefine some global `ScenarioContext` values outside the gherkin definition,
 it is now possible to add them to the `application.yaml`/`application.properties` file.
 
