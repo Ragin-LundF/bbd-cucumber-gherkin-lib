@@ -21,7 +21,7 @@ jobs:
 
       - name: Decode GPG for Maven Central
         run: |
-          echo "${{secrets.GPG_KEY_ARMOR}}" > ~/.gradle/secring.gpg.b64
+          echo "${{ secrets.GPG_KEY_ARMOR }}" > ~/.gradle/secring.gpg.b64
           base64 -d ~/.gradle/secring.gpg.b64 > ~/.gradle/secring.gpg
 
       - name: Publish package to Maven Central and Github
