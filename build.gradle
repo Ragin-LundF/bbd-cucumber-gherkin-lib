@@ -11,6 +11,7 @@ plugins {
     id "java"
     id "java-library"
     id "maven-publish"
+    id "signing"
     id "org.springframework.boot" version "2.3.4.RELEASE"
     id "io.spring.dependency-management" version "1.0.10.RELEASE"
     id "org.liquibase.gradle" version "2.0.4"
@@ -81,17 +82,40 @@ publishing {
             from components.java
             artifactId "bdd-cucumber-gherkin-lib"
             version "${version}"
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'Cucumber library for simpler e2e tests with predefined sentences for API and basic database access')
-                root.appendNode('name', 'bdd-cucumber-gherkin-lib')
-                root.appendNode('url', 'https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib')
-                root.children().last() + pomConfig
+            pom {
+                name = "bdd-cucumber-gherkin-lib"
+                description = "Cucumber library for simpler e2e tests with predefined sentences for API and basic database access"
+                url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
+                scm {
+                    connection = "scm:git:git@github.com:Ragin-LundF/bbd-cucumber-gherkin-lib.git"
+                    developerConnection = "scm:git:ssh://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib.git"
+                    url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
+                }
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/blob/main/LICENSE"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "Ragin-LundF"
+                        name = "Ragin-LundF"
+                    }
+                }
             }
         }
     }
 
     repositories {
+        maven {
+            name = "OSSRH"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("OSSRH_USERNAME")
+                password = System.getenv("OSSRH_PASSWORD")
+            }
+        }
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/Ragin-LundF/bbd-cucumber-gherkin-lib")
@@ -103,32 +127,8 @@ publishing {
     }
 }
 
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_TOKEN')
-    publications = ['maven']
-    dryRun = false //[Default: false] Whether to run this as dry-run, without deploying
-    publish = true //[Default: false] Whether version should be auto published after an upload
-    override = true //[Default: false] Whether to override version artifacts already published
-    filesSpec {
-        from 'build/libs'
-        into 'standalone_files/level1'
-    }
-    pkg {
-        repo = 'bdd-cucumber-gherkin-lib'
-        name = 'bdd-cucumber-gherkin-lib'
-        userOrg = user
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib.git'
-        labels = ['cucumber', 'bdd', 'gherkin']
-        publicDownloadNumbers = true
-        version {
-            name = "${version}"
-            desc = 'Cucumber library for simpler e2e tests with predefined sentences for REST API and basic database access'
-            vcsTag = "v${version}"
-            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
-        }
-    }
+signing {
+    sign publishing.publications.maven
 }
 
 java {
