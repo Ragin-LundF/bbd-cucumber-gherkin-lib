@@ -35,4 +35,4 @@ jobs:
         run: |
           NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3 | sed s/v//)
           echo "New version: ${NEW_VERSION}"
-          gradlew -Pversion=${NEW_VERSION} publish -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }} -Psigning.secretKeyRingFile=$(echo secring.gpg)
+          ./gradlew -Pversion=${NEW_VERSION} publish -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }} -Psigning.secretKeyRingFile=$(echo secring.gpg)
