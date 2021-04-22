@@ -16,15 +16,19 @@ jobs:
           java-version: 14
           distribution: 'adopt'
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Decode GPG for Maven Central
         run: |
-          echo "${GPG_KEY_ARMOR}" > ~/.gradle/secring.gpg.b64
-          base64 -d ~/.gradle/secring.gpg.b64 > ~/.gradle/secring.gpg
-        env:
-          GPG_KEY_ARMOR: ${{ secrets.GPG_KEY_ARMOR }}
+          printf "${{ secrets.GPG_KEY_ARMOR }}" | base64 --decode > ~/.gradle/secring.gpg
 
       - name: Publish package to Maven Central and Github
         env:
