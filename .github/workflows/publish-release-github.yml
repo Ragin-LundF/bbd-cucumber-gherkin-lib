@@ -21,8 +21,7 @@ jobs:
 
       - name: Decode GPG for Maven Central
         run: |
-          echo "${{secrets.GPG_KEY_ARMOR}}" > ~/.gradle/secring.gpg.b64
-          base64 -d ~/.gradle/secring.gpg.b64 > ~/.gradle/secring.gpg
+          echo "${{ secrets.GPG_KEY_ARMOR }}" | base64 --decode > secring.gpg
 
       - name: Publish package to Maven Central and Github
         env:
@@ -36,4 +35,4 @@ jobs:
         run: |
           NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3 | sed s/v//)
           echo "New version: ${NEW_VERSION}"
-          gradlew -Pversion=${NEW_VERSION} publish -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }} -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg)
+          ./gradlew -Pversion=${NEW_VERSION} publish -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Psigning.password=${{ secrets.GPG_KEY_PASSWORD }} -Psigning.secretKeyRingFile=$(echo secring.gpg)

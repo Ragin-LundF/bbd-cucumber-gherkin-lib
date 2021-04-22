@@ -19,7 +19,7 @@ See [src/test](src/test) folder for examples.
 
 ## How to integrate
 
-The library is available on jcenter. Please add jcenter to your build tool.
+The library is available on Maven Central.
 
 ### Maven
 ```xml
