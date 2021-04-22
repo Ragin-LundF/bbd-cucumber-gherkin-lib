@@ -1,8 +1,14 @@
 # Release 1.34.0
-This release has no code changes.
-It releases only to Maven Central, because of deprecation of jcenter.
+## Updates
+This release updates the Spring dependency to `2.4.5`.
 
-With this, the `groupId` is changing to:
+It is recommended to update the project also to this version.
+
+## New groupId and Maven Central deployment
+
+Because of the deprecation of jcenter, the artifacts are now published on Maven Central.
+
+To be able to do that, the `groupId` has to be changed to:
 
 ### Maven
 ```xml

@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.31'
+    ext.kotlin_version = '1.4.32'
     repositories {
         mavenCentral()
     }
@@ -12,11 +12,10 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "signing"
-    id "org.springframework.boot" version "2.3.4.RELEASE"
-    id "io.spring.dependency-management" version "1.0.10.RELEASE"
+    id "org.springframework.boot" version "2.4.5"
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id "org.liquibase.gradle" version "2.0.4"
-    id "com.jfrog.bintray" version "1.8.5"
-    id "org.sonarqube" version "3.0"
+    id "org.sonarqube" version "3.1.1"
     id "jacoco"
 }
 
@@ -26,18 +25,20 @@ apply plugin: 'io.spring.dependency-management'
 
 dependencies {
     api "org.apache.httpcomponents:httpclient"
-    api "org.glassfish:javax.json:${versionJavaxJson}"
-    api "net.javacrumbs.json-unit:json-unit:${versionJsonUnit}"
+    api "org.glassfish:javax.json:1.1.4"
+    api "net.javacrumbs.json-unit:json-unit:2.25.0"
 
-    api "io.cucumber:cucumber-java:${versionCucumber}"
-    api "io.cucumber:cucumber-spring:${versionCucumber}"
-    api "io.cucumber:cucumber-junit:${versionCucumber}"
+    api "io.cucumber:cucumber-java:6.10.3"
+    api "io.cucumber:cucumber-spring:6.10.3"
+    api "io.cucumber:cucumber-junit:6.10.3"
 
-    api "javax.validation:validation-api:${versionValidationApi}"
+    api "javax.validation:validation-api:2.0.1.Final"
 
-    api "org.apache.commons:commons-text:${versionCommonsText}"
+    api "org.apache.commons:commons-text:1.9"
+    implementation "commons-io:commons-io:2.8.0"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
 
-    implementation "org.liquibase:liquibase-core:${versionLiquibase}"
+    implementation "org.liquibase:liquibase-core:3.10.3"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
@@ -45,14 +46,12 @@ dependencies {
 
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
 
-    implementation "commons-io:commons-io:${versionCommonsIo}"
-    implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-    compileOnly "org.projectlombok:lombok:${versionLombok}"
-    annotationProcessor "org.projectlombok:lombok:${versionLombok}"
+    compileOnly "org.projectlombok:lombok:1.18.20"
+    annotationProcessor "org.projectlombok:lombok:1.18.20"
+    testCompileOnly "org.projectlombok:lombok:1.18.20"
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.20"
 
-    testCompileOnly "org.projectlombok:lombok:${versionLombok}"
-    testAnnotationProcessor "org.projectlombok:lombok:${versionLombok}"
-    testImplementation "com.h2database:h2:${versionH2}"
+    testImplementation "com.h2database:h2:1.4.200"
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
