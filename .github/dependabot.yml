@@ -2,12 +2,17 @@ version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 2
   - package-ecosystem: "gradle"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
     assignees:
       - "Ragin-LundF"
     open-pull-requests-limit: 2
+    ignore:
+      - dependency-name: "org.liquibase*"
