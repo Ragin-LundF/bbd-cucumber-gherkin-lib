@@ -52,7 +52,9 @@ abstract class BaseRESTExecutionGlue(
     fun init() {
         // init ScenarioContext
         bddProperties.scenarioContext?.let { ScenarioStateContext.scenarioContextMap.putAll(it) }
-        setDefaultBearerToken(bddProperties.authorization?.bearerToken?.default!!)
+        if (bddProperties.authorization?.bearerToken?.default != null) {
+            setDefaultBearerToken(bddProperties.authorization.bearerToken.default)
+        }
 
         // https://stackoverflow.com/questions/16748969/java-net-httpretryexception-cannot-retry-due-to-server-authentication-in-strea
         // https://github.com/spring-projects/spring-framework/issues/14004
@@ -75,10 +77,12 @@ abstract class BaseRESTExecutionGlue(
     protected fun createHttpClient() : CloseableHttpClient {
         val httpClientBuilder = HttpClientBuilder.create()
 
-        if (bddProperties.ssl?.disableCheck!!) {
+        if (bddProperties.ssl != null && bddProperties.ssl.disableCheck) {
             httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier())
         }
-        if (! StringUtils.isEmpty(bddProperties.proxy?.host) && bddProperties.proxy?.port!! > 0) {
+        if (bddProperties.proxy != null
+            && ! StringUtils.isEmpty(bddProperties.proxy.host)
+            && bddProperties.proxy.port != null && bddProperties.proxy.port > 0) {
             httpClientBuilder.setProxy(HttpHost(
                 bddProperties.proxy.host,
                 bddProperties.proxy.port,

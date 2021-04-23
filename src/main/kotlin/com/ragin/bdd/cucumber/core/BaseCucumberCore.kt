@@ -23,7 +23,9 @@ open class BaseCucumberCore(protected val jsonUtils: JsonUtils, protected val bd
      * @param defaultBearerToken default Bearer token
      */
     fun setDefaultBearerToken(defaultBearerToken: String?) {
-        ScenarioStateContext.defaultBearerToken = bddProperties.authorization?.bearerToken?.default!!
+        if (StringUtils.isNotEmpty(bddProperties.authorization?.bearerToken?.default)) {
+            ScenarioStateContext.defaultBearerToken = bddProperties.authorization?.bearerToken?.default!!
+        }
         if (StringUtils.isEmpty(bearerToken)) {
             bearerToken = defaultBearerToken
         }
