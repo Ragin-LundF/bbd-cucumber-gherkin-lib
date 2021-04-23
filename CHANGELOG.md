@@ -3,13 +3,12 @@ An issue with the new configuration was fixed.
 
 The introduction of the `BddProperties` class made some problems with not configured properties.
 
-It is also required to add the library to the configuration scan path:
+Please ensure also, that you've put the library on the configuration scan path:
 
 ```java
 @ConfigurationPropertiesScan({
         "com.ragin.bdd", "configuration.com.ragin.bdd"
 })
-
 ```
 
 # Release 1.34.0
