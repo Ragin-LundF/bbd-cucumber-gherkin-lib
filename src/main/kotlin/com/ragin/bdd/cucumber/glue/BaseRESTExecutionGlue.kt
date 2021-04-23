@@ -75,10 +75,12 @@ abstract class BaseRESTExecutionGlue(
     protected fun createHttpClient() : CloseableHttpClient {
         val httpClientBuilder = HttpClientBuilder.create()
 
-        if (bddProperties.ssl?.disableCheck!!) {
+        if (bddProperties.ssl != null && bddProperties.ssl.disableCheck) {
             httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier())
         }
-        if (! StringUtils.isEmpty(bddProperties.proxy?.host) && bddProperties.proxy?.port!! > 0) {
+        if (bddProperties.proxy != null
+            && ! StringUtils.isEmpty(bddProperties.proxy.host)
+            && bddProperties.proxy.port != null && bddProperties.proxy.port > 0) {
             httpClientBuilder.setProxy(HttpHost(
                 bddProperties.proxy.host,
                 bddProperties.proxy.port,
