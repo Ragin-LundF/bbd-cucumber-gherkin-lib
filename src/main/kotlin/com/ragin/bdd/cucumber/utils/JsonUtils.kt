@@ -6,10 +6,7 @@ import com.ragin.bdd.cucumber.BddLibConstants
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.getJsonPathOptions
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
-import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
-import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher
-import com.ragin.bdd.cucumber.matcher.UUIDMatcher
-import com.ragin.bdd.cucumber.matcher.ValidDateMatcher
+import com.ragin.bdd.cucumber.matcher.*
 import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
@@ -61,6 +58,7 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
         var configuration = JsonAssert.withTolerance(0.0)
                 .`when`(Option.TREATING_NULL_AS_ABSENT)
                 .withMatcher("isValidDate", ValidDateMatcher(bddCucumberDateTimeFormatter))
+                .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
                 .withMatcher("isValidUUID", UUIDMatcher())
                 .withMatcher("isEqualToScenarioContext", ScenarioStateContextMatcher())
 

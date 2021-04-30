@@ -1,3 +1,15 @@
+# Release 1.35.0
+Introduction of date util sentences and extended date validators.
+
+This version introduces some `Given` sentences to create a date in the past or future.
+In addition, there is a new matcher that allows to compare this date with a JSON date or a datetime.
+
+Read more at:
+[docs/date_operations.md](docs/date_operations.md).
+
+Examples at:
+[src/test/resources/features/date_operations/date_operations.feature](src/test/resources/features/date_operations/date_operations.feature)
+
 # Release 1.34.1
 An issue with the new configuration was fixed.
 

@@ -56,7 +56,7 @@ object DateUtils {
      * @return              LocalDateTime if valid date, else null
      * @throws DateTimeParseException   Exception, when date is not parseable
      */
-    private fun transformToLocalDateTime(
+    fun transformToLocalDateTime(
             dateObject: Any,
             bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>): LocalDateTime? {
         var localDateTime: LocalDateTime? = null
