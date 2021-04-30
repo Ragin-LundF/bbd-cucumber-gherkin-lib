@@ -56,6 +56,7 @@ To learn more, read the [docs/configuration.md](docs/configuration.md) Guide.
     - [JSON-Unit](#json-unit)
     - [Polling](#polling)
     - [Given](#given-1)
+      - [Date operations](#date-operations)
       - [Define user(s)](#define-users)
       - [Set path base directory for request/result/database files](#set-path-base-directory-for-requestresultdatabase-files)
       - [Set a static value to the context](#set-a-static-value-to-the-context)
@@ -151,11 +152,14 @@ In the last case the system is using the base classpath as root.
 
 The library contains already some matchers:
 - `${json-unit.matches:isValidDate}` which checks, if the date can be a valid date by parsing it into date formats
+- `${json-unit.matches:isDateOfContext}<var>` which checks, if the date is equal to a previous stored in context
 - `${json-unit.matches:isValidUUID}` which checks, if the string is a valid UUID
 - `${json-unit.matches:isEqualToScenarioContext}create_id` which compares the content of the actual JSON to a variable in the ScenarioContext.
   The context has to be set before with the [I store the string of the field "<field>" in the context "<context-id>" for later usage](#read-from-response-and-set-it-to-a-feature-context) sentence.
 
 There are more details about how to extend it at the [Extension of JSON Unit Matcher](docs/json_matcher.md) section.
+
+Read more about date operations at [docs/date_operations.md](docs/date_operations.md).
 
 ### Polling
 Polling support combines some `Given` and `When` definitions. For this reason it has its own chapter.
@@ -231,6 +235,10 @@ Examples can be found at [src/test/resources/features/polling/](src/test/resourc
 
 
 ### Given
+
+#### Date operations
+
+Read more about date operations at [docs/date_operations.md](docs/date_operations.md).
 
 #### Define user(s)
 With the following sentence it is possible to define multiple users:
