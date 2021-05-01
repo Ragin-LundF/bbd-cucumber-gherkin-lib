@@ -8,6 +8,8 @@ import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Given
 import org.springframework.beans.factory.annotation.Value
 import java.io.IOException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
@@ -191,5 +193,59 @@ class GivenRESTStateGlue(
     fun givenPollingSecondsAndNumberOfPolls(seconds: Long, numberOfPolls: Int) {
         ScenarioStateContext.polling.pollEverySeconds = seconds
         ScenarioStateContext.polling.numberOfPolls = numberOfPolls
+    }
+
+    @Given("that a date {int} days in the past is stored as {string}")
+    fun givenDateDaysInPastStoredInContext(daysInPast: Long, contextKey: String) {
+        val now = LocalDate.now();
+        ScenarioStateContext.scenarioContextMap.put(
+            contextKey,
+            now.minusDays(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        );
+    }
+
+    @Given("that a date {int} months in the past is stored as {string}")
+    fun givenDateMonthsInPastStoredInContext(daysInPast: Long, contextKey: String) {
+        val now = LocalDate.now();
+        ScenarioStateContext.scenarioContextMap.put(
+            contextKey,
+            now.minusMonths(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        );
+    }
+
+    @Given("that a date {int} years in the past is stored as {string}")
+    fun givenDateYearsInPastStoredInContext(daysInPast: Long, contextKey: String) {
+        val now = LocalDate.now();
+        ScenarioStateContext.scenarioContextMap.put(
+            contextKey,
+            now.minusYears(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        );
+    }
+
+    @Given("that a date {int} days in the future is stored as {string}")
+    fun givenDateDaysInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
+        val now = LocalDate.now();
+        ScenarioStateContext.scenarioContextMap.put(
+            contextKey,
+            now.plusDays(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        );
+    }
+
+    @Given("that a date {int} months in the future is stored as {string}")
+    fun givenDateMonthsInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
+        val now = LocalDate.now();
+        ScenarioStateContext.scenarioContextMap.put(
+            contextKey,
+            now.plusMonths(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        );
+    }
+
+    @Given("that a date {int} years in the future is stored as {string}")
+    fun givenDateYearsInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
+        val now = LocalDate.now();
+        ScenarioStateContext.scenarioContextMap.put(
+            contextKey,
+            now.plusYears(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        );
     }
 }
