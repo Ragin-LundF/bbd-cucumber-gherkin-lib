@@ -28,7 +28,7 @@ dependencies {
     api "org.glassfish:javax.json:1.1.4"
     api "net.javacrumbs.json-unit:json-unit:2.25.0"
 
-    api "io.cucumber:cucumber-java:6.10.3"
+    api "io.cucumber:cucumber-java:6.10.4"
     api "io.cucumber:cucumber-spring:6.10.3"
     api "io.cucumber:cucumber-junit:6.10.4"
 
