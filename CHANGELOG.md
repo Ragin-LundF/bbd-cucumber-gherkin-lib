@@ -1,3 +1,28 @@
+# Release 1.36.0
+## Small enhancements
+
+A user token can be resolved also from context map. If nothing was found there, it uses the given one.
+This refers to the following sentences:
+
+- `that the following users and tokens are existing`
+- `that the user is {string}`
+
+In general the `ScenarioStateContext` class has now a new method called `resolveEntry(key: String)`.
+This method tries to read the value from the context map for the given key.
+If the key was not found, it returns the key itself.
+This may be helpful for own sentences based on the context map.
+
+## Possibility to wait
+There is a new sentence that allows you to wait some time before proceeding:
+
+```gherkin
+  Scenario: Wait for something
+    Then I wait for 1000 ms
+```
+
+Examples at:
+[src/test/resources/features/performance/performance.feature](src/test/resources/features/performance/performance.feature)
+
 # Release 1.35.0
 Introduction of date util sentences and extended date validators.
 

@@ -23,6 +23,12 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'kotlin'
 apply plugin: 'io.spring.dependency-management'
 
+configurations.all {
+    exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    exclude group: "ch.qos.logback", module: "logback-classic"
+    exclude group: "ch.qos.logback", module: "logback-core"
+}
+
 dependencies {
     api "org.apache.httpcomponents:httpclient"
     api "org.glassfish:javax.json:1.1.4"
