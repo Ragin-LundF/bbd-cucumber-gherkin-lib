@@ -52,7 +52,7 @@ class GivenRESTStateGlue(
         val userDataMap = userDataTable.asMap<String, String>(String::class.java, String::class.java)
         val keySet: Set<String> = userDataMap.keys
         for (key in keySet) {
-            ScenarioStateContext.userTokenMap[key] = userDataMap[key]!!
+            ScenarioStateContext.userTokenMap[key] = ScenarioStateContext.resolveEntry(userDataMap[key]!!)
         }
     }
 
@@ -62,8 +62,8 @@ class GivenRESTStateGlue(
      * @param user name of the user
      */
     @Given("that the user is {string}")
-    fun givenThatTheUserIs(user: String?) {
-        ScenarioStateContext.bearerToken = ScenarioStateContext.userTokenMap[user]
+    fun givenThatTheUserIs(user: String) {
+        ScenarioStateContext.bearerToken = ScenarioStateContext.userTokenMap[ScenarioStateContext.resolveEntry(user)]
     }
 
     /**
@@ -171,12 +171,7 @@ class GivenRESTStateGlue(
 
     @Given("that the Bearer token is {string}")
     fun givenThatBearerTokenIsUsed(bearerToken: String) {
-        val bearerFromContext: String? = ScenarioStateContext.scenarioContextMap[bearerToken]
-        if (Objects.isNull(bearerFromContext)) {
-            ScenarioStateContext.bearerToken = bearerToken
-        } else {
-            ScenarioStateContext.bearerToken = bearerFromContext
-        }
+        ScenarioStateContext.bearerToken = ScenarioStateContext.resolveEntry(bearerToken)
     }
 
     @Given("that a requests polls every {int} seconds")
@@ -201,7 +196,7 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap.put(
             contextKey,
             now.minusDays(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        );
+        )
     }
 
     @Given("that a date {int} months in the past is stored as {string}")
@@ -210,7 +205,7 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap.put(
             contextKey,
             now.minusMonths(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        );
+        )
     }
 
     @Given("that a date {int} years in the past is stored as {string}")
@@ -219,7 +214,7 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap.put(
             contextKey,
             now.minusYears(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        );
+        )
     }
 
     @Given("that a date {int} days in the future is stored as {string}")
@@ -228,7 +223,7 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap.put(
             contextKey,
             now.plusDays(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        );
+        )
     }
 
     @Given("that a date {int} months in the future is stored as {string}")
@@ -237,7 +232,7 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap.put(
             contextKey,
             now.plusMonths(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        );
+        )
     }
 
     @Given("that a date {int} years in the future is stored as {string}")
@@ -246,6 +241,6 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap.put(
             contextKey,
             now.plusYears(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        );
+        )
     }
 }

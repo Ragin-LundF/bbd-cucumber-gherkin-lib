@@ -55,6 +55,15 @@ object ScenarioStateContext {
         polling = Polling()
     }
 
+    fun resolveEntry(key: String): String {
+        var value = scenarioContextMap[key]
+        if (Objects.isNull(value)) {
+            value = key
+        }
+
+        return value!!
+    }
+
     fun getJsonPathOptions(): List<Option> {
         return jsonPathOptions
     }
@@ -64,12 +73,12 @@ object ScenarioStateContext {
     }
 
     @JvmStatic
-    fun current() : ScenarioStateContext {
+    fun current(): ScenarioStateContext {
         return this
     }
 
     class Polling {
-        var pollEverySeconds : Long = 0
-        var numberOfPolls : Int = -1
+        var pollEverySeconds: Long = 0
+        var numberOfPolls: Int = -1
     }
 }
