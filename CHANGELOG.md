@@ -1,11 +1,10 @@
-# Release 1.37.0
+# Release 1.36.0
 ## Updated libraries
 
 - Spring updated to 2.5.2
 - Cucumber-JVM updated to 6.10.4
 - Json-Unit updated to 2.27.0
 
-# Release 1.36.0
 ## Small enhancements
 
 A user token can be resolved also from context map. If nothing was found there, it uses the given one.
