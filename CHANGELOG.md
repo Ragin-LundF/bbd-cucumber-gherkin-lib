@@ -1,9 +1,10 @@
 # Release 1.36.0
 ## Updated libraries
 
-- Spring updated to 2.5.2
-- Cucumber-JVM updated to 6.10.4
-- Json-Unit updated to 2.27.0
+- Spring updated to `2.5.2`
+  - With the Spring update Liquibase will also be updated to `4.3.5`
+- Cucumber-JVM updated to `6.10.4`
+- Json-Unit updated to `2.27.0`
 
 ## Small enhancements
 
