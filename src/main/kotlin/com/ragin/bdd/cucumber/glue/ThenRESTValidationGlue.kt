@@ -9,6 +9,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Then
+import org.apache.commons.logging.LogFactory
 import org.junit.Assert
 import java.io.IOException
 
@@ -19,6 +20,10 @@ class ThenRESTValidationGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties
 ) : BaseCucumberCore(jsonUtils, bddProperties) {
+    companion object {
+        private val log = LogFactory.getLog(ThenRESTValidationGlue::class.java)
+    }
+
     /**
      * Ensure, that the response code is valid
      * @param expectedStatusCode HTTP status code that is expected
@@ -173,6 +178,20 @@ class ThenRESTValidationGlue(
         val executionTime = System.currentTimeMillis() - executionTime
         val executionTimeValid = executionTime <= expectedExecutionTime
         Assert.assertTrue("The performance was poor with [$executionTime ms]", executionTimeValid)
+    }
+
+    /**
+     * Wait for a specified amount of milliseconds
+     *
+     * @param milliseconds  amount of milliseconds to wait
+     */
+    @Then("I wait for {long} ms")
+    fun waitForSeconds(milliseconds: Long) {
+        try {
+            Thread.sleep(milliseconds)
+        } catch (ie: InterruptedException) {
+            log.error("Wait has detected a problem", ie)
+        }
     }
 
     /**

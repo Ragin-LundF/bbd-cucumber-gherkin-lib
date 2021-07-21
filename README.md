@@ -72,6 +72,7 @@ To learn more, read the [docs/configuration.md](docs/configuration.md) Guide.
       - [Execute requests](#execute-requests)
     - [Then](#then-1)
       - [Additional validation configuration](#additional-validation-configuration)
+        [Wait for some ms](#wait-for-some-ms)
       - [Validate execution time of requests](#validate-execution-time-of-requests)
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
@@ -467,6 +468,19 @@ Partly there is a requirement to be more flexible with JSON responses, such as:
 This can be achieved using annotations or sentences.
 
 [docs/json_validation_configuration.md](docs/json_validation_configuration.md)
+
+
+#### Wait for some ms
+Sometimes it is required to wait for some time (e.g. for backend processing).
+With the following set you can wait a certain time before continuing.
+
+```gherkin
+  Scenario: Wait for something
+    Then I wait for 1000 ms
+```
+
+Examples at:
+[src/test/resources/features/performance/performance.feature](src/test/resources/features/performance/performance.feature)
 
 
 #### Validate execution time of requests

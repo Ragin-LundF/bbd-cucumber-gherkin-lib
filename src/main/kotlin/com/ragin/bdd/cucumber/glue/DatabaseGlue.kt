@@ -126,7 +126,7 @@ open class DatabaseGlue(
      * @return the columnName processed to be database independent
      */
     private fun generifyDatabaseColumnName(columnName: String): String {
-        return columnName.toUpperCase()
+        return columnName.uppercase()
     }
 
     /**

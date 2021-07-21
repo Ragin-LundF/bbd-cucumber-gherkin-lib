@@ -3,7 +3,7 @@ package com.ragin.bdd.cucumber.glue
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
-import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
+import com.ragin.bdd.cucumber.core.ScenarioStateContext.resolveEntry
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.java.en.When
 import org.apache.commons.lang3.StringUtils
@@ -24,35 +24,38 @@ class WhenRESTManipulationGlue(
     @When("I set the value of the previously given body property {string} to {string}")
     fun whenISetTheValueOfTheBodyPropertyTo(propertyPath: String, value: String) {
         // fetch new value from state context if possible. Else use the given value
-        var newValue = scenarioContextMap[value]
-        if (newValue == null) {
-            newValue = value
-        }
-        if ("null" == newValue) {
-            editableBody = jsonUtils.removeJsonField(
-                editableBody,
-                propertyPath
-            )
-        } else if (newValue.matches("\\d* bdd_lib_numbers".toRegex())) {
-            val numOfChars = newValue.split(" ").toTypedArray()[0].toInt()
-            newValue = StringUtils.rightPad("", numOfChars, "1234567890")
-            editableBody = jsonUtils.editJsonField(
-                editableBody,
-                propertyPath,
-                newValue
-            )
-        } else if (newValue.matches("bdd_lib_uuid".toRegex())) {
-            editableBody = jsonUtils.editJsonField(
-                editableBody,
-                propertyPath,
-                UUID.randomUUID().toString()
-            )
-        } else {
-            editableBody = jsonUtils.editJsonField(
-                editableBody,
-                propertyPath,
-                newValue
-            )
+        var newValue = resolveEntry(value)
+
+        when {
+            "null" == newValue -> {
+                editableBody = jsonUtils.removeJsonField(
+                    editableBody,
+                    propertyPath
+                )
+            }
+            newValue.matches("\\d* bdd_lib_numbers".toRegex()) -> {
+                val numOfChars = newValue.split(" ").toTypedArray()[0].toInt()
+                newValue = StringUtils.rightPad("", numOfChars, "1234567890")
+                editableBody = jsonUtils.editJsonField(
+                    editableBody,
+                    propertyPath,
+                    newValue
+                )
+            }
+            newValue.matches("bdd_lib_uuid".toRegex()) -> {
+                editableBody = jsonUtils.editJsonField(
+                    editableBody,
+                    propertyPath,
+                    UUID.randomUUID().toString()
+                )
+            }
+            else -> {
+                editableBody = jsonUtils.editJsonField(
+                    editableBody,
+                    propertyPath,
+                    newValue
+                )
+            }
         }
     }
 
@@ -64,10 +67,6 @@ class WhenRESTManipulationGlue(
      */
     @When("I set the header {string} to {string}")
     fun whenISetTheHeaderValueTo(header: String, headerValue: String) {
-        var resolvedHeader = scenarioContextMap[headerValue]
-        if (Objects.isNull(resolvedHeader)) {
-            resolvedHeader = headerValue
-        }
-        headerValues[header] = resolvedHeader!!
+        headerValues[header] = resolveEntry(headerValue)
     }
 }
