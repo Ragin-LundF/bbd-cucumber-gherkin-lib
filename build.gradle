@@ -35,7 +35,7 @@ dependencies {
     api "net.javacrumbs.json-unit:json-unit:2.28.0"
 
     api "io.cucumber:cucumber-java:6.11.0"
-    api "io.cucumber:cucumber-spring:6.11.0"
+    api "io.cucumber:cucumber-spring:7.0.0"
     api "io.cucumber:cucumber-junit:6.11.0"
 
     api "javax.validation:validation-api:2.0.1.Final"
