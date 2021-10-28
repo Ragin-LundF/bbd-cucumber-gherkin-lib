@@ -1,3 +1,31 @@
+# Release 1.38.0
+## Updated libraries
+- Spring Boot updated to `2.5.6` because of a memory leak in tomcat
+- Cucumber updated to `7.0.0`
+
+## Enhancements
+### Added check for headers
+If it is required to check if a HTTP header contains a special value, this can be done with the following sentence:
+
+```gherkin
+And I ensure, that the header "<header name>" is equal to "<header values>"
+```
+
+Be aware, that headers are always an array.
+If there are more header values you want to check, please add them comma separated.
+
+Example:
+```gherkin
+Scenario: Check a header
+  When executing an authorized GET call to "/api/v1/header"
+  Then I ensure that the status code of the response is 200
+  And I ensure, that the header "X-TEST-HEADER" is equal to "present"
+```
+
+This might be used to check if XSS headers are set for example.
+
+See [src/test/resources/features/header/header.feature](src/test/resources/features/header/header.feature)
+
 # Release 1.37.0
 ## Updated libraries
 - Spring Boot updated to `2.5.5`
