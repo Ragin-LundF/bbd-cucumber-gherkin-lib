@@ -5,14 +5,24 @@
 
 ## Enhancements
 ### Added check for headers
-Now it is possible to check, if a response header contains a special value:
+If it is required to check if a HTTP header contains a special value, this can be done with the following sentence:
 
+```gherkin
+And I ensure, that the header "<header name>" is equal to "<header values>"
+```
+
+Be aware, that headers are always an array.
+If there are more header values you want to check, please add them comma separated.
+
+Example:
 ```gherkin
 Scenario: Check a header
   When executing an authorized GET call to "/api/v1/header"
   Then I ensure that the status code of the response is 200
   And I ensure, that the header "X-TEST-HEADER" is equal to "present"
 ```
+
+This might be used to check if XSS headers are set for example.
 
 See [src/test/resources/features/header/header.feature](src/test/resources/features/header/header.feature)
 
