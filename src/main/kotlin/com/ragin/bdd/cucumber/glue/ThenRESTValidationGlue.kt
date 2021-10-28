@@ -56,6 +56,16 @@ class ThenRESTValidationGlue(
         )
     }
 
+    @Then("I ensure, that the header {string} is equal to {string}")
+    fun thenEnsureHeaderIsEqualTo(headerName: String, expectedValue: String) {
+        val header = latestResponse!!.headers.getOrEmpty(headerName)
+        Assert.assertEquals(
+            expectedValue,
+            header,
+            String.format("Header [%s] does not have the value [%s], but [%s]", headerName, expectedValue, header)
+        )
+    }
+
     /**
      * Ensure, that the response is equal to a directly given body.
      *
