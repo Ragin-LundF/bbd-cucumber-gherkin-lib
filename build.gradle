@@ -62,6 +62,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
+jar {
+    archiveClassifier.set('')   // remove "plain" suffix for jar files
+}
+
 def pomConfig = {
     licenses {
         license {
