@@ -1,4 +1,4 @@
-# Release 1.38.1
+# Release 1.39.0
 ## Updated libraries
 - Spring Boot updated to `2.5.6` because of a memory leak in tomcat
 - Cucumber updated to `7.0.0`
