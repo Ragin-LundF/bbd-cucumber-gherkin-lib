@@ -1,5 +1,11 @@
 Feature: Header manipulation
 
+  Scenario: Check a header
+    When executing an authorized GET call to "/api/v1/header"
+    Then I ensure that the status code of the response is 200
+    And I ensure, that the header "X-TEST-HEADER" is equal to "present"
+
+
   Scenario: Add custom header
     Given I set the header "X-My-Custom-Header" to "ABC_DEF"
     When executing an authorized GET call to "/api/v1/customHeader"

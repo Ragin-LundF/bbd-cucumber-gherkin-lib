@@ -77,6 +77,7 @@ To learn more, read the [docs/configuration.md](docs/configuration.md) Guide.
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
       - [Validate response body with given String](#validate-response-body-with-given-string)
+      - [Validate response HTTP header contains a value](#validate-response-http-header-contains-a-value)
       - [Validate response HTTP code and body together](#validate-response-http-code-and-body-together)
       - [Validate response HTTP code and body together with a JSON file](#validate-response-http-code-and-body-together-with-a-json-file)
       - [Validate only special fields of the response body](#validate-only-special-fields-of-the-response-body)
@@ -525,6 +526,30 @@ Scenario:
 In this case, the JSON is written directly under the sentence and enclosed in three double quotation marks.
 Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
 
+
+#### Validate response HTTP header contains a value
+If it is required to check if a HTTP header contains a special value, this can be done with the following sentence:
+
+```gherkin
+And I ensure, that the header "<header name>" is equal to "<header values>"
+```
+
+Be aware, that headers are always an array.
+If there are more header values you want to check, please add them comma separated.
+
+Example:
+```gherkin
+Scenario: Check a header
+  When executing an authorized GET call to "/api/v1/header"
+  Then I ensure that the status code of the response is 200
+  And I ensure, that the header "X-TEST-HEADER" is equal to "present"
+```
+
+This might be used to check if XSS headers are set for example.
+
+See [src/test/resources/features/header/header.feature](src/test/resources/features/header/header.feature)
+
+
 #### Validate response HTTP code and body together
 ```gherkin
 Scenario:
@@ -538,6 +563,7 @@ Scenario:
 
 In this case, the response status code is part of the sentence, and the JSON is written directly under the sentence and enclosed in three double quotation marks.
 Here it is also possible to use [JSON Unit](https://github.com/lukas-krecan/JsonUnit) syntax to validate dynamic elements.
+
 
 #### Validate response HTTP code and body together with a JSON file
 ```gherkin
