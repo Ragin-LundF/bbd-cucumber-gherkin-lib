@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.5.31'
+    ext.kotlin_version = '1.6.0'
     repositories {
         mavenCentral()
     }
@@ -12,9 +12,9 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "signing"
-    id "org.springframework.boot" version "2.5.6"
+    id "org.springframework.boot" version "2.6.1"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
-    id "org.liquibase.gradle" version "2.0.4"
+    id "org.liquibase.gradle" version "2.1.0"
     id "org.sonarqube" version "3.3"
     id "jacoco"
 }
@@ -34,9 +34,9 @@ dependencies {
     api "org.glassfish:javax.json:1.1.4"
     api "net.javacrumbs.json-unit:json-unit:2.28.0"
 
-    api "io.cucumber:cucumber-java:7.0.0"
-    api "io.cucumber:cucumber-spring:7.0.0"
-    api "io.cucumber:cucumber-junit:7.0.0"
+    api "io.cucumber:cucumber-java:7.1.0"
+    api "io.cucumber:cucumber-spring:7.1.0"
+    api "io.cucumber:cucumber-junit:7.1.0"
 
     api "javax.validation:validation-api:2.0.1.Final"
 
@@ -52,14 +52,15 @@ dependencies {
 
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
 
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
     compileOnly "org.projectlombok:lombok:1.18.22"
     annotationProcessor "org.projectlombok:lombok:1.18.22"
     testCompileOnly "org.projectlombok:lombok:1.18.22"
     testAnnotationProcessor "org.projectlombok:lombok:1.18.22"
 
     testImplementation "com.h2database:h2:1.4.200"
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 jar {

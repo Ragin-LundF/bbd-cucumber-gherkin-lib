@@ -12,18 +12,18 @@ databaseChangeLog:
                   type: bigint
                   autoIncrement: true
                   constraints:
-                    - primaryKey: true
-                    - nullable: false
+                    primaryKey: true
+                    nullable: false
                   remarks: ID
               - column:
                   name: USER_NAME
                   type: varchar(255)
                   constraints:
-                    - nullable: false
+                    nullable: false
                   remarks: Username
               - column:
                   name: USER_ID
                   type: varchar(36)
                   constraints:
-                    - nullable: false
+                    nullable: false
                   remarks: User UUID
