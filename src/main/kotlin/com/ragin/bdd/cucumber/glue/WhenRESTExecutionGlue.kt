@@ -315,6 +315,32 @@ class WhenRESTExecutionGlue(
 
     /**
      * Execute an authorized poll request, which has to be preconfigured until the response contains
+     * the status.
+     *
+     * @param httpMethod HTTP Method
+     * @param expectedStatusCode the expected HTTP status code
+     */
+    @Then("executing an authorized {httpMethod} poll request until the response code is {int}")
+    @Throws(IOException::class)
+    fun whenExecutingAuthorizedPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod,  expectedStatusCode: Int) {
+        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, "", true)
+    }
+
+    /**
+     * Execute a poll request, which has to be preconfigured until the response contains
+     * the status.
+     *
+     * @param httpMethod HTTP Method
+     * @param expectedStatusCode the expected HTTP status code
+     */
+    @Then("executing a {httpMethod} poll request until the response code is {int}")
+    @Throws(IOException::class)
+    fun whenExecutingPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int) {
+        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, "", false)
+    }
+
+    /**
+     * Execute an authorized poll request, which has to be preconfigured until the response contains
      * the status and JSON response message.
      *
      * @param httpMethod HTTP Method
@@ -339,7 +365,7 @@ class WhenRESTExecutionGlue(
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
     }
 
-    private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String, authorized: Boolean) {
+    private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String?, authorized: Boolean) {
         Assert.assertNotEquals("Please configure max number of polls!",
             -1,
             ScenarioStateContext.polling.numberOfPolls
@@ -349,10 +375,7 @@ class WhenRESTExecutionGlue(
         for (i in 1..ScenarioStateContext.polling.numberOfPolls) {
             executeRequest(httpMethod, authorized)
             try {
-                assertJSONisEqual(
-                    expectedBody,
-                    ScenarioStateContext.latestResponse!!.body
-                )
+                evaluateBody(expectedBody)
                 Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
                 repeatLoop = i
                 break
@@ -361,12 +384,23 @@ class WhenRESTExecutionGlue(
             }
         }
 
-        assertJSONisEqual(
-            expectedBody,
-            ScenarioStateContext.latestResponse!!.body
-        )
+        evaluateBody(expectedBody)
         Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
         log.info("Polling finished after $repeatLoop repeats")
+    }
+
+    /**
+     * Compare message body with expected result, if body is present.
+     *
+     * @param expectedBody body
+     */
+    private fun evaluateBody(expectedBody: String?) {
+        if (!expectedBody.isNullOrEmpty()) {
+            assertJSONisEqual(
+                expectedBody,
+                ScenarioStateContext.latestResponse!!.body
+            )
+        }
     }
 
     /**

@@ -2,6 +2,17 @@ Feature: Polling test
   Background:
     Given that all file paths are relative to "features/polling/responses/"
 
+  Scenario: Polling unauthorized until response code is correct with long config
+    Given that a requests polls every 1 seconds
+    And that a requests polls for 5 times
+    And that the API path is "/api/v1/polling"
+    When executing a GET poll request until the response code is 200
+
+  Scenario: Polling authorized until response code is correct with short config
+    Given that a request polls every 1 seconds for 5 times
+    And that the API path is "/api/v1/pollingAuth"
+    When executing an authorized GET poll request until the response code is 200
+
   Scenario: Polling unauthorized until response is correct with long config
     Given that a requests polls every 1 seconds
     And that a requests polls for 5 times
