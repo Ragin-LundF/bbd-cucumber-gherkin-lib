@@ -323,7 +323,7 @@ class WhenRESTExecutionGlue(
     @Then("executing an authorized {httpMethod} poll request until the response code is {int}")
     @Throws(IOException::class)
     fun whenExecutingAuthorizedPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod,  expectedStatusCode: Int) {
-        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, "", true)
+        executePollRequestUntilResponseIsEqual(httpMethod = httpMethod, expectedStatusCode = expectedStatusCode, authorized = true)
     }
 
     /**
@@ -336,7 +336,7 @@ class WhenRESTExecutionGlue(
     @Then("executing a {httpMethod} poll request until the response code is {int}")
     @Throws(IOException::class)
     fun whenExecutingPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int) {
-        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, "", false)
+        executePollRequestUntilResponseIsEqual(httpMethod = httpMethod, expectedStatusCode = expectedStatusCode, authorized = false)
     }
 
     /**
@@ -365,7 +365,7 @@ class WhenRESTExecutionGlue(
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
     }
 
-    private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String?, authorized: Boolean) {
+    private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String? = null, authorized: Boolean) {
         Assert.assertNotEquals("Please configure max number of polls!",
             -1,
             ScenarioStateContext.polling.numberOfPolls
