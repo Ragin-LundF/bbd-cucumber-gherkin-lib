@@ -69,4 +69,16 @@ class WhenRESTManipulationGlue(
     fun whenISetTheHeaderValueTo(header: String, headerValue: String) {
         headerValues[header] = resolveEntry(headerValue)
     }
+
+    /**
+     * Set a header to a specific prefixed value.
+     *
+     * @param header                Header name
+     * @param headerValue           Header value
+     * @param headerValuePrefix     Prefix for header value
+     */
+    @When("I set the header {string} to {string} prefixed by {string}")
+    fun whenISetTheHeaderValueTo(header: String, headerValue: String, headerValuePrefix: String) {
+        headerValues[header] = "${resolveEntry(headerValuePrefix)}${resolveEntry(headerValue)}"
+    }
 }

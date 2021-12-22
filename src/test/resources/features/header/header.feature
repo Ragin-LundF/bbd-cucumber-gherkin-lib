@@ -17,6 +17,28 @@ Feature: Header manipulation
     }
     """
 
+  Scenario: Add custom header with prefix
+    Given I set the header "X-My-Custom-Header" to "ABC_DEF" prefixed by "PRE_"
+    When executing an authorized GET call to "/api/v1/customHeader"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to
+    """
+    {
+      "header": "PRE_ABC_DEF"
+    }
+    """
+
+  Scenario: Add custom header with prefix from context
+    Given that the context contains the key "PREFIX" with the value "PRE_"
+    And I set the header "X-My-Custom-Header" to "ABC_DEF" prefixed by "PREFIX"
+    When executing an authorized GET call to "/api/v1/customHeader"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to
+    """
+    {
+      "header": "PRE_ABC_DEF"
+    }
+    """
 
   Scenario: Set own/dynamic authorization header
     Given I set the header "Authorization" to "MyAuth"
