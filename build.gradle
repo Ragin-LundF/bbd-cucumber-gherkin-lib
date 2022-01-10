@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.6.0'
+    ext.kotlin_version = '1.6.10'
     repositories {
         mavenCentral()
     }
@@ -60,7 +60,7 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok:1.18.22"
     testAnnotationProcessor "org.projectlombok:lombok:1.18.22"
 
-    testImplementation "com.h2database:h2:1.4.200"
+    testImplementation "com.h2database:h2:2.0.206"
 }
 
 jar {
