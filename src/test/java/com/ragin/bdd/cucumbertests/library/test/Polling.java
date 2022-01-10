@@ -21,7 +21,7 @@ public class Polling {
     @GetMapping("/api/v1/polling")
     public ResponseEntity<String> polling() {
         if (RUN_COUNTER_POLLING.incrementAndGet() < 3) {
-            return ResponseEntity.ok().body(createMessage("NOT_READY"));
+            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(createMessage("NOT_READY"));
         }
         RUN_COUNTER_POLLING.set(0);
         return ResponseEntity.ok().body(createMessage("SUCCESSFUL"));
@@ -34,7 +34,7 @@ public class Polling {
         }
 
         if (RUN_COUNTER_POLLING.incrementAndGet() < 3) {
-            return ResponseEntity.ok().body(createMessage("NOT_READY"));
+            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(createMessage("NOT_READY"));
         }
         RUN_COUNTER_POLLING.set(0);
         return ResponseEntity.ok().body(createMessage("SUCCESSFUL"));
