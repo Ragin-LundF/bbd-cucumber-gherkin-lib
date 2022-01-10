@@ -1,4 +1,9 @@
 # Release 1.41.0
+## Updated libraries
+- Spring Boot updated to `2.6.2`
+- Cucumber updated to `7.2.2`
+
+
 ## Extended Polling
 Polling now allows also to check for the HTTP code only.
 
