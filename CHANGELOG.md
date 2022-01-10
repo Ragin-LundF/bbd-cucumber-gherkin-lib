@@ -1,3 +1,46 @@
+# Release 1.41.0
+## Updated libraries
+- Spring Boot updated to `2.6.2`
+- Cucumber updated to `7.2.2`
+
+
+## Extended Polling
+Polling now allows also to check for the HTTP code only.
+
+### Unauthorized Example
+
+```gherkin
+Scenario: Polling unauthorized until response code is correct with long config
+  Given that a requests polls every 1 seconds
+  And that a requests polls for 5 times
+  And that the API path is "/api/v1/polling"
+  When executing a GET poll request until the response code is 200
+```
+
+### Authorized Example
+
+```gherkin
+Scenario: Polling authorized until response code is correct with short config
+  Given that a request polls every 1 seconds for 5 times
+  And that the API path is "/api/v1/pollingAuth"
+  When executing an authorized GET poll request until the response code is 200
+```
+
+Examples can be found at [src/test/resources/features/polling/](src/test/resources/features/polling/).
+
+## Extended Header Manipulation
+### Prefix for Header manipulation
+```gherkin
+Scenario: Add custom header with prefix
+  Given I set the header "X-My-Custom-Header" to "ABC_DEF" prefixed by "PRE_"
+```
+
+This sets the header `X-My-Custom-Header` to the value of `ABC_DEF` with the prefix `PRE_`.
+The prefix and the value can be also a variable name from the context.
+
+Please have a look to the examples at: [src/test/resources/features/header/](src/test/resources/features/header/)
+
+
 # Release 1.40.0
 ## Updated libraries
 - Spring Boot updated to `2.6.1`
