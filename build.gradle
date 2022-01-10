@@ -36,7 +36,7 @@ dependencies {
 
     api "io.cucumber:cucumber-java:7.1.0"
     api "io.cucumber:cucumber-spring:7.1.0"
-    api "io.cucumber:cucumber-junit:7.1.0"
+    api "io.cucumber:cucumber-junit:7.2.2"
 
     api "javax.validation:validation-api:2.0.1.Final"
 
