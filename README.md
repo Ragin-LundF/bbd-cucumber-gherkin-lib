@@ -191,7 +191,10 @@ Scenario: Multiline configuration
 The `URL`/`URI` and (if required) body have to be preconfigured. Polling itself does simply use previous set body and path definition.
 To execute a request it supports the well known authorized and unauthorized phrases and it supports direct JSON or JSON from file:
 
-Authorized request with JSON response file:
+#### Polling with JSON response file and HTTP Code check
+
+Authorized:
+
 ```gherkin
 Scenario: Authorized request with JSON response file
   Given that a request polls every 1 seconds for 5 times
@@ -199,7 +202,8 @@ Scenario: Authorized request with JSON response file
   When executing an authorized GET poll request until the response code is 200 and the body is equal to file "expected.json"
 ```
 
-Unauthorized request with JSON response file:
+Unauthorized:
+
 ```gherkin
 Scenario: Unauthorized request with JSON response file
   Given that a request polls every 1 seconds for 5 times
@@ -207,7 +211,10 @@ Scenario: Unauthorized request with JSON response file
   When executing a GET poll request until the response code is 200 and the body is equal to file "expected.json"
 ```
 
-Authorized request with direct JSON response:
+#### Polling with direct JSON response and HTTP Code check
+
+Authorized:
+
 ```gherkin
 Scenario: Authorized request with JSON response file
   Given that a request polls every 1 seconds for 5 times
@@ -220,7 +227,8 @@ Scenario: Authorized request with JSON response file
     """
 ```
 
-Unauthorized request with direct JSON response:
+Unauthorized:
+
 ```gherkin
 Scenario: Unauthorized request with JSON response file
   Given that a request polls every 1 seconds for 5 times
@@ -231,6 +239,27 @@ Scenario: Unauthorized request with JSON response file
       "message": "SUCCESSFUL"
     }
     """
+```
+
+#### Polling with HTTP Code check only
+
+Unauthorized:
+
+```gherkin
+Scenario: Polling unauthorized until response code is correct with long config
+  Given that a requests polls every 1 seconds
+  And that a requests polls for 5 times
+  And that the API path is "/api/v1/polling"
+  When executing a GET poll request until the response code is 200
+```
+
+Authorized:
+
+```gherkin
+Scenario: Polling authorized until response code is correct with short config
+  Given that a request polls every 1 seconds for 5 times
+  And that the API path is "/api/v1/pollingAuth"
+  When executing an authorized GET poll request until the response code is 200
 ```
 
 Examples can be found at [src/test/resources/features/polling/](src/test/resources/features/polling/).
@@ -418,12 +447,25 @@ It is required to use this `Given` step in cases when it is necessary to manipul
 The paths that are used here can be shortened by set a base URL path with [Set base path for URLs](#set-base-path-for-urls) with a `Given` Step before.
 
 #### Header manipulation
+
+##### Simple manipulation
 ```gherkin
 Scenario:
   When I set the header {string} to {string}
 ```
 
 This sentence allows adding or manipulating headers. The first argument is the header name and the second the header value.
+
+##### Prefix for Header manipulation
+```gherkin
+Scenario: Add custom header with prefix
+  Given I set the header "X-My-Custom-Header" to "ABC_DEF" prefixed by "PRE_"
+```
+
+This sets the header `X-My-Custom-Header` to the value of `ABC_DEF` with the prefix `PRE_`.
+The prefix and the value can be also a variable name from the context.
+
+Please have a look to the examples at: [src/test/resources/features/header/](src/test/resources/features/header/)
 
 #### Body manipulation
 ```gherkin
