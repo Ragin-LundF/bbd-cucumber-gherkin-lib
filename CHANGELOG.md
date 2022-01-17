@@ -1,3 +1,6 @@
+# Release 1.42.0
+An issue was fixed, which prevented to overwrite the `Accept-Language`, `Content-Type` and `Accept` headers.
+
 # Release 1.41.0
 ## Updated libraries
 - Spring Boot updated to `2.6.2`

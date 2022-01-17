@@ -21,18 +21,27 @@ object RESTCommunicationUtils {
     @JvmStatic
     fun createHTTPHeader(addAuthorisation: Boolean): HttpHeaders {
         val headers = HttpHeaders()
-        headers.add("Accept", "application/json")
-        headers.add("Accept-Language", "en")
-        headers.add("Content-Type", "application/json")
         if (addAuthorisation && headerValues[HttpHeaders.AUTHORIZATION] == null) {
             headers.add(HttpHeaders.AUTHORIZATION, "Bearer $bearerToken")
         }
 
         // set user specific headers if present
-        if (!headerValues.isEmpty()) {
+        if (headerValues.isNotEmpty()) {
             for (headerName in headerValues.keys) {
                 headers.add(headerName, headerValues[headerName])
             }
+        }
+
+        if (! headerValues.containsKey("Content-Type")) {
+            headers.add("Content-Type", "application/json")
+        }
+
+        if (! headerValues.containsKey("Accept")) {
+            headers.add("Accept", "application/json")
+        }
+
+        if (! headerValues.containsKey("Accept-Language")) {
+            headers.add("Accept-Language", "en")
         }
         return headers
     }

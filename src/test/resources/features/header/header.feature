@@ -17,6 +17,41 @@ Feature: Header manipulation
     }
     """
 
+  Scenario: Check all default headers
+    When executing an authorized GET call to "/api/v1/allHeaders"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to
+    """
+    {
+      "accept":"application/json",
+      "accept-encoding":"gzip,deflate",
+      "accept-language":"en",
+      "authorization":"${json-unit.ignore}",
+      "connection":"Keep-Alive",
+      "content-type":"application/json",
+      "host":"${json-unit.ignore}",
+      "user-agent":"${json-unit.ignore}"
+    }
+    """
+
+  Scenario: Set Accept-Langauge header to something else
+    Given I set the header "Accept-Language" to "de_DE"
+    When executing an authorized GET call to "/api/v1/allHeaders"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to
+    """
+    {
+      "accept":"application/json",
+      "accept-encoding":"gzip,deflate",
+      "accept-language":"de_DE",
+      "authorization":"${json-unit.ignore}",
+      "connection":"Keep-Alive",
+      "content-type":"application/json",
+      "host":"${json-unit.ignore}",
+      "user-agent":"${json-unit.ignore}"
+    }
+    """
+
   Scenario: Add custom header with prefix
     Given I set the header "X-My-Custom-Header" to "ABC_DEF" prefixed by "PRE_"
     When executing an authorized GET call to "/api/v1/customHeader"
