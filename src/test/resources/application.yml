@@ -32,18 +32,20 @@ cucumberTest:
 
 spring:
   datasource:
-      platform: h2
-      url: jdbc:h2:mem:testdb;IGNORECASE=true;DATABASE_TO_UPPER=true
-      driver-class-name: org.h2.Driver
-      username: cucumber
-      password: cucumber
+    url: jdbc:h2:mem:testdb;IGNORECASE=true;DATABASE_TO_UPPER=true;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: cucumber
+    password: cucumber
 
   jpa:
     hibernate:
       use-new-id-generator-mappings: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+  sql:
+    init:
+      platform: h2
 
   liquibase:
       enabled: true
