@@ -1,3 +1,7 @@
+# Release 1.43.0
+## Updating dependencies
+- Spring Boot 2.6.4
+
 # Release 1.42.0
 An issue was fixed, which prevented to overwrite the `Accept-Language`, `Content-Type` and `Accept` headers.
 
