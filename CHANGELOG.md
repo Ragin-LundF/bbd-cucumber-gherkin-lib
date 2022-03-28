@@ -1,3 +1,6 @@
+# Release 1.44.0
+- Disable redirects for HTTP client.
+
 # Release 1.43.0
 ## Updating dependencies
 - Spring Boot 2.6.4
