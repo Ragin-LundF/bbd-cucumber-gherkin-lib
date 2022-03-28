@@ -14,6 +14,7 @@ import io.cucumber.datatable.DataTable
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.StringSubstitutor
 import org.apache.http.HttpHost
+import org.apache.http.client.RedirectStrategy
 import org.apache.http.conn.ssl.NoopHostnameVerifier
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
@@ -51,7 +52,7 @@ abstract class BaseRESTExecutionGlue(
     @PostConstruct
     fun init() {
         // init ScenarioContext
-        bddProperties.scenarioContext?.let { ScenarioStateContext.scenarioContextMap.putAll(it) }
+        bddProperties.scenarioContext?.let { scenarioContextMap.putAll(it) }
         if (bddProperties.authorization?.bearerToken?.default != null) {
             setDefaultBearerToken(bddProperties.authorization.bearerToken.default)
         }
@@ -76,6 +77,7 @@ abstract class BaseRESTExecutionGlue(
 
     protected fun createHttpClient() : CloseableHttpClient {
         val httpClientBuilder = HttpClientBuilder.create()
+        httpClientBuilder.disableRedirectHandling()
 
         if (bddProperties.ssl != null && bddProperties.ssl.disableCheck) {
             httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier())
