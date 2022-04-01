@@ -1,3 +1,6 @@
+# Release 1.45.0
+- Updated Spring Boot to 2.6.6 to avoid issues with Spring Shell.
+
 # Release 1.44.0
 - Disable redirects for HTTP client.
 
