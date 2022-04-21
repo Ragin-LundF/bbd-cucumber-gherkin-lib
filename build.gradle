@@ -56,9 +56,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     compileOnly "org.projectlombok:lombok:1.18.24"
-    annotationProcessor "org.projectlombok:lombok:1.18.22"
-    testCompileOnly "org.projectlombok:lombok:1.18.22"
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.22"
+    annotationProcessor "org.projectlombok:lombok:1.18.24"
+    testCompileOnly "org.projectlombok:lombok:1.18.24"
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
 
     testImplementation "com.h2database:h2:1.4.200"
 }
