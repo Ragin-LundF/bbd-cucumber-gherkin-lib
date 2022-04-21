@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.6.20'
     repositories {
         mavenCentral()
     }
@@ -34,9 +34,9 @@ dependencies {
     api "org.glassfish:javax.json:1.1.4"
     api "net.javacrumbs.json-unit:json-unit:2.34.0"
 
-    api "io.cucumber:cucumber-java:7.2.3"
+    api "io.cucumber:cucumber-java:7.3.1"
     api "io.cucumber:cucumber-spring:7.2.3"
-    api "io.cucumber:cucumber-junit:7.2.3"
+    api "io.cucumber:cucumber-junit:7.3.1"
 
     api "javax.validation:validation-api:2.0.1.Final"
 
