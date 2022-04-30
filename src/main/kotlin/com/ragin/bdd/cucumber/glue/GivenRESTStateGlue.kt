@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 /**
  * This class contains steps to edit the test state.
@@ -49,7 +48,7 @@ class GivenRESTStateGlue(
      */
     @Given("that the following users and tokens are existing")
     fun givenThatUsersAndTokensExisting(userDataTable: DataTable) {
-        val userDataMap = userDataTable.asMap<String, String>(String::class.java, String::class.java)
+        val userDataMap = userDataTable.asMap(String::class.java, String::class.java)
         val keySet: Set<String> = userDataMap.keys
         for (key in keySet) {
             ScenarioStateContext.userTokenMap[key] = ScenarioStateContext.resolveEntry(userDataMap[key]!!)
@@ -93,7 +92,7 @@ class GivenRESTStateGlue(
     @Given("that the file {string} is used as the body")
     @Throws(IOException::class)
     fun givenThatTheFileIsUsedAsTheBody(pathToFile: String) {
-        ScenarioStateContext.editableBody = readFile(pathToFile)
+        ScenarioStateContext.editableBody = readFileAsString(pathToFile)
     }
 
     /**
@@ -133,7 +132,7 @@ class GivenRESTStateGlue(
      */
     @Given("that the context contains the following 'key' and 'value' pairs")
     fun givenThatContextContainsKeyValuePairFromDataTable(dataTable: DataTable) {
-        val contextDataTableMap = dataTable.asMap<String, String>(String::class.java, String::class.java)
+        val contextDataTableMap = dataTable.asMap(String::class.java, String::class.java)
         val keySet: Set<String> = contextDataTableMap.keys
         for (key in keySet) {
             ScenarioStateContext.scenarioContextMap[key] = contextDataTableMap[key]!!
@@ -241,6 +240,15 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap.put(
             contextKey,
             now.plusYears(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        )
+    }
+
+    @Given("that the file {string} is stored as {string}")
+    fun givenFileStoredInContext(filePath: String, contextKey: String) {
+        val file = readFileAsByteArray(filePath)
+        ScenarioStateContext.scenarioContextFileMap.put(
+            contextKey,
+            file
         )
     }
 }

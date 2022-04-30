@@ -15,7 +15,7 @@
     - [Execute an authorized {httpMethod} request call](#execute-an-authorized-httpmethod-request-call)
     - [Execute an authorized {httpMethod} request call to previously given URL with dynamic URI elements](#execute-an-authorized-httpmethod-request-call-to-previously-given-url-with-dynamic-uri-elements)
     - [Execute a {httpMethod} request call to previously given URL with dynamic URI elements](#execute-a-httpmethod-request-call-to-previously-given-url-with-dynamic-uri-elements)
-
+    - [Execute a form-data POST request](#execute-a-form-data-post-request)
 
 # When
 The paths that are used here can be shortened by set a base URL path with [Set base path for URLs](../README.md#set-base-path-for-urls) with a `Given` Step before.
@@ -240,3 +240,34 @@ To set something to the `ScenarioStateContext` it is possible to use [Read from 
 But like mentioned at this point, this is an [Anti-Pattern](https://cucumber.io/docs/guides/anti-patterns/), which should be used with caution.
 
 **Requires the `Step` [Set a URI path for later execution](../README.md#set-a-uri-path-for-later-execution)!**
+
+## Execute a form-data POST request
+
+With the following sentences it is possible to create a simple form-data POST request.
+A file can also be attached in the process.
+
+To add the file there is the sentence:
+
+```gherkin
+Scenario: Post form data
+    Given that the file "test.txt" is stored as "FORM_FILE"
+```
+
+The file is placed as a byte array in a separate context, which is emptied again after the scenario is completed for memory reasons.
+
+To execute a form-data request the following sentences are available:
+
+```gherkin
+When executing a form-data POST call to "/your/api" with the fields
+    | text-form-data-key  | text-form-data-value      |
+```
+
+```gherkin
+When executing an authorized form-data POST call to "/your/api" with the fields
+    | text-form-data-key  | text-form-data-value      |
+```
+
+The fields are written as key/value datamap.
+
+Examples can be found at [src/test/resources/features/form_data/](src/test/resources/features/form_data/).
+

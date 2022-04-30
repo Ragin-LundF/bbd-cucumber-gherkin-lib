@@ -61,7 +61,7 @@ object RESTCommunicationUtils {
         Assert.assertNotNull("No given path found", path)
 
         // Read datatable
-        val dataTableRowList = dataTable.asMaps<String, String>(String::class.java, String::class.java)
+        val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
         for (stringStringMap in dataTableRowList) {
             // Try to resolve value from context map
             var uriValue = scenarioContextMap[stringStringMap["URI Values"]]

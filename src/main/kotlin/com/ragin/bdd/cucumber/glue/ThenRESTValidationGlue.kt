@@ -49,7 +49,7 @@ class ThenRESTValidationGlue(
     @Then("I ensure that the body of the response is equal to the file {string}")
     @Throws(IOException::class)
     fun thenEnsureTheBodyOfTheResponseIsEqualToTheFile(pathToFile: String) {
-        val expectedBody = readFile(pathToFile)
+        val expectedBody = readFileAsString(pathToFile)
         assertJSONisEqual(
                 expectedBody,
                 latestResponse!!.body
@@ -136,7 +136,7 @@ class ThenRESTValidationGlue(
             expectedStatusCode: Int,
             pathToFile: String
     ) {
-        val expectedBody = readFile(pathToFile)
+        val expectedBody = readFileAsString(pathToFile)
         Assert.assertEquals(
                 expectedStatusCode,
                 Integer.valueOf(latestResponse!!.statusCode.value())

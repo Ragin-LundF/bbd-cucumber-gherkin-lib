@@ -52,11 +52,27 @@ open class BaseCucumberCore(protected val jsonUtils: JsonUtils, protected val bd
      * @throws IOException      Error while reading file
      */
     @Throws(IOException::class)
-    protected fun readFile(path: String): String {
+    protected fun readFileAsString(path: String): String {
         val name = getFilePath(path)
         val resourceAsStream = javaClass.classLoader.getResourceAsStream(name)
                 ?: throw FileNotFoundException("Could not find the file $name in the class path.")
         return IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8)
+    }
+
+    /**
+     * Read file and return content as ByteArray.
+     * If the path contains the reserved word "absolutePath:" it tries to resolve the file from the classpath root.
+     *
+     * @param path              Path to file
+     * @return                  Content of file as ByteArray
+     * @throws IOException      Error while reading file
+     */
+    @Throws(IOException::class)
+    protected fun readFileAsByteArray(path: String): ByteArray {
+        val name = getFilePath(path)
+        val resourceAsStream = javaClass.classLoader.getResourceAsStream(name)
+                ?: throw FileNotFoundException("Could not find the file $name in the class path.")
+        return resourceAsStream.readBytes()
     }
 
     /**
