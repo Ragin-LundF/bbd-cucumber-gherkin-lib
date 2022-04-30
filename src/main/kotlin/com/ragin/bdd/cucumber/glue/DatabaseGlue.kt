@@ -48,7 +48,7 @@ open class DatabaseGlue(
     @Throws(IOException::class)
     open fun givenThatTheDatabaseWasInitializedWithSQLFile(pathToQueryFile: String) {
         // read file
-        val sqlStatements = readFile(pathToQueryFile)
+        val sqlStatements = readFileAsString(pathToQueryFile)
         // execute query
         databaseExecutorService.executeSQL(sqlStatements)
     }
@@ -65,7 +65,7 @@ open class DatabaseGlue(
     @Throws(IOException::class)
     open fun thenEnsureThatResultOfQueryOfFileIsEqualToCSV(pathToQueryFile: String, pathToCsvFile: String) {
         // read file
-        val sqlStatements = readFile(pathToQueryFile)
+        val sqlStatements = readFileAsString(pathToQueryFile)
         // execute query
         val queryResults = generifyDatabaseJSONFiles(databaseExecutorService.executeQuerySQL(sqlStatements))
 
@@ -73,7 +73,7 @@ open class DatabaseGlue(
         val iterator: Iterator<Map<String, Any?>> = CsvMapper()
             .readerFor(MutableMap::class.java)
             .with(CsvSchema.emptySchema().withHeader())
-            .readValues(readFile(pathToCsvFile))
+            .readValues(readFileAsString(pathToCsvFile))
 
         // write data into list
         val csvList: MutableList<Map<String, Any?>> = ArrayList()

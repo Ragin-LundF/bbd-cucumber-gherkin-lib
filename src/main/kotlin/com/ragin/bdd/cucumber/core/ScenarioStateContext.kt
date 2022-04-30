@@ -14,6 +14,7 @@ object ScenarioStateContext {
     var defaultBearerToken = ""
     var headerValues: HashMap<String, String> = HashMap()
     var scenarioContextMap: HashMap<String, String> = HashMap()
+    var scenarioContextFileMap: HashMap<String, ByteArray> = HashMap()
     var userTokenMap: HashMap<String, String> = HashMap()
     private var jsonPathOptions: MutableList<Option> = ArrayList(0)
     var executionTime = -1L
@@ -53,12 +54,22 @@ object ScenarioStateContext {
         jsonPathOptions = ArrayList(0)
         bearerToken = defaultBearerToken
         polling = Polling()
+        scenarioContextFileMap = HashMap()
     }
 
     fun resolveEntry(key: String): String {
         var value = scenarioContextMap[key]
         if (Objects.isNull(value)) {
             value = key
+        }
+
+        return value!!
+    }
+
+    fun resolveFileEntry(key: String): ByteArray {
+        val value = scenarioContextFileMap[key]
+        if (Objects.isNull(value)) {
+            throw java.lang.IllegalArgumentException("Entry $key not found in scendario file context")
         }
 
         return value!!

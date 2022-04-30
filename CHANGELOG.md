@@ -1,3 +1,37 @@
+# Release 1.46.0
+## Updated Libraries
+- Spring Boot updated to 2.6.7
+- Cucumber updated to 7.3.2
+
+## Feature: Simple form-data POST request
+It is now possible to create a simple form-data POST request.
+A file can also be attached in the process.
+
+To add the file there is the sentence:
+
+```gherkin
+Scenario: Post form data
+    Given that the file "test.txt" is stored as "FORM_FILE"
+```
+
+The file is placed as a byte array in a separate context, which is emptied again after the scenario is completed for memory reasons.
+
+To execute a form-data request the following sentences are available:
+
+```gherkin
+When executing a form-data POST call to "/your/api" with the fields
+    | text-form-data-key  | text-form-data-value      |
+```
+
+```gherkin
+When executing an authorized form-data POST call to "/your/api" with the fields
+    | text-form-data-key  | text-form-data-value      |
+```
+
+The fields are written as key/value datamap.
+
+Examples can be found at [src/test/resources/features/form_data/](src/test/resources/features/form_data/).
+
 # Release 1.45.0
 - Updated Spring Boot to 2.6.6 to avoid issues with Spring Shell.
 

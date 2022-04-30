@@ -83,7 +83,7 @@ class WhenRESTExecutionGlue(
     @Throws(IOException::class)
     fun whenExecutingCallToUriAndBodyFromFile(httpMethod: HttpMethod, uri: String, pathToFile: String) {
         uriPath = uri
-        val body = readFile(pathToFile)
+        val body = readFileAsString(pathToFile)
         editableBody = body
         executeRequest(httpMethod, false)
     }
@@ -100,7 +100,7 @@ class WhenRESTExecutionGlue(
     @Throws(IOException::class)
     fun whenExecutingAuthorizedCallToUriWithBodyFromFile(httpMethod: HttpMethod, uri: String, pathToFile: String) {
         uriPath = uri
-        val body = readFile(pathToFile)
+        val body = readFileAsString(pathToFile)
         editableBody = body
         executeRequest(httpMethod, true)
     }
@@ -291,7 +291,7 @@ class WhenRESTExecutionGlue(
                                                                  expectedStatusCode: Int,
                                                                  pathToFile: String
     ) {
-        val expectedBody = readFile(pathToFile)
+        val expectedBody = readFileAsString(pathToFile)
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
     }
 
@@ -309,7 +309,7 @@ class WhenRESTExecutionGlue(
                                                        expectedStatusCode: Int,
                                                        pathToFile: String
     ) {
-        val expectedBody = readFile(pathToFile)
+        val expectedBody = readFileAsString(pathToFile)
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
     }
 
@@ -363,6 +363,28 @@ class WhenRESTExecutionGlue(
     @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to")
     fun whenExecutingPollingUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String) {
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
+    }
+
+    /**
+     * Executes a form-data multipart POST request.
+     *
+     * The datatable contains the fields of the request as key/value pair.
+     */
+    @When("executing a form-data POST call to {string} with the fields")
+    fun whenExecutingFormDataRequest(uri: String, dataTable: DataTable) {
+        uriPath = uri
+        executeFormDataRequest(dataTable, false)
+    }
+
+    /**
+     * Executes an authorized form-data multipart POST request.
+     *
+     * The datatable contains the fields of the request as key/value pair.
+     */
+    @When("executing an authorized form-data POST call to {string} with the fields")
+    fun whenExecutingAuthorizedFormDataRequest(uri: String, dataTable: DataTable) {
+        uriPath = uri
+        executeFormDataRequest(dataTable, true)
     }
 
     private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String? = null, authorized: Boolean) {

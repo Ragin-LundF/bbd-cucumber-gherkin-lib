@@ -4,6 +4,7 @@ import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
+import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextFileMap
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.urlBasePath
@@ -14,7 +15,6 @@ import io.cucumber.datatable.DataTable
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.StringSubstitutor
 import org.apache.http.HttpHost
-import org.apache.http.client.RedirectStrategy
 import org.apache.http.conn.ssl.NoopHostnameVerifier
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
@@ -23,15 +23,20 @@ import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.HttpServerErrorException
 import java.io.IOException
 import java.net.Proxy
+import java.util.*
 import javax.annotation.PostConstruct
+
 
 abstract class BaseRESTExecutionGlue(
     jsonUtils: JsonUtils,
@@ -105,7 +110,7 @@ abstract class BaseRESTExecutionGlue(
     }
 
     /**
-     * Executes a call with dynamic URL and replaces dynamic values with data from DataTable
+     * Executes a call with dynamic URL and replaces dynamic values with data from DataTable.
      *
      * @param dataTable     DataTable which contains dynamic values mapping. If null, no URI parameter will be mapped.
      * @param httpMethod    HttpMethod of the request
@@ -113,18 +118,7 @@ abstract class BaseRESTExecutionGlue(
      */
     protected fun executeRequest(dataTable: DataTable, httpMethod: HttpMethod, authorized: Boolean) {
         // Prepare path with dynamic URLs from datatable
-        var path: String = if (!dataTable.isEmpty) {
-            prepareDynamicURLWithDataTable(dataTable)
-        } else {
-            uriPath
-        }
-
-        val resolvedUri = scenarioContextMap[path]
-        if (resolvedUri != null) {
-            path = resolvedUri
-        }
-
-        path = replacePathPlaceholders(path)
+        val path = preparePath(dataTable)
 
         // Prepare headers
         val headers = createHTTPHeader(authorized)
@@ -148,6 +142,54 @@ abstract class BaseRESTExecutionGlue(
         } catch (hsee: HttpServerErrorException) {
             setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
         }
+    }
+
+    /**
+     * Executes a multipart/form data post request with dynamic URL and replaces dynamic values with data from DataTable.
+     *
+     * @param dataTable     DataTable which contains the form data
+     * @param authorized    should the request executed authorized or unauthorized (true = authorized)
+     */
+    protected fun executeFormDataRequest(dataTable: DataTable, authorized: Boolean) {
+        val path = preparePath(DataTable.emptyDataTable())
+
+        // Prepare headers
+        val headers = createHTTPHeader(authorized)
+        headers.contentType = MULTIPART_FORM_DATA
+
+        val formDataMap: MultiValueMap<String, Any> = LinkedMultiValueMap()
+        dataTable.asMap().forEach { entry ->
+            val byteArray = scenarioContextFileMap[entry.value]
+            if (Objects.nonNull(byteArray)) {
+                formDataMap.add(entry.key, byteArray)
+            } else {
+                formDataMap.add(entry.key, scenarioContextMap[entry.value] ?: entry.value)
+            }
+        }
+
+        val request = HttpEntity(formDataMap, headers)
+        try {
+            setLatestResponse(
+                restTemplate.postForEntity(fullURLFor(path), request, String::class.java)
+            )
+        } catch (hsee: HttpServerErrorException) {
+            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+        }
+    }
+
+    protected fun preparePath(dataTable: DataTable): String {
+        var path: String = if (!dataTable.isEmpty) {
+            prepareDynamicURLWithDataTable(dataTable)
+        } else {
+            uriPath
+        }
+
+        val resolvedUri = scenarioContextMap[path]
+        if (resolvedUri != null) {
+            path = resolvedUri
+        }
+
+        return replacePathPlaceholders(path)
     }
 
     /**
