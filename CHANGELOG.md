@@ -1,4 +1,4 @@
-# Release 1.47.0
+# Release 1.48.0
 ## Updated Libraries
 - Cucumber updated to 7.3.4
 - Liquibase updated to 4.10.0 (CVE-fix)
