@@ -1,3 +1,8 @@
+# Release 1.47.0
+## Updated Libraries
+- Cucumber updated to 7.3.4
+- Liquibase updated to 4.10.0 (CVE-fix)
+
 # Release 1.46.0
 ## Updated Libraries
 - Spring Boot updated to 2.6.7

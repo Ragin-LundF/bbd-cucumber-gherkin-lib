@@ -34,7 +34,7 @@ dependencies {
     api "org.glassfish:javax.json:1.1.4"
     api "net.javacrumbs.json-unit:json-unit:2.34.0"
 
-    api "io.cucumber:cucumber-java:7.3.2"
+    api "io.cucumber:cucumber-java:7.3.4"
     api "io.cucumber:cucumber-spring:7.3.4"
     api "io.cucumber:cucumber-junit:7.3.4"
 
@@ -44,7 +44,8 @@ dependencies {
     implementation "commons-io:commons-io:2.11.0"
     implementation "org.apache.commons:commons-lang3:3.12.0"
 
-    implementation "org.liquibase:liquibase-core"
+    // Defining the version here, because Spring brings 4.5.0, which has a CVE
+    implementation "org.liquibase:liquibase-core:4.10.0"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
