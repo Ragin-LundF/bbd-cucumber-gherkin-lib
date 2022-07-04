@@ -1,12 +1,16 @@
-package com.ragin.bdd.cucumbertests.hooks;
+package com.ragin.bdd.cucumbertests.glue;
 
 import com.ragin.bdd.Application;
 import com.ragin.bdd.cucumber.core.DatabaseExecutorService;
 import com.ragin.bdd.cucumber.utils.JsonUtils;
+import com.ragin.bdd.cucumbertests.hooks.CustomDateTimeFormatter;
+import com.ragin.bdd.cucumbertests.hooks.ParameterizedCustomMultiParameterMatcher;
+import com.ragin.bdd.cucumbertests.hooks.ParameterizedCustomScenarioContextMatcher;
+import com.ragin.bdd.cucumbertests.hooks.SimpleCustomUUIDMatcher;
 import io.cucumber.java.Before;
 import io.cucumber.spring.CucumberContextConfiguration;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,9 +37,9 @@ import org.springframework.test.context.ContextConfiguration;
         properties = "spring.main.allow-bean-definition-overriding=true"
 )
 @SuppressWarnings("squid:S3577")
-public class CreateContextHooks {
+public class CreateContextGlue {
     @Test
-    @Ignore("Empty test to avoid java.lang.Exception: No runnable methods.")
+    @Disabled("Empty test to avoid java.lang.Exception: No runnable methods.")
     public void emptyTest(){
         // See "http://sqa.fyicenter.com/FAQ/JUnit/Can_You_Explain_the_Exception_No_runnable_meth.html" for more info.
     }

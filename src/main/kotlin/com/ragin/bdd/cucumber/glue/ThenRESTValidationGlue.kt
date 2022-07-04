@@ -10,8 +10,11 @@ import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Then
 import org.apache.commons.logging.LogFactory
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.IOException
+import java.util.Locale
 
 /**
  * This class contains HTTP response validations.
@@ -30,9 +33,9 @@ class ThenRESTValidationGlue(
      */
     @Then("I ensure that the status code of the response is {int}")
     fun thenEnsureThatTheStatusCodeOfTheResponseIs(expectedStatusCode: Int) {
-        Assert.assertEquals(
-                expectedStatusCode,
-                Integer.valueOf(latestResponse!!.statusCode.value())
+        assertEquals(
+            expectedStatusCode,
+            Integer.valueOf(latestResponse!!.statusCode.value())
         )
     }
 
@@ -51,18 +54,24 @@ class ThenRESTValidationGlue(
     fun thenEnsureTheBodyOfTheResponseIsEqualToTheFile(pathToFile: String) {
         val expectedBody = readFileAsString(pathToFile)
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expectedBody,
+            latestResponse!!.body
         )
     }
 
     @Then("I ensure, that the header {string} is equal to {string}")
     fun thenEnsureHeaderIsEqualTo(headerName: String, expectedValue: String) {
         val header = latestResponse!!.headers.getOrEmpty(headerName).joinToString(",")
-        Assert.assertEquals(
-            String.format("Header [%s] does not have the value [%s], but [%s]", headerName, expectedValue, header),
+        assertEquals(
             expectedValue,
-            header
+            header,
+            String.format(
+                Locale.ENGLISH,
+                "Header [%s] does not have the value [%s], but [%s]",
+                headerName,
+                expectedValue,
+                header
+            )
         )
     }
 
@@ -78,8 +87,8 @@ class ThenRESTValidationGlue(
     @Then("^I ensure that the body of the response is equal to$")
     fun thenEnsureTheBodyOfTheResponseIsEqualTo(expectedBody: String) {
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expectedBody,
+            latestResponse!!.body
         )
     }
 
@@ -109,13 +118,13 @@ class ThenRESTValidationGlue(
      */
     @Then("I ensure that the response code is {int} and the body is equal to")
     fun thenEnsureTheResponseCodeAndBodyIsEqualTo(expectedStatusCode: Int, expectedBody: String) {
-        Assert.assertEquals(
-                expectedStatusCode,
-                Integer.valueOf(latestResponse!!.statusCode.value())
+        assertEquals(
+            expectedStatusCode,
+            Integer.valueOf(latestResponse!!.statusCode.value())
         )
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expectedBody,
+            latestResponse!!.body
         )
     }
 
@@ -133,17 +142,17 @@ class ThenRESTValidationGlue(
     @Then("I ensure that the response code is {int} and the body is equal to the file {string}")
     @Throws(IOException::class)
     fun thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(
-            expectedStatusCode: Int,
-            pathToFile: String
+        expectedStatusCode: Int,
+        pathToFile: String
     ) {
         val expectedBody = readFileAsString(pathToFile)
-        Assert.assertEquals(
-                expectedStatusCode,
-                Integer.valueOf(latestResponse!!.statusCode.value())
+        assertEquals(
+            expectedStatusCode,
+            Integer.valueOf(latestResponse!!.statusCode.value())
         )
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expectedBody,
+            latestResponse!!.body
         )
     }
 
@@ -159,15 +168,15 @@ class ThenRESTValidationGlue(
      */
     @Then("I store the string of the field {string} in the context {string} for later usage")
     fun storeStringOfFieldInContextForLaterUsage(fieldName: String, contextName: String) {
-        Assert.assertNotNull(fieldName)
-        Assert.assertNotNull(contextName)
-        Assert.assertNotNull(
-                "response was null!",
-                latestResponse
+        assertNotNull(fieldName)
+        assertNotNull(contextName)
+        assertNotNull(
+            latestResponse,
+            "response was null!"
         )
-        Assert.assertNotNull(
-                "body of response was null",
-                latestResponse!!.body
+        assertNotNull(
+            latestResponse!!.body,
+            "body of response was null"
         )
         var jsonPath = fieldName
         if (!jsonPath.startsWith("$.")) {
@@ -187,7 +196,7 @@ class ThenRESTValidationGlue(
     fun ensureThatExecutionTimeIsLessThan(expectedExecutionTime: Long) {
         val executionTime = System.currentTimeMillis() - executionTime
         val executionTimeValid = executionTime <= expectedExecutionTime
-        Assert.assertTrue("The performance was poor with [$executionTime ms]", executionTimeValid)
+        assertTrue(executionTimeValid, "The performance was poor with [$executionTime ms]")
     }
 
     /**

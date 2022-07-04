@@ -5,7 +5,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import io.cucumber.datatable.DataTable
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.springframework.http.HttpHeaders
 
 /**
@@ -32,15 +32,15 @@ object RESTCommunicationUtils {
             }
         }
 
-        if (! headerValues.containsKey("Content-Type")) {
+        if (!headerValues.containsKey("Content-Type")) {
             headers.add("Content-Type", "application/json")
         }
 
-        if (! headerValues.containsKey("Accept")) {
+        if (!headerValues.containsKey("Accept")) {
             headers.add("Accept", "application/json")
         }
 
-        if (! headerValues.containsKey("Accept-Language")) {
+        if (!headerValues.containsKey("Accept-Language")) {
             headers.add("Accept-Language", "en")
         }
         return headers
@@ -58,7 +58,7 @@ object RESTCommunicationUtils {
         var path = uriPath
 
         // assert that given for path and body was previously done
-        Assert.assertNotNull("No given path found", path)
+        assertNotNull(path, "No given path found")
 
         // Read datatable
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
@@ -71,8 +71,8 @@ object RESTCommunicationUtils {
             }
             // replace path with URI key and URI value
             path = path.replace(
-                    "{" + stringStringMap["URI Elements"] + "}",
-                    uriValue!!
+                "{" + stringStringMap["URI Elements"] + "}",
+                uriValue!!
             )
         }
         return path

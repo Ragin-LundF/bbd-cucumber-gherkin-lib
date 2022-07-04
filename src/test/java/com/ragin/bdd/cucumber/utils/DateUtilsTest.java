@@ -1,10 +1,10 @@
 package com.ragin.bdd.cucumber.utils;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.ragin.bdd.cucumbertests.hooks.CustomDateTimeFormatter;
 import java.util.Collections;
 import java.util.stream.Stream;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DateUtilsTest {
     
@@ -37,7 +37,7 @@ public class DateUtilsTest {
                 "2020-11-11T17:53:37.123467",
                 "2020-11-11T17:53:37.1234678",
                 "2020-11-11T17:53:37.12346789")
-            .forEach(sample -> TestCase.assertTrue(
+            .forEach(sample -> assertTrue(
                     DateUtils.isValidMandatoryDate(sample,
                             Collections.singletonList(new CustomDateTimeFormatter()))));
     }

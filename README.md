@@ -35,6 +35,7 @@ The library is available on Maven Central.
 ```groovy
 dependencies {
     testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+    testImplementation "org.junit.platform:junit-platform-suite"
 }
 ```
 
@@ -89,11 +90,11 @@ To learn more, read the [docs/configuration.md](docs/configuration.md) Guide.
 This library defines a set of sentences and tries to harmonize them and provide a context-related beginning of sentences.
 This is very helpful for IDEs with code completion.
 
-| Step    | Sentence start           | Main usage         |
-| ---     | ---                      | ---                |
-| `Given` | `that`                   | Prepare something  |
-| `When`  | `executing a` or `I set` | Do something       |
-| `Then`  | `I ensure` or `I store`  | Validate something |
+| Step     | Sentence start            | Main usage          |
+|----------|---------------------------|---------------------|
+| `Given`  | `that`                    | Prepare something   |
+| `When`   | `executing a` or `I set`  | Do something        |
+| `Then`   | `I ensure` or `I store`   | Validate something  |
 
 There are a lot of examples in the [src/test](src/test) directory.
 

@@ -1,3 +1,43 @@
+# Release 1.49.0
+## Updated Libraries
+- Cucumber updated to 7.4.1
+
+## jUnit 5 support
+This version no longer ships jUnit 4. Instead, jUnit 5 should be used.
+
+The new Runner class looks now like this:
+
+```java
+@Suite
+@IncludeEngines("cucumber")
+@SelectClasspathResource("features")
+@ExcludeTags("ignore")
+@CucumberOptions(
+        glue = {
+                "com.ragin.bdd.cucumber.glue",
+                "com.ragin.bdd.cucumber.hooks",
+                "com.ragin.bdd.cucumbertests.hooks"
+        },
+        plugin = {
+                "json:target/reports/cucumber/cucumber.json",
+                "html:target/reports/cucumber/cucumber.html"
+        },
+        publish = true // publish it to https://reports.cucumber.io. Decide if you wish it!
+)
+public class RunnerCucumber {
+}
+```
+
+You should use `junit-platform-suite` as dependency for this:
+
+```gradle
+testImplementation "org.junit.platform:junit-platform-suite"
+```
+
+To include or exclude, you can use [jUnits Tag Expression](https://junit.org/junit5/docs/current/user-guide/#running-tests-tag-expressions).
+
+Find more information about configuring Cucumber with jUnit 5 at: https://github.com/cucumber/cucumber-jvm/blob/main/junit-platform-engine/README.md
+
 # Release 1.48.0
 ## Updated Libraries
 - Cucumber updated to 7.3.4

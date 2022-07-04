@@ -10,7 +10,8 @@ import io.cucumber.java.ParameterType
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import org.apache.commons.logging.LogFactory
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpMethod
 import java.io.IOException
@@ -287,9 +288,10 @@ class WhenRESTExecutionGlue(
      */
     @Then("executing an authorized {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
     @Throws(IOException::class)
-    fun whenExecutingAuthorizedPollingUntilResponseIsEqualToFile(httpMethod: HttpMethod,
-                                                                 expectedStatusCode: Int,
-                                                                 pathToFile: String
+    fun whenExecutingAuthorizedPollingUntilResponseIsEqualToFile(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        pathToFile: String
     ) {
         val expectedBody = readFileAsString(pathToFile)
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
@@ -305,9 +307,10 @@ class WhenRESTExecutionGlue(
      */
     @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
     @Throws(IOException::class)
-    fun whenExecutingPollingUntilResponseIsEqualToFile(httpMethod: HttpMethod,
-                                                       expectedStatusCode: Int,
-                                                       pathToFile: String
+    fun whenExecutingPollingUntilResponseIsEqualToFile(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        pathToFile: String
     ) {
         val expectedBody = readFileAsString(pathToFile)
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
@@ -322,8 +325,12 @@ class WhenRESTExecutionGlue(
      */
     @Then("executing an authorized {httpMethod} poll request until the response code is {int}")
     @Throws(IOException::class)
-    fun whenExecutingAuthorizedPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod,  expectedStatusCode: Int) {
-        executePollRequestUntilResponseIsEqual(httpMethod = httpMethod, expectedStatusCode = expectedStatusCode, authorized = true)
+    fun whenExecutingAuthorizedPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int) {
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            authorized = true
+        )
     }
 
     /**
@@ -336,7 +343,11 @@ class WhenRESTExecutionGlue(
     @Then("executing a {httpMethod} poll request until the response code is {int}")
     @Throws(IOException::class)
     fun whenExecutingPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int) {
-        executePollRequestUntilResponseIsEqual(httpMethod = httpMethod, expectedStatusCode = expectedStatusCode, authorized = false)
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            authorized = false
+        )
     }
 
     /**
@@ -348,7 +359,11 @@ class WhenRESTExecutionGlue(
      * @param expectedBody describes the expected JSON body
      */
     @Then("executing an authorized {httpMethod} poll request until the response code is {int} and the body is equal to")
-    fun whenExecutingAuthorizedPollingUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String) {
+    fun whenExecutingAuthorizedPollingUntilResponseIsEqual(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        expectedBody: String
+    ) {
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
     }
 
@@ -361,7 +376,11 @@ class WhenRESTExecutionGlue(
      * @param expectedBody describes the expected JSON body
      */
     @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to")
-    fun whenExecutingPollingUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String) {
+    fun whenExecutingPollingUntilResponseIsEqual(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        expectedBody: String
+    ) {
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
     }
 
@@ -387,10 +406,16 @@ class WhenRESTExecutionGlue(
         executeFormDataRequest(dataTable, true)
     }
 
-    private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String? = null, authorized: Boolean) {
-        Assert.assertNotEquals("Please configure max number of polls!",
+    private fun executePollRequestUntilResponseIsEqual(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        expectedBody: String? = null,
+        authorized: Boolean
+    ) {
+        assertNotEquals(
             -1,
-            ScenarioStateContext.polling.numberOfPolls
+            ScenarioStateContext.polling.numberOfPolls,
+            "Please configure max number of polls!"
         )
 
         var repeatLoop = 0
@@ -398,7 +423,7 @@ class WhenRESTExecutionGlue(
             executeRequest(httpMethod, authorized)
             try {
                 evaluateBody(expectedBody)
-                Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
+                assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
                 repeatLoop = i
                 break
             } catch (error: AssertionError) {
@@ -407,7 +432,7 @@ class WhenRESTExecutionGlue(
         }
 
         evaluateBody(expectedBody)
-        Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
+        assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
         log.info("Polling finished after $repeatLoop repeats")
     }
 

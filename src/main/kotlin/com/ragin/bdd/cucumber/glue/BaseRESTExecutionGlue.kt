@@ -18,8 +18,8 @@ import org.apache.http.HttpHost
 import org.apache.http.conn.ssl.NoopHostnameVerifier
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -34,7 +34,7 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.HttpServerErrorException
 import java.io.IOException
 import java.net.Proxy
-import java.util.*
+import java.util.Objects
 import javax.annotation.PostConstruct
 
 
@@ -47,7 +47,7 @@ abstract class BaseRESTExecutionGlue(
         protected const val PLACEHOLDER = "none"
     }
 
-    @LocalServerPort
+    @Value("\${local.server.port}")
     protected var port = 0
 
     protected fun setLatestResponse(latestResponse: ResponseEntity<String>?) {

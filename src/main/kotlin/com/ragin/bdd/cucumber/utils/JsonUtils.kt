@@ -6,22 +6,34 @@ import com.ragin.bdd.cucumber.BddLibConstants
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.getJsonPathOptions
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
-import com.ragin.bdd.cucumber.matcher.*
+import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
+import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher
+import com.ragin.bdd.cucumber.matcher.UUIDMatcher
+import com.ragin.bdd.cucumber.matcher.ValidDateContextMatcher
+import com.ragin.bdd.cucumber.matcher.ValidDateMatcher
 import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
 import org.apache.commons.logging.LogFactory
 import org.hamcrest.Matcher
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Arrays
+import java.util.Optional
 import java.util.stream.Collectors
 
 /**
  * Utility class used to work with JSON objects.
  */
 @Component
-class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>) {
+class JsonUtils(
+    private val jsonMatcher: Collection<BddCucumberJsonMatcher>?,
+    private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>
+) {
     companion object {
         private val log = LogFactory.getLog(JsonUtils::class.java)
     }
@@ -36,9 +48,9 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
         try {
             val configuration = createJsonAssertConfiguration()
             JsonAssert.assertJsonEquals(
-                    expectedJSON,
-                    actualJSON,
-                    configuration
+                expectedJSON,
+                actualJSON,
+                configuration
             )
         } catch (error: AssertionError) {
             val minimizedExpected = minimizeJSON(expectedJSON)
@@ -56,11 +68,11 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
     private fun createJsonAssertConfiguration(): Configuration {
         // base configuration
         var configuration = JsonAssert.withTolerance(0.0)
-                .`when`(Option.TREATING_NULL_AS_ABSENT)
-                .withMatcher("isValidDate", ValidDateMatcher(bddCucumberDateTimeFormatter))
-                .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
-                .withMatcher("isValidUUID", UUIDMatcher())
-                .withMatcher("isEqualToScenarioContext", ScenarioStateContextMatcher())
+            .`when`(Option.TREATING_NULL_AS_ABSENT)
+            .withMatcher("isValidDate", ValidDateMatcher(bddCucumberDateTimeFormatter))
+            .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
+            .withMatcher("isValidUUID", UUIDMatcher())
+            .withMatcher("isEqualToScenarioContext", ScenarioStateContextMatcher())
 
         // add additional options
         for (jsonOption in getJsonPathOptions()) {
@@ -87,8 +99,8 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
         var configurationVar = configuration
         try {
             configurationVar = configurationVar.withMatcher(
-                    matcher.matcherName(),
-                    matcher.matcherClass().getDeclaredConstructor().newInstance()
+                matcher.matcherName(),
+                matcher.matcherClass().getDeclaredConstructor().newInstance()
             )
         } catch (e: Exception) {
             log.error("""Unable to instantiate the matcher [${matcher.matcherName()}]""")
@@ -156,7 +168,7 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
             assertFieldValidation(expectedValueToCompare, fieldValue.toString())
         } catch (pnfe: PathNotFoundException) {
             if (BddLibConstants.BDD_LIB_NOT_EXISTS.equals(expectedValueToCompare, ignoreCase = true)) {
-                Assert.assertNull(fieldValue)
+                assertNull(fieldValue)
             } else {
                 throw pnfe
             }
@@ -173,16 +185,16 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
         if (expectedValueToCompare.startsWith(BddLibConstants.BDD_LIB_NOT)) {
             if (matcher.isPresent) {
                 val fieldMatches = matcher.get().matches(fieldValue)
-                Assert.assertFalse(fieldMatches)
+                assertFalse(fieldMatches)
             } else {
-                Assert.assertNotEquals(expectedValueToCompare.substring(BddLibConstants.BDD_LIB_NOT.length), fieldValue)
+                assertNotEquals(expectedValueToCompare.substring(BddLibConstants.BDD_LIB_NOT.length), fieldValue)
             }
         } else {
             if (matcher.isPresent) {
                 val fieldMatches = matcher.get().matches(fieldValue)
-                Assert.assertTrue(fieldMatches)
+                assertTrue(fieldMatches)
             } else {
-                Assert.assertEquals(expectedValueToCompare, fieldValue)
+                assertEquals(expectedValueToCompare, fieldValue)
             }
         }
     }
@@ -216,9 +228,9 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
     private fun minimizeJSON(json: String?): String {
         val nullSafeJson = json ?: "{}"
         return Arrays.stream(nullSafeJson.split("\n").toTypedArray())
-                .map { line: String -> line.replace("\r", "") }
-                .map { line: String -> line.replace("\": ", "\":") }
-                .map { obj: String -> obj.trim { it <= ' ' } }
-                .collect(Collectors.joining(""))
+            .map { line: String -> line.replace("\r", "") }
+            .map { line: String -> line.replace("\": ", "\":") }
+            .map { obj: String -> obj.trim { it <= ' ' } }
+            .collect(Collectors.joining(""))
     }
 }
