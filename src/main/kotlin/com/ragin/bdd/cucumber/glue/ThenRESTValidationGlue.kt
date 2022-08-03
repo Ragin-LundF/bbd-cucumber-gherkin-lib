@@ -174,8 +174,8 @@ class ThenRESTValidationGlue(
             jsonPath = "$.$jsonPath"
         }
         val documentContext = JsonPath.parse(latestResponse!!.body)
-        val field = documentContext.read(jsonPath, String::class.java)
-        scenarioContextMap[replaceTrailingAndLeadingQuotes(contextName)] = field
+        val field = documentContext.read(jsonPath, Any::class.java)
+        scenarioContextMap[replaceTrailingAndLeadingQuotes(contextName)] = field.toString()
     }
 
     /**

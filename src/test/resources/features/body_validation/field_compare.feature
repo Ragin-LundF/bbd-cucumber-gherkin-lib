@@ -43,6 +43,7 @@ Feature: Field validation instead of full JSON comparison
          * I ensure that the body of the response contains a field "object" with the value "{firstname=John, lastname=Doe}"
         # set this value to the context to test, if context is used in the next scenario
          * I store the string of the field "$.list[0]" in the context "BDD_TEST_LIST_FIRST_ELEMENT" for later usage
+         * I store the string of the field "$.objectList[?(@.first == 3)].second " in the context "BDD_TEST_OBJECT_LIST_SECOND_ELEMENT" for later usage
 
   Rule: It must be possible to re-use simple matcher
     Scenario: Validate field with a custom JSON Assert matcher
@@ -61,17 +62,20 @@ Feature: Field validation instead of full JSON comparison
       When executing a GET call to "/api/v1/fieldValidation"
       Then I ensure that the status code of the response is 200
       And I ensure that the body of the response contains the following fields and values
-      | string           | is a string                 |
-      | number           | 12                          |
-      | uuid             | ${json-unit.matches:isUUID} |
-      | $.number         | @bdd_lib_not 15             |
-      | list             | ["First","Second"]          |
-      | list[0]          | First                       |
-      | $.list[0]        | BDD_TEST_LIST_FIRST_ELEMENT |
-      | $.list[1]        | Second                      |
-      | object.firstname | John                        |
-      | object.lastname  | Doe                         |
-      | shouldNotExist   | @bdd_lib_not_exist          |
+      | string                                          | is a string                         |
+      | number                                          | 12                                  |
+      | uuid                                            | ${json-unit.matches:isUUID}         |
+      | $.number                                        | @bdd_lib_not 15                     |
+      | list                                            | ["First","Second"]                  |
+      | list[0]                                         | First                               |
+      | $.list[0]                                       | BDD_TEST_LIST_FIRST_ELEMENT         |
+      | $.list[1]                                       | Second                              |
+      | object.firstname                                | John                                |
+      | object.lastname                                 | Doe                                 |
+      | shouldNotExist                                  | @bdd_lib_not_exist                  |
+      | objectList[1]                                   | {first=3, second=4}                 |
+      | $.objectList[?(@.first == 3)].first             | [3]                                 |
+      | $.objectList[?(@.first == 3)].second            | BDD_TEST_OBJECT_LIST_SECOND_ELEMENT |
 
   Rule: It must be possible to add custom dateTime pattern and validate them with isValidDate()
     Scenario: Validate a date in format "yyyy.MM.dd" with the configured custom dateTime pattern

@@ -203,7 +203,7 @@ task cucumber(group: "verification") {
             String baseReportDir = "build/cucumberReport/"
             args = [
                     '-p', 'pretty',
-                    '-p', 'html:'+baseReportDir+'cucumber-html',
+                    '-p', 'html:'+baseReportDir+'cucumber-html.html',
                     '-p', 'junit:'+baseReportDir+'cucumber-junit.xml',
                     '-p', 'json:'+baseReportDir+'cucumber-json.json',
                     '--tags', 'not @ignore',
