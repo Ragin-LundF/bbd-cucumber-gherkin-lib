@@ -26,12 +26,25 @@ public class FieldValidation {
             subObject.put("firstname", "John");
             subObject.put("lastname", "Doe");
 
+            JSONObject listObject = new JSONObject();
+            listObject.put("first", 1);
+            listObject.put("second", 2);
+
+            JSONObject listObject2 = new JSONObject();
+            listObject2.put("first", 3);
+            listObject2.put("second", 4);
+
+            JSONArray objectArray = new JSONArray();
+            objectArray.put(listObject);
+            objectArray.put(listObject2);
+
             jsonObject.put("string", "is a string");
             jsonObject.put("number", 12);
             jsonObject.put("boolean", true);
             jsonObject.put("list", jsonArray);
             jsonObject.put("object", subObject);
             jsonObject.put("uuid", UUID.randomUUID());
+            jsonObject.put("objectList", objectArray);
         } catch (JSONException je) {
         }
 

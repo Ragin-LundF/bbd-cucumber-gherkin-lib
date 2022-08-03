@@ -72,7 +72,7 @@ To learn more, read the [docs/configuration.md](docs/configuration.md) Guide.
       - [Execute requests](#execute-requests)
     - [Then](#then-1)
       - [Additional validation configuration](#additional-validation-configuration)
-        [Wait for some ms](#wait-for-some-ms)
+      - [Wait for some ms](#wait-for-some-ms)
       - [Validate execution time of requests](#validate-execution-time-of-requests)
       - [Validate HTTP response code](#validate-http-response-code)
       - [Validate response body with JSON file](#validate-response-body-with-json-file)
