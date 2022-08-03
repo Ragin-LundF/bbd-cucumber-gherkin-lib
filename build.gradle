@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.6.21'
+    ext.kotlin_version = '1.7.0'
     repositories {
         mavenCentral()
     }
@@ -36,7 +36,7 @@ dependencies {
 
     api "io.cucumber:cucumber-java:7.3.4"
     api "io.cucumber:cucumber-spring:7.3.4"
-    api "io.cucumber:cucumber-junit:7.3.4"
+    api "io.cucumber:cucumber-junit:7.5.0"
 
     api "javax.validation:validation-api:2.0.1.Final"
 
