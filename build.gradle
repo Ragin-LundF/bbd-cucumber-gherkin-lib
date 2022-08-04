@@ -65,7 +65,10 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok:1.18.24"
     testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
 
-    testImplementation "com.h2database:h2:1.4.200"
+    testImplementation "org.postgresql:postgresql:42.4.0"
+    testImplementation "org.testcontainers:testcontainers:1.17.3"
+    testImplementation "org.testcontainers:postgresql:1.17.3"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.3"
 }
 
 jar {

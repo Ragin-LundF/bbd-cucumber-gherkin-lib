@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import lombok.Data;
 
 /**
@@ -14,17 +15,20 @@ import lombok.Data;
  * This example is only for testing.
  */
 @Data
-@Entity(name = "USER")
+@Entity(name = "BDD_USER")
+@SequenceGenerator(name = "id_gen", sequenceName = "hibernate_sequence", allocationSize = 1, initialValue = 1)
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false, length = 36, unique = true)
     @JsonIgnore
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_gen")
+    @Column(name = "ID", nullable = false, length = 36, unique = true)
     Long id;
-    @Column(name = "USER_NAME", nullable = false, length = 255, unique = true)
+
     @JsonProperty("userName")
+    @Column(name = "USER_NAME", nullable = false, length = 255, unique = true)
     String userName;
-    @Column(name = "USER_ID", nullable = false, length = 36, unique = true)
+
     @JsonProperty("userId")
+    @Column(name = "USER_ID", nullable = false, length = 36, unique = true)
     String userId;
 }

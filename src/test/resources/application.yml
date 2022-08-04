@@ -32,20 +32,23 @@ cucumberTest:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;IGNORECASE=true;DATABASE_TO_UPPER=true;MODE=PostgreSQL
-    driver-class-name: org.h2.Driver
+    url: jdbc:tc:postgresql:14.4:///cucumber
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     username: cucumber
     password: cucumber
 
   jpa:
+    show-sql: true
     hibernate:
+      globally_quoted_identifiers: true
       use-new-id-generator-mappings: false
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
       hibernate:
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
-  sql:
-    init:
-      platform: h2
 
   liquibase:
       enabled: true
