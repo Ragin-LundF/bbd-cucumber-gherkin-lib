@@ -12,6 +12,10 @@ import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 
 @ActiveProfiles("cucumberTest")
 @CucumberContextConfiguration
@@ -34,6 +38,15 @@ import org.springframework.test.context.ContextConfiguration;
 )
 @SuppressWarnings("squid:S3577")
 public class CreateContextHooks {
+    private final String POSTGRES_IMAGE = "postgres:latest";
+    private final String DOCKER_NETWORK_NAME = "bdd_cucumber_pg";
+    private final Network DOCKER_NETWORK = Network.newNetwork();
+
+    @Container
+    private final GenericContainer<?> dbContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE)
+        .withNetwork(DOCKER_NETWORK)
+        .withNetworkAliases(DOCKER_NETWORK_NAME);
+
     @Test
     @Ignore("Empty test to avoid java.lang.Exception: No runnable methods.")
     public void emptyTest(){

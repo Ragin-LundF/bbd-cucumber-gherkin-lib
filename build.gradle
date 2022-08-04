@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.7.0'
+    ext.kotlin_version = '1.7.10'
     repositories {
         mavenCentral()
     }
@@ -14,14 +14,18 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "org.springframework.boot" version "2.7.2"
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id "io.spring.dependency-management" version "1.0.12.RELEASE"
     id "org.liquibase.gradle" version "2.1.1"
-    id "org.sonarqube" version "3.3"
+    id "org.sonarqube" version "3.4.0.2513"
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
+wrapper {
+    gradleVersion = "7.5"
+}
 
 configurations.all {
     exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
@@ -34,9 +38,9 @@ dependencies {
     api "org.glassfish:javax.json:1.1.4"
     api "net.javacrumbs.json-unit:json-unit:2.35.0"
 
-    api "io.cucumber:cucumber-java:7.3.4"
-    api "io.cucumber:cucumber-spring:7.3.4"
-    api "io.cucumber:cucumber-junit:7.3.4"
+    api "io.cucumber:cucumber-java:7.5.0"
+    api "io.cucumber:cucumber-spring:7.5.0"
+    api "io.cucumber:cucumber-junit:7.5.0"
 
     api "javax.validation:validation-api:2.0.1.Final"
 
@@ -45,7 +49,7 @@ dependencies {
     implementation "org.apache.commons:commons-lang3:3.12.0"
 
     // Defining the version here, because Spring brings 4.5.0, which has a CVE
-    implementation "org.liquibase:liquibase-core:4.10.0"
+    implementation "org.liquibase:liquibase-core:4.14.0"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
@@ -61,7 +65,10 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok:1.18.24"
     testAnnotationProcessor "org.projectlombok:lombok:1.18.24"
 
-    testImplementation "com.h2database:h2:1.4.200"
+    testImplementation "org.postgresql:postgresql:42.4.0"
+    testImplementation "org.testcontainers:testcontainers:1.17.3"
+    testImplementation "org.testcontainers:postgresql:1.17.3"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.3"
 }
 
 jar {
@@ -144,8 +151,8 @@ signing {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withSourcesJar()
     withJavadocJar()
 }
@@ -225,11 +232,11 @@ jacocoTestReport {
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }

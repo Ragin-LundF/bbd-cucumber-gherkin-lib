@@ -5,7 +5,7 @@ databaseChangeLog:
       author: ragin
       changes:
         - createTable:
-            tableName: USER
+            tableName: BDD_USER
             columns:
               - column:
                   name: ID
@@ -27,3 +27,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   remarks: User UUID
+  - changeSet:
+      id: 0001-create-sequence
+      author: ragin
+      changes:
+        - createSequence:
+            sequenceName: hibernate_sequence

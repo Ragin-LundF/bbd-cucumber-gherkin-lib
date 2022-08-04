@@ -1,1 +1,1 @@
-SELECT * from USER WHERE USER_NAME='mytestuser';
+SELECT * from BDD_USER WHERE USER_NAME='mytestuser';

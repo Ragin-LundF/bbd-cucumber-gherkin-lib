@@ -6,7 +6,7 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 	<changeSet author="ragin" id="feature-insert_user">
-		<insert tableName="USER">
+		<insert tableName="BDD_USER">
 			<column name="ID" valueNumeric="1" />
 			<column name="USER_ID" value="1f086281-d28d-4dfa-9cd9-4f609afb0295" />
 			<column name="USER_NAME" value="liquibase_user" />
