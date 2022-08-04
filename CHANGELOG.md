@@ -1,3 +1,12 @@
+# Release 1.49.0
+## Update Libraries
+- Cucumber updated to 7.5.0
+- Spring Boot updated to 2.7.2
+- Liquibase updated to 4.14.0
+
+## Fixes
+The sentence `I store the string of the field "{string}" in the context "{string}" for later usage` is now able to store any kind of objects and not only strings.
+
 # Release 1.48.0
 ## Updated Libraries
 - Cucumber updated to 7.3.4
