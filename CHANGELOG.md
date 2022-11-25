@@ -1,6 +1,6 @@
 # Release 1.50.0
 ## Update Libraries
-- Cucumber updated to 7.8.1
+- Cucumber updated to 7.9.0
 - Spring Boot updated to 2.7.5
 - Liquibase updated to 4.17.2
 
