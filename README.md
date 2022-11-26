@@ -40,6 +40,5 @@ dependencies {
 
 # Documentation
 
-The documentation of the configuration, integration and available sentences can be found in the wiki.
+The documentation of the configuration, integration and available sentences can be found in the [Wiki](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki).
 
-See [Wiki](wiki)
