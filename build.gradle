@@ -102,7 +102,7 @@ publishing {
             version "${version}"
             pom {
                 name = "bdd-cucumber-gherkin-lib"
-                description = "Cucumber library for simpler e2e tests with predefined sentences for API and basic database access"
+                description = "Cucumber BDD library for simpler e2e tests with predefined sentences for API and basic database access"
                 url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
                 scm {
                     connection = "scm:git:git@github.com:Ragin-LundF/bbd-cucumber-gherkin-lib.git"
