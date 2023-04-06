@@ -1,5 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.8.20'
+    ext.jdk_version = 11
     repositories {
         mavenCentral()
     }
@@ -152,13 +153,13 @@ signing {
 }
 
 kotlin {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    jvmToolchain(11)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
     withSourcesJar()
     withJavadocJar()
 }
