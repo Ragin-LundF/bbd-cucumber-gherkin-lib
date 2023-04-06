@@ -1,3 +1,10 @@
+# Release 1.52.0
+## Update Libraries
+- Cucumber updated to 7.11.2
+- Spring Boot updated to 2.7.10
+- Liquibase updated to 4.20.0
+- Snakeyaml updated to 2.0
+
 # Release 1.51.0
 ## Update Libraries
 - Cucumber updated to 7.11.1
