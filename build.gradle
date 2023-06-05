@@ -68,9 +68,9 @@ dependencies {
     testAnnotationProcessor "org.projectlombok:lombok:1.18.26"
 
     testImplementation "org.postgresql:postgresql:42.6.0"
-    testImplementation "org.testcontainers:testcontainers:1.17.6"
-    testImplementation "org.testcontainers:postgresql:1.17.6"
-    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
+    testImplementation "org.testcontainers:testcontainers:1.18.3"
+    testImplementation "org.testcontainers:postgresql:1.18.3"
+    testImplementation "org.testcontainers:junit-jupiter:1.18.3"
 }
 
 jar {
