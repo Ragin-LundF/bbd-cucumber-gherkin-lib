@@ -2,6 +2,15 @@
   <configuration default="false" name="CucumberJUnit" type="JUnit" factoryName="JUnit">
     <module name="bdd-cucumber-gherkin-lib.test" />
     <useClassPathOnly />
+    <extension name="com.egoshard.intellij.k8s-runtime-config-plugin">
+      <option name="ENABLED" value="false" />
+      <entries />
+    </extension>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
     <option name="PACKAGE_NAME" value="com.ragin.bdd.cucumbertests" />
     <option name="MAIN_CLASS_NAME" value="com.ragin.bdd.cucumbertests.RunnerCucumber" />
     <option name="METHOD_NAME" value="" />

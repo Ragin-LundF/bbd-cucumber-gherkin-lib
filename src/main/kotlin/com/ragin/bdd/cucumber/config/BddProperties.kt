@@ -1,9 +1,7 @@
 package com.ragin.bdd.cucumber.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "cucumbertest")
 data class BddProperties(
     val authorization : Authorization?,
@@ -18,7 +16,6 @@ data class BddProperties(
         /**
          * Authorization
          */
-        @ConstructorBinding
         data class AuthorizationBearer(
             val default : String,
             val noscope: String
@@ -28,7 +25,6 @@ data class BddProperties(
     /**
      * Proxy
      */
-    @ConstructorBinding
     data class Proxy(
         val host : String = "http",
         val port : Int?
@@ -37,7 +33,6 @@ data class BddProperties(
     /**
      * Server
      */
-    @ConstructorBinding
     data class Server(
         val protocol : String = "http",
         val host : String?,
@@ -47,7 +42,6 @@ data class BddProperties(
     /**
      * SSL
      */
-    @ConstructorBinding
     data class SSL(
         val disableCheck : Boolean = false
     )

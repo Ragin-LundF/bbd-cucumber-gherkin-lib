@@ -12,17 +12,21 @@ import com.ragin.bdd.cucumber.utils.JsonUtils
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.createHTTPHeader
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWithDataTable
 import io.cucumber.datatable.DataTable
+import jakarta.annotation.PostConstruct
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.StringSubstitutor
-import org.apache.http.HttpHost
-import org.apache.http.conn.ssl.NoopHostnameVerifier
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder
+import org.apache.hc.client5.http.ssl.TrustAllStrategy
+import org.apache.hc.core5.http.HttpHost
+import org.apache.hc.core5.ssl.SSLContextBuilder
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpRequestFactory
@@ -35,7 +39,6 @@ import org.springframework.web.client.HttpServerErrorException
 import java.io.IOException
 import java.net.Proxy
 import java.util.*
-import javax.annotation.PostConstruct
 
 
 abstract class BaseRESTExecutionGlue(
@@ -69,32 +72,48 @@ abstract class BaseRESTExecutionGlue(
             @Throws(IOException::class)
             override fun hasError(response: ClientHttpResponse): Boolean {
                 val statusCode = response.statusCode
-                return statusCode.series() == HttpStatus.Series.SERVER_ERROR
+                return statusCode.is5xxServerError
             }
         }
     }
 
-    protected fun createRequestFactory() : ClientHttpRequestFactory {
+    protected fun createRequestFactory(): ClientHttpRequestFactory {
         return HttpComponentsClientHttpRequestFactory(
             createHttpClient()
         )
     }
 
-    protected fun createHttpClient() : CloseableHttpClient {
+    @Suppress("ComplexCondition")
+    protected fun createHttpClient(): CloseableHttpClient {
         val httpClientBuilder = HttpClientBuilder.create()
         httpClientBuilder.disableRedirectHandling()
 
         if (bddProperties.ssl != null && bddProperties.ssl.disableCheck) {
-            httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier())
+            httpClientBuilder.setConnectionManager(
+                PoolingHttpClientConnectionManagerBuilder.create()
+                    .setSSLSocketFactory(
+                        SSLConnectionSocketFactoryBuilder.create()
+                        .setSslContext(
+                            SSLContextBuilder.create()
+                            .loadTrustMaterial(TrustAllStrategy.INSTANCE)
+                            .build())
+                        .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                        .build())
+                    .build())
+                .build()
         }
+
         if (bddProperties.proxy != null
-            && ! StringUtils.isEmpty(bddProperties.proxy.host)
-            && bddProperties.proxy.port != null && bddProperties.proxy.port > 0) {
-            httpClientBuilder.setProxy(HttpHost(
-                bddProperties.proxy.host,
-                bddProperties.proxy.port,
-                Proxy.Type.HTTP.name
-            ))
+            && !StringUtils.isEmpty(bddProperties.proxy.host)
+            && bddProperties.proxy.port != null && bddProperties.proxy.port > 0
+        ) {
+            httpClientBuilder.setProxy(
+                HttpHost(
+                    Proxy.Type.HTTP.name,
+                    bddProperties.proxy.host,
+                    bddProperties.proxy.port,
+                )
+            )
         }
         return httpClientBuilder.build()
     }
@@ -132,12 +151,12 @@ abstract class BaseRESTExecutionGlue(
         }
         try {
             setLatestResponse(
-                    restTemplate.exchange(
-                            fullURLFor(path),
-                            httpMethod,
-                            httpEntity,
-                            String::class.java
-                    )
+                restTemplate.exchange(
+                    fullURLFor(path),
+                    httpMethod,
+                    httpEntity,
+                    String::class.java
+                )
             )
         } catch (hsee: HttpServerErrorException) {
             setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
@@ -145,7 +164,8 @@ abstract class BaseRESTExecutionGlue(
     }
 
     /**
-     * Executes a multipart/form data post request with dynamic URL and replaces dynamic values with data from DataTable.
+     * Executes a multipart/form data post request with dynamic URL and replaces dynamic
+     * values with data from DataTable.
      *
      * @param dataTable     DataTable which contains the form data
      * @param authorized    should the request executed authorized or unauthorized (true = authorized)
