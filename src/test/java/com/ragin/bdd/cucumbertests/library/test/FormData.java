@@ -1,6 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;

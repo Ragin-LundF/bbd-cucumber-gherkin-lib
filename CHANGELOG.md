@@ -1,3 +1,13 @@
+# Release 2.0.0
+This release requires Java 17 and Spring Boot 3.
+It uses also the `jakarta.*` packages instead of the `javax.*` packages.
+
+## Update Libraries
+- Spring Boot updated to 3.1.1
+- Liquibase updated to 4.23.0
+- Cucumber updated to 7.13.0
+- Apache HTTP Client updated to 5.2.1
+
 # Release 1.52.0
 ## Update Libraries
 - Cucumber updated to 7.11.2
