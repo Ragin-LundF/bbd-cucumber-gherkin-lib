@@ -1,4 +1,4 @@
-# Release 2.0.0
+# Release 2.0.1
 This release requires Java 17 and Spring Boot 3.
 It uses also the `jakarta.*` packages instead of the `javax.*` packages.
 
