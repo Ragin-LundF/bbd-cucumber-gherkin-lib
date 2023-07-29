@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class IBANMatcherCheck {
-    private static final List<String> ibanMap = List.of(
+    private static final List<String> ibanList = List.of(
             "AT702040483252512583",
             "CH8889144635889488182",
             "DE13500105177816296336",
@@ -30,7 +30,7 @@ public class IBANMatcherCheck {
 
     private String createResponse() {
         final JSONObject jsonObject = new JSONObject();
-        ibanMap.forEach(iban -> {
+        ibanList.forEach(iban -> {
             try {
                 jsonObject.put(iban.substring(0, 2), iban);
             } catch (JSONException je) {
