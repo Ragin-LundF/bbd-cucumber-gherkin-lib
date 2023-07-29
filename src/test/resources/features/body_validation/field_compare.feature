@@ -1,4 +1,20 @@
 Feature: Field validation instead of full JSON comparison
+  Rule: Matcher are working for fields
+    Scenario: Using the IBAN matcher
+      When executing a GET call to "/api/v1/iban"
+      Then I ensure that the status code of the response is 200
+      And I ensure that the body of the response is equal to
+      """
+      {
+        "AT": "${json-unit.matches:isValidIBAN}",
+        "CH": "${json-unit.matches:isValidIBAN}",
+        "DE": "${json-unit.matches:isValidIBAN}",
+        "EE": "${json-unit.matches:isValidIBAN}",
+        "FO": "${json-unit.matches:isValidIBAN}",
+        "NL": "${json-unit.matches:isValidIBAN}"
+      }
+      """
+
   Rule: It must be possible to compare a single field of JSON response independent of the type
     Scenario: Validate field with a string
       When executing a GET call to "/api/v1/fieldValidation"

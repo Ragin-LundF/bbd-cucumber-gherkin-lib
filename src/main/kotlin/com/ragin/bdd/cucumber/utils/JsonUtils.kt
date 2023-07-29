@@ -60,6 +60,7 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
                 .withMatcher("isValidDate", ValidDateMatcher(bddCucumberDateTimeFormatter))
                 .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
                 .withMatcher("isValidUUID", UUIDMatcher())
+                .withMatcher("isValidIBAN", IBANMatcher())
                 .withMatcher("isEqualToScenarioContext", ScenarioStateContextMatcher())
 
         // add additional options

@@ -1,3 +1,11 @@
+# Release 2.1.0
+## Update Libraries
+- Spring Boot updated to 3.1.2
+
+## New matcher
+- A new matcher for IBANs was added. The syntax is `${json-unit.matches:isValidIBAN}`.
+
+
 # Release 2.0.1
 This release requires Java 17 and Spring Boot 3.
 It uses also the `jakarta.*` packages instead of the `javax.*` packages.
