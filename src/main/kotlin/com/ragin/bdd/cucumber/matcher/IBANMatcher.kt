@@ -10,13 +10,14 @@ import org.springframework.stereotype.Component
 @Component
 class IBANMatcher: BaseMatcher<String?>(), BddCucumberJsonMatcher {
     override fun matcherName(): String {
-        return "isIBAN"
+        return "isValidIBAN"
     }
 
     override fun matcherClass(): Class<out BaseMatcher<*>> {
         return this::class.java
     }
 
+    @Suppress("LongMethod")
     override fun matches(actual: Any): Boolean {
         val ibanRegex = ("^AL\\d{10}[0-9A-Z]{16}\$|" +
                 "^AD\\d{10}[0-9A-Z]{12}\$|" +
