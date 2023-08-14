@@ -1,3 +1,7 @@
+# Release 2.2.0
+## Feature
+- Logs the http method and URL for each request to have a better overview what was called with dynamic URLs.
+
 # Release 2.1.0
 ## Update Libraries
 - Spring Boot updated to 3.1.2

@@ -6,7 +6,15 @@ import com.ragin.bdd.cucumber.BddLibConstants
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.getJsonPathOptions
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
-import com.ragin.bdd.cucumber.matcher.*
+import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
+import com.ragin.bdd.cucumber.matcher.IBANMatcher
+import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher
+import com.ragin.bdd.cucumber.matcher.UUIDMatcher
+import com.ragin.bdd.cucumber.matcher.ValidDateContextMatcher
+import com.ragin.bdd.cucumber.matcher.ValidDateMatcher
+import java.util.Arrays
+import java.util.Optional
+import java.util.stream.Collectors
 import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
@@ -14,14 +22,15 @@ import org.apache.commons.logging.LogFactory
 import org.hamcrest.Matcher
 import org.junit.Assert
 import org.springframework.stereotype.Component
-import java.util.*
-import java.util.stream.Collectors
 
 /**
  * Utility class used to work with JSON objects.
  */
 @Component
-class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>) {
+class JsonUtils(
+    private val jsonMatcher: Collection<BddCucumberJsonMatcher>?,
+    private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>
+) {
     companion object {
         private val log = LogFactory.getLog(JsonUtils::class.java)
     }
@@ -69,7 +78,7 @@ class JsonUtils(private val jsonMatcher: Collection<BddCucumberJsonMatcher>?, pr
         }
 
         // add additional matcher
-        if (jsonMatcher != null && !jsonMatcher.isEmpty()) {
+        if (!jsonMatcher.isNullOrEmpty()) {
             for (matcher in jsonMatcher) {
                 configuration = addMatcherConfiguration(configuration, matcher)
             }

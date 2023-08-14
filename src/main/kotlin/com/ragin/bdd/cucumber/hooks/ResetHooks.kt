@@ -28,10 +28,10 @@ open class ResetHooks(private val databaseExecutorService: IDatabaseExecutorServ
     open fun resetDatabase(scenario: Scenario) {
         // Check if the file exist
         if (javaClass.classLoader.getResource(RESET_DATABASE_FILE) == null) {
-            log.debug(String.format("No reset database file (%s) found.", RESET_DATABASE_FILE))
+            log.debug("No reset database file ($RESET_DATABASE_FILE) found.")
         } else {
             // Execute the liquibase script to reset the DB
-            log.info(String.format("Reset database for scenario %s", scenario.name))
+            log.info("Reset database for scenario ${scenario.name}")
             databaseExecutorService.executeLiquibaseScript(RESET_DATABASE_FILE)
         }
     }
@@ -42,25 +42,25 @@ open class ResetHooks(private val databaseExecutorService: IDatabaseExecutorServ
      */
     @Before(order = 3)
     fun resetBaseCucumberCoreState(scenario: Scenario) {
-        log.info("""Cleanup test state for scenario ${scenario.name}""")
+        log.info("Cleanup test state for scenario ${scenario.name}")
         reset()
     }
 
     @Before(order = 10, value = "@bdd_lib_json_ignore_new_array_elements")
     fun jsonIgnoreExtraArrayElements(scenario: Scenario) {
-        log.info("""Set JSON ignore for extra array elements for scenario ${scenario.name}""")
+        log.info("Set JSON ignore for extra array elements for scenario ${scenario.name}")
         addJsonIgnoringExtraArrayElements()
     }
 
     @Before(order = 10, value = "@bdd_lib_json_ignore_extra_fields")
     fun jsonIgnoreNewFields(scenario: Scenario) {
-        log.info("""Set JSON ignore for extra fields for scenario ${scenario.name}""")
+        log.info("Set JSON ignore for extra fields for scenario ${scenario.name}")
         addJsonIgnoringExtraFields()
     }
 
     @Before(order = 10, value = "@bdd_lib_json_ignore_array_order")
     fun jsonIgnoreArrayOrder(scenario: Scenario) {
-        log.info("""Set JSON ignore array order for scenario ${scenario.name}""")
+        log.info("Set JSON ignore array order for scenario ${scenario.name}")
         addJsonIgnoringArrayOrder()
     }
 }
