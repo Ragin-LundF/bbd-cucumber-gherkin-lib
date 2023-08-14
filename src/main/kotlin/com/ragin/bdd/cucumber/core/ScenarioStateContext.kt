@@ -6,12 +6,12 @@ import java.util.*
 
 object ScenarioStateContext {
     var latestResponse: ResponseEntity<String>? = null
-    var fileBasePath = ""
-    var urlBasePath = ""
+    var fileBasePath: String = ""
+    var urlBasePath: String = ""
     var bearerToken: String? = null
-    var editableBody = ""
-    var uriPath = ""
-    var defaultBearerToken = ""
+    var editableBody: String = ""
+    var uriPath:String = ""
+    var defaultBearerToken: String = ""
     var headerValues: HashMap<String, String> = HashMap()
     var scenarioContextMap: HashMap<String, String> = HashMap()
     var scenarioContextFileMap: HashMap<String, ByteArray> = HashMap()

@@ -168,6 +168,11 @@ class GivenRESTStateGlue(
         ScenarioStateContext.scenarioContextMap = HashMap()
     }
 
+    @Given("that the request body in the scenario context map has been reset")
+    fun givenThatStoredRequestBodyInContextMapHasBeenReset() {
+        ScenarioStateContext.editableBody = ""
+    }
+
     @Given("that the Bearer token is {string}")
     fun givenThatBearerTokenIsUsed(bearerToken: String) {
         ScenarioStateContext.bearerToken = ScenarioStateContext.resolveEntry(bearerToken)
