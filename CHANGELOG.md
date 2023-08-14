@@ -1,3 +1,11 @@
+# Release 2.3.0
+## New sentence
+```gherkin
+Given that the request body in the scenario context map has been reset
+```
+
+This sentence resets the body if a scenario uses 2 requests and the second should be empty.
+
 # Release 2.2.0
 ## Feature
 - Logs the http method and URL for each request to have a better overview what was called with dynamic URLs.

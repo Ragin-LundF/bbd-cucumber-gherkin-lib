@@ -145,7 +145,7 @@ abstract class BaseRESTExecutionGlue(
         val headers = createHTTPHeader(authorized)
 
         // create HttpEntity
-        val body = editableBody
+        var body = editableBody
         var httpEntity = HttpEntity<String?>(headers)
         if (!StringUtils.isEmpty(body)) {
             // there was a body...replace with new entity with body
@@ -193,8 +193,10 @@ abstract class BaseRESTExecutionGlue(
 
         val request = HttpEntity(formDataMap, headers)
         try {
+            val targetUrl = fullURLFor(path)
+            log.info("Executing call to [POST][$targetUrl]")
             setLatestResponse(
-                restTemplate.postForEntity(fullURLFor(path), request, String::class.java)
+                restTemplate.postForEntity(targetUrl, request, String::class.java)
             )
         } catch (hsee: HttpServerErrorException) {
             setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))

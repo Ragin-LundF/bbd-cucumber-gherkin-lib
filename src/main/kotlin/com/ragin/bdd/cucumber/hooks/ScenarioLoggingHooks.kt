@@ -17,34 +17,24 @@ class ScenarioLoggingHooks {
 
     @Before(order = 1)
     fun logBeforeScenario(scenario: Scenario) {
-        log.info(String.format(
-                "Entering scenario %s",
-                scenario.id
-        ))
+        log.info("Entering scenario ${scenario.id}")
     }
 
     @After(order = 1)
     fun logAfterScenario(scenario: Scenario) {
         if (!scenario.isFailed) {
-            log.info(String.format(
-                    "Scenario PASS %s with status %s",
-                    scenario.id,
-                    scenario.status
-            ))
+            log.info("Scenario PASS ${scenario.id} with status ${scenario.status}")
         } else {
             val latestResponse: ResponseEntity<String>? = ScenarioStateContext.latestResponse
             if (latestResponse != null) {
-                log.error(String.format(
-                        "Scenario FAIL: Exiting %s%nResponse status:%d%nResponse body:%n%s%n----------------%n",
-                        scenario.id,
-                        latestResponse.statusCodeValue,
-                        latestResponse.body
-                ))
+                log.error(
+                    "Scenario FAIL: Exiting ${scenario.id}" +
+                            "%nResponse status:${latestResponse.statusCode.value()}" +
+                            "%nResponse body:%n${latestResponse.body}" +
+                            "%n----------------%n"
+                )
             } else {
-                log.error(String.format(
-                        "Scenario FAIL: Exiting %s%n----------------%n",
-                        scenario.id
-                ))
+                log.error("Scenario FAIL: Exiting ${scenario.id}%n----------------%n")
             }
         }
     }
