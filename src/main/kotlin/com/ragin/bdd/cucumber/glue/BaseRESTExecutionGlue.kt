@@ -14,6 +14,7 @@ import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWith
 import io.cucumber.datatable.DataTable
 import jakarta.annotation.PostConstruct
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.logging.LogFactory
 import org.apache.commons.text.StringSubstitutor
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
@@ -48,6 +49,7 @@ abstract class BaseRESTExecutionGlue(
 ) : BaseCucumberCore(jsonUtils, bddProperties) {
     companion object {
         protected const val PLACEHOLDER = "none"
+        private val log = LogFactory.getLog(BaseRESTExecutionGlue::class.java)
     }
 
     @LocalServerPort
@@ -150,9 +152,11 @@ abstract class BaseRESTExecutionGlue(
             httpEntity = HttpEntity(body, headers)
         }
         try {
+            val targetUrl = fullURLFor(path)
+            log.info("Executing call to [${httpMethod.name()}][$targetUrl]")
             setLatestResponse(
                 restTemplate.exchange(
-                    fullURLFor(path),
+                    targetUrl,
                     httpMethod,
                     httpEntity,
                     String::class.java
