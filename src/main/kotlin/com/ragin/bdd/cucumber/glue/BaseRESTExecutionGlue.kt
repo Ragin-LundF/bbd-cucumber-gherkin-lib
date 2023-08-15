@@ -12,6 +12,7 @@ import com.ragin.bdd.cucumber.utils.JsonUtils
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.createHTTPHeader
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWithDataTable
 import io.cucumber.datatable.DataTable
+import io.cucumber.java.Scenario
 import jakarta.annotation.PostConstruct
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
@@ -47,11 +48,6 @@ abstract class BaseRESTExecutionGlue(
     bddProperties: BddProperties,
     private val restTemplate: TestRestTemplate
 ) : BaseCucumberCore(jsonUtils, bddProperties) {
-    companion object {
-        protected const val PLACEHOLDER = "none"
-        private val log = LogFactory.getLog(BaseRESTExecutionGlue::class.java)
-    }
-
     @LocalServerPort
     protected var port = 0
 
@@ -124,10 +120,20 @@ abstract class BaseRESTExecutionGlue(
      * Executes a request with given httpMethod
      *
      * @param httpMethod    HttpMethod of the request
-     * @param authorized    should the request executed authorized or unauthorized (true = authorized)
+     * @param authorized    should the request execute authorized or unauthorized (true = authorized)
+     * @param scenario      Cucumber scenario
      */
-    protected fun executeRequest(httpMethod: HttpMethod, authorized: Boolean) {
-        executeRequest(DataTable.emptyDataTable(), httpMethod, authorized)
+    protected fun executeRequest(
+        httpMethod: HttpMethod,
+        authorized: Boolean,
+        scenario: Scenario
+    ) {
+        executeRequest(
+            dataTable = DataTable.emptyDataTable(),
+            httpMethod = httpMethod,
+            authorized = authorized,
+            scenario = scenario
+        )
     }
 
     /**
@@ -135,24 +141,34 @@ abstract class BaseRESTExecutionGlue(
      *
      * @param dataTable     DataTable which contains dynamic values mapping. If null, no URI parameter will be mapped.
      * @param httpMethod    HttpMethod of the request
-     * @param authorized    should the request executed authorized or unauthorized (true = authorized)
+     * @param authorized    should the request execute authorized or unauthorized (true = authorized)
      */
-    protected fun executeRequest(dataTable: DataTable, httpMethod: HttpMethod, authorized: Boolean) {
-        // Prepare path with dynamic URLs from datatable
+    protected fun executeRequest(
+        dataTable: DataTable,
+        httpMethod: HttpMethod,
+        authorized: Boolean,
+        scenario: Scenario
+    ) {
+        // Prepare a path with dynamic URLs from datatable
         val path = preparePath(dataTable)
 
         // Prepare headers
         val headers = createHTTPHeader(authorized)
 
         // create HttpEntity
-        var body = editableBody
+        var body: String? = editableBody
+
         var httpEntity = HttpEntity<String?>(headers)
-        if (!StringUtils.isEmpty(body)) {
+        if (httpMethod != HttpMethod.GET && ! body.isNullOrEmpty()) {
             // there was a body...replace with new entity with body
             httpEntity = HttpEntity(body, headers)
         }
         try {
             val targetUrl = fullURLFor(path)
+            scenario.log("Request:")
+            scenario.log("========")
+            scenario.log("HTTP Method: ${httpMethod.name()}")
+            scenario.log("HTTP URL   : $targetUrl")
             log.info("Executing call to [${httpMethod.name()}][$targetUrl]")
             setLatestResponse(
                 restTemplate.exchange(
@@ -165,6 +181,10 @@ abstract class BaseRESTExecutionGlue(
         } catch (hsee: HttpServerErrorException) {
             setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
         }
+        scenario.log("Response:")
+        scenario.log("========")
+        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
+        scenario.log("Body       : ${ScenarioStateContext.latestResponse?.body}")
     }
 
     /**
@@ -172,7 +192,7 @@ abstract class BaseRESTExecutionGlue(
      * values with data from DataTable.
      *
      * @param dataTable     DataTable which contains the form data
-     * @param authorized    should the request executed authorized or unauthorized (true = authorized)
+     * @param authorized    should the request execute authorized or unauthorized (true = authorized)
      */
     protected fun executeFormDataRequest(dataTable: DataTable, authorized: Boolean) {
         val path = preparePath(DataTable.emptyDataTable())
@@ -219,7 +239,7 @@ abstract class BaseRESTExecutionGlue(
     }
 
     /**
-     * Replace placeholder like ${myContextItem} with the available items from the context
+     * Replace placeholder like ${myContextItem} with the available items from the context.
      *
      * @param path  Path which can contain the placeholder
      * @return      replaced path
@@ -254,9 +274,17 @@ abstract class BaseRESTExecutionGlue(
                 basePath.append(":").append(bddProperties.server.port)
             }
         }
-        if (!urlBasePath.startsWith("/")) {
+        if (!urlBasePath.startsWith("/") && ! basePath.endsWith("/")) {
             basePath.append("/")
         }
-        return basePath.toString() + urlBasePath + path
+
+        val targetUrl = basePath.toString() + urlBasePath + path
+
+        return targetUrl.replace("//", "/")
+    }
+
+    companion object {
+        protected const val PLACEHOLDER = "none"
+        private val log = LogFactory.getLog(BaseRESTExecutionGlue::class.java)
     }
 }
