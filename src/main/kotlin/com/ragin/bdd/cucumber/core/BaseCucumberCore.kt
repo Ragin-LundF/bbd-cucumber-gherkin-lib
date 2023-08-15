@@ -13,10 +13,6 @@ import java.nio.charset.StandardCharsets
 
 @Component
 open class BaseCucumberCore(protected val jsonUtils: JsonUtils, protected val bddProperties: BddProperties) {
-    companion object {
-        private const val KEYWORD_ABSOLUTE_PATH = "absolutePath:"
-    }
-
     /**
      * Handle BearerToken
      *
@@ -83,5 +79,9 @@ open class BaseCucumberCore(protected val jsonUtils: JsonUtils, protected val bd
      */
     protected fun assertJSONisEqual(expected: String?, actual: String?) {
         jsonUtils.assertJsonEquals(expected, actual)
+    }
+
+    companion object {
+        private const val KEYWORD_ABSOLUTE_PATH = "absolutePath:"
     }
 }

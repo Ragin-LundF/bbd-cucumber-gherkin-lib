@@ -6,7 +6,9 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.datatable.DataTable
+import io.cucumber.java.Before
 import io.cucumber.java.ParameterType
+import io.cucumber.java.Scenario
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import org.apache.commons.logging.LogFactory
@@ -19,13 +21,21 @@ import java.util.concurrent.TimeUnit
 /**
  * This class contains common `When` execution of REST related steps.
  */
+@Suppress("TooManyFunctions")
 class WhenRESTExecutionGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties,
     restTemplate: TestRestTemplate
-) : BaseRESTExecutionGlue(jsonUtils, bddProperties, restTemplate) {
-    companion object {
-        private val log = LogFactory.getLog(ThenRESTValidationGlue::class.java)
+) : BaseRESTExecutionGlue(
+    jsonUtils = jsonUtils,
+    bddProperties = bddProperties,
+    restTemplate = restTemplate
+) {
+    lateinit var scenarioState: Scenario
+
+    @Before
+    fun injectScenario(scenario: Scenario) {
+        scenarioState = scenario
     }
 
     /**
@@ -35,7 +45,11 @@ class WhenRESTExecutionGlue(
      */
     @When("executing a {httpMethod} call with previously given URI and body")
     fun whenExecutingCallWithPreviouslyGivenUriAndBody(httpMethod: HttpMethod) {
-        executeRequest(httpMethod, false)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = false,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -45,7 +59,11 @@ class WhenRESTExecutionGlue(
      */
     @When("executing an authorized {httpMethod} call with previously given URI and body")
     fun whenExecutingAuthorizedCallWithPreviouslyGivenUriAndBody(httpMethod: HttpMethod) {
-        executeRequest(httpMethod, true)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = true,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -57,7 +75,11 @@ class WhenRESTExecutionGlue(
     @When("executing a {httpMethod} call to {string} with previously given body")
     fun whenExecutingCallToUriAndPreviouslyGivenBody(httpMethod: HttpMethod, uri: String) {
         uriPath = uri
-        executeRequest(httpMethod, false)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = false,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -85,7 +107,11 @@ class WhenRESTExecutionGlue(
         uriPath = uri
         val body = readFileAsString(pathToFile)
         editableBody = body
-        executeRequest(httpMethod, false)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = false,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -102,7 +128,11 @@ class WhenRESTExecutionGlue(
         uriPath = uri
         val body = readFileAsString(pathToFile)
         editableBody = body
-        executeRequest(httpMethod, true)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = true,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -134,7 +164,12 @@ class WhenRESTExecutionGlue(
      */
     @When("executing a {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingCallToUriWithBodyAndDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
-        executeRequest(dataTable, httpMethod, false)
+        executeRequest(
+            dataTable = dataTable,
+            httpMethod = httpMethod,
+            authorized = false,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -166,7 +201,12 @@ class WhenRESTExecutionGlue(
      */
     @When("executing an authorized {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingAuthorizedCallToUriWithBodyAndDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
-        executeRequest(dataTable, httpMethod, true)
+        executeRequest(
+            dataTable = dataTable,
+            httpMethod = httpMethod,
+            authorized = true,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -176,7 +216,11 @@ class WhenRESTExecutionGlue(
      */
     @When("executing a {httpMethod} call with previously given URI")
     fun whenExecutingCall(httpMethod: HttpMethod) {
-        executeRequest(httpMethod, false)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = false,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -186,7 +230,11 @@ class WhenRESTExecutionGlue(
      */
     @When("executing an authorized {httpMethod} call with previously given URI")
     fun whenExecutingAuthorizedCall(httpMethod: HttpMethod) {
-        executeRequest(httpMethod, true)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = true,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -198,7 +246,11 @@ class WhenRESTExecutionGlue(
     @When("executing a {httpMethod} call to {string}")
     fun whenExecutingCallToUri(httpMethod: HttpMethod, uri: String) {
         uriPath = uri
-        executeRequest(httpMethod, false)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = false,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -210,7 +262,11 @@ class WhenRESTExecutionGlue(
     @When("executing an authorized {httpMethod} call to {string}")
     fun whenExecutingAuthorizedCallToUri(httpMethod: HttpMethod, uri: String) {
         uriPath = uri
-        executeRequest(httpMethod, true)
+        executeRequest(
+            httpMethod = httpMethod,
+            authorized = true,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -242,7 +298,12 @@ class WhenRESTExecutionGlue(
      */
     @When("executing an authorized {httpMethod} call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingAuthorizedCallToUriWithDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
-        executeRequest(dataTable, httpMethod, true)
+        executeRequest(
+            dataTable = dataTable,
+            httpMethod = httpMethod,
+            authorized = true,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -274,7 +335,12 @@ class WhenRESTExecutionGlue(
      */
     @When("executing a {httpMethod} call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingCallToUriWithDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
-        executeRequest(dataTable, httpMethod, false)
+        executeRequest(
+            dataTable = dataTable,
+            httpMethod = httpMethod,
+            authorized = false,
+            scenario = scenarioState
+        )
     }
 
     /**
@@ -287,9 +353,10 @@ class WhenRESTExecutionGlue(
      */
     @Then("executing an authorized {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
     @Throws(IOException::class)
-    fun whenExecutingAuthorizedPollingUntilResponseIsEqualToFile(httpMethod: HttpMethod,
-                                                                 expectedStatusCode: Int,
-                                                                 pathToFile: String
+    fun whenExecutingAuthorizedPollingUntilResponseIsEqualToFile(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        pathToFile: String
     ) {
         val expectedBody = readFileAsString(pathToFile)
         executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
@@ -305,12 +372,20 @@ class WhenRESTExecutionGlue(
      */
     @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
     @Throws(IOException::class)
-    fun whenExecutingPollingUntilResponseIsEqualToFile(httpMethod: HttpMethod,
-                                                       expectedStatusCode: Int,
-                                                       pathToFile: String
+    fun whenExecutingPollingUntilResponseIsEqualToFile(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        pathToFile: String
     ) {
-        val expectedBody = readFileAsString(pathToFile)
-        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
+        val expectedBody = readFileAsString(
+            path = pathToFile
+        )
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            expectedBody = expectedBody,
+            authorized = false
+        )
     }
 
     /**
@@ -323,7 +398,11 @@ class WhenRESTExecutionGlue(
     @Then("executing an authorized {httpMethod} poll request until the response code is {int}")
     @Throws(IOException::class)
     fun whenExecutingAuthorizedPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod,  expectedStatusCode: Int) {
-        executePollRequestUntilResponseIsEqual(httpMethod = httpMethod, expectedStatusCode = expectedStatusCode, authorized = true)
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            authorized = true
+        )
     }
 
     /**
@@ -336,7 +415,11 @@ class WhenRESTExecutionGlue(
     @Then("executing a {httpMethod} poll request until the response code is {int}")
     @Throws(IOException::class)
     fun whenExecutingPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int) {
-        executePollRequestUntilResponseIsEqual(httpMethod = httpMethod, expectedStatusCode = expectedStatusCode, authorized = false)
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            authorized = false
+        )
     }
 
     /**
@@ -348,8 +431,17 @@ class WhenRESTExecutionGlue(
      * @param expectedBody describes the expected JSON body
      */
     @Then("executing an authorized {httpMethod} poll request until the response code is {int} and the body is equal to")
-    fun whenExecutingAuthorizedPollingUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String) {
-        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
+    fun whenExecutingAuthorizedPollingUntilResponseIsEqual(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        expectedBody: String
+    ) {
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            expectedBody = expectedBody,
+            authorized = true
+        )
     }
 
     /**
@@ -361,8 +453,17 @@ class WhenRESTExecutionGlue(
      * @param expectedBody describes the expected JSON body
      */
     @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to")
-    fun whenExecutingPollingUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String) {
-        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, false)
+    fun whenExecutingPollingUntilResponseIsEqual(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        expectedBody: String
+    ) {
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            expectedBody = expectedBody,
+            authorized = false
+        )
     }
 
     /**
@@ -373,7 +474,10 @@ class WhenRESTExecutionGlue(
     @When("executing a form-data POST call to {string} with the fields")
     fun whenExecutingFormDataRequest(uri: String, dataTable: DataTable) {
         uriPath = uri
-        executeFormDataRequest(dataTable, false)
+        executeFormDataRequest(
+            dataTable = dataTable,
+            authorized = false
+        )
     }
 
     /**
@@ -384,10 +488,18 @@ class WhenRESTExecutionGlue(
     @When("executing an authorized form-data POST call to {string} with the fields")
     fun whenExecutingAuthorizedFormDataRequest(uri: String, dataTable: DataTable) {
         uriPath = uri
-        executeFormDataRequest(dataTable, true)
+        executeFormDataRequest(
+            dataTable = dataTable,
+            authorized = true
+        )
     }
 
-    private fun executePollRequestUntilResponseIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int, expectedBody: String? = null, authorized: Boolean) {
+    private fun executePollRequestUntilResponseIsEqual(
+        httpMethod: HttpMethod,
+        expectedStatusCode: Int,
+        expectedBody: String? = null,
+        authorized: Boolean
+    ) {
         Assert.assertNotEquals("Please configure max number of polls!",
             -1,
             ScenarioStateContext.polling.numberOfPolls
@@ -395,13 +507,18 @@ class WhenRESTExecutionGlue(
 
         var repeatLoop = 0
         for (i in 1..ScenarioStateContext.polling.numberOfPolls) {
-            executeRequest(httpMethod, authorized)
+            executeRequest(
+                httpMethod = httpMethod,
+                authorized = authorized,
+                scenario = scenarioState
+            )
+
             try {
                 evaluateBody(expectedBody)
                 Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
                 repeatLoop = i
                 break
-            } catch (error: AssertionError) {
+            } catch (_: AssertionError) {
                 TimeUnit.SECONDS.sleep(ScenarioStateContext.polling.pollEverySeconds)
             }
         }
@@ -412,7 +529,7 @@ class WhenRESTExecutionGlue(
     }
 
     /**
-     * Compare message body with expected result, if body is present.
+     * Compare message body with an expected result if the body is present.
      *
      * @param expectedBody body
      */
@@ -434,5 +551,9 @@ class WhenRESTExecutionGlue(
     @ParameterType("GET|POST|PUT|PATCH|DELETE")
     fun httpMethod(httpMethod: String): HttpMethod {
         return HttpMethod.valueOf(httpMethod)
+    }
+
+    companion object {
+        private val log = LogFactory.getLog(ThenRESTValidationGlue::class.java)
     }
 }

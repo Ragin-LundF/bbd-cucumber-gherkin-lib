@@ -1,3 +1,25 @@
+# Release 2.4.0
+## Logging of requests and responses
+
+Now all `executing` sentences log the request and response as scenario text in the report.
+This makes problems in tests more visible on CI/CD scenarios.
+
+Example:
+
+```gherkin
+When executing a GET call to "/api/v1/unauthorized"
+```
+```plain
+  Request:
+  ========
+  HTTP Method: GET
+  HTTP URL   : /api/v1/unauthorized
+  Response:
+  ========
+  Status Code: 401 UNAUTHORIZED
+  Body       : {"error_description":"Full authentication is required to access this resource","error":"unauthorized"}
+```
+
 # Release 2.3.0
 ## New sentence
 ```gherkin
