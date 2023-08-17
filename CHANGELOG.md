@@ -1,3 +1,6 @@
+# Release 2.5.0
+- Fix for URLs with `http(s)://`
+
 # Release 2.4.0
 ## Logging of requests and responses
 
