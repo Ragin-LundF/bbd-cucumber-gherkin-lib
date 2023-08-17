@@ -278,9 +278,7 @@ abstract class BaseRESTExecutionGlue(
             basePath.append("/")
         }
 
-        val targetUrl = basePath.toString() + urlBasePath + path
-
-        return targetUrl.replace("//", "/")
+        return basePath.toString() + urlBasePath + path
     }
 
     companion object {
