@@ -274,7 +274,7 @@ abstract class BaseRESTExecutionGlue(
                 basePath.append(":").append(bddProperties.server.port)
             }
         }
-        if (!urlBasePath.startsWith("/") && ! basePath.endsWith("/") && basePath.length > 2) {
+        if (! basePath.endsWith("/") && basePath.length > 2 && !urlBasePath.startsWith("/")) {
             basePath.append("/")
         }
 
