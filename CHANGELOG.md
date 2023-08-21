@@ -1,5 +1,5 @@
 # Release 2.5.1
-In some cases, a `@PostContruct` annotation was not executed in the correct order.
+In some cases, a `@PostConstruct` annotation was not executed in the correct order.
 This has now been taken care of by moving the logic it contains to a constructor.
 
 # Release 2.5.0
