@@ -13,7 +13,6 @@ import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.createHTTPHeader
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWithDataTable
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.Scenario
-import jakarta.annotation.PostConstruct
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.text.StringSubstitutor
@@ -42,7 +41,6 @@ import java.io.IOException
 import java.net.Proxy
 import java.util.*
 
-
 abstract class BaseRESTExecutionGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties,
@@ -55,8 +53,7 @@ abstract class BaseRESTExecutionGlue(
         ScenarioStateContext.latestResponse = latestResponse
     }
 
-    @PostConstruct
-    fun init() {
+    init {
         // init ScenarioContext
         bddProperties.scenarioContext?.let { scenarioContextMap.putAll(it) }
         if (bddProperties.authorization?.bearerToken?.default != null) {
@@ -274,7 +271,7 @@ abstract class BaseRESTExecutionGlue(
                 basePath.append(":").append(bddProperties.server.port)
             }
         }
-        if (!urlBasePath.startsWith("/") && ! basePath.endsWith("/") && basePath.length > 2) {
+        if (! basePath.endsWith("/") && basePath.length > 2 && !urlBasePath.startsWith("/")) {
             basePath.append("/")
         }
 
