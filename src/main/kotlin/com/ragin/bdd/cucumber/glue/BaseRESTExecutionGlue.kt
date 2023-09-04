@@ -28,6 +28,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpRequestFactory
@@ -218,6 +219,58 @@ abstract class BaseRESTExecutionGlue(
         } catch (hsee: HttpServerErrorException) {
             setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
         }
+    }
+
+    /**
+     * Executes an application/x-www-form-urlencoded data post request with dynamic values with data from DataTable.
+     *
+     * @param dataTable     DataTable which contains the form-urlencoded data
+     * @param authorized    should the request execute authorized or unauthorized (true = authorized)
+     */
+    protected fun executeUrlEncodedRequest(dataTable: DataTable, authorized: Boolean, scenario: Scenario) {
+        // Prepare a path with dynamic URLs from datatable
+        val path = preparePath(dataTable)
+
+        // Prepare headers
+        val headers = createHTTPHeader(authorized)
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+
+        val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
+        val map: MultiValueMap<String, String> = LinkedMultiValueMap()
+        dataTableRowList.forEach { list ->
+            val key = scenarioContextMap[list["Key"]] ?: list["Key"]
+            val value = scenarioContextMap[list["Value"]] ?: list["Value"]
+            map.add(key, value)
+        }
+
+        // create HttpEntity
+        val httpEntity = HttpEntity(map, headers)
+        try {
+            val targetUrl = fullURLFor(path)
+            scenario.log("Request:")
+            scenario.log("========")
+            scenario.log("HTTP URL   : $targetUrl")
+            scenario.log("URL Encoded Data:")
+            map.entries.forEach { pair ->
+                scenario.log("  ${pair.key}=${pair.value}")
+            }
+
+            log.info("Executing call to [$targetUrl]")
+            setLatestResponse(
+                restTemplate.exchange(
+                    targetUrl,
+                    HttpMethod.POST,
+                    httpEntity,
+                    String::class.java
+                )
+            )
+        } catch (hsee: HttpServerErrorException) {
+            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+        }
+        scenario.log("Response:")
+        scenario.log("========")
+        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
+        scenario.log("Body       : ${ScenarioStateContext.latestResponse?.body}")
     }
 
     protected fun preparePath(dataTable: DataTable): String {

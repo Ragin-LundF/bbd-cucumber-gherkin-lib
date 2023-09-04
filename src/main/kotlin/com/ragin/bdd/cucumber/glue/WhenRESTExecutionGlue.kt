@@ -481,6 +481,21 @@ class WhenRESTExecutionGlue(
     }
 
     /**
+     * Executes a form-data multipart POST request.
+     *
+     * The datatable contains the fields of the request as key/value pair.
+     */
+    @When("executing a url-encoded POST call to {string} with the fields")
+    fun whenExecutingUrlEncodedRequest(uri: String, dataTable: DataTable) {
+        uriPath = uri
+        executeUrlEncodedRequest(
+            dataTable = dataTable,
+            authorized = false,
+            scenario = scenarioState
+        )
+    }
+
+    /**
      * Executes an authorized form-data multipart POST request.
      *
      * The datatable contains the fields of the request as key/value pair.

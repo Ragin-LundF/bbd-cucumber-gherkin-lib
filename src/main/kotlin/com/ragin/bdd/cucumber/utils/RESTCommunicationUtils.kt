@@ -64,16 +64,18 @@ object RESTCommunicationUtils {
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
         for (stringStringMap in dataTableRowList) {
             // Try to resolve value from context map
-            var uriValue = scenarioContextMap[stringStringMap["URI Values"]]
-            // If context map knows nothing about the value, use value directly
-            if (uriValue == null) {
-                uriValue = stringStringMap["URI Values"]
-            }
-            // replace path with URI key and URI value
-            path = path.replace(
+            if (stringStringMap["URI Values"] != null) {
+                var uriValue = scenarioContextMap[stringStringMap["URI Values"]]
+                // If context map knows nothing about the value, use value directly
+                if (uriValue == null) {
+                    uriValue = stringStringMap["URI Values"]
+                }
+                // replace path with URI key and URI value
+                path = path.replace(
                     "{" + stringStringMap["URI Elements"] + "}",
                     uriValue!!
-            )
+                )
+            }
         }
         return path
     }
