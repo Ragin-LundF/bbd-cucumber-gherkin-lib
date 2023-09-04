@@ -1,3 +1,16 @@
+# Release 2.6.0
+
+New sentence added for `application/x-www-form-urlencoded` `POST` calls.
+
+```gherkin
+When executing a url-encoded POST call to "/api/form-encoded" with the fields
+| Key    | Value         |
+| first  | myFirstValue  |
+| second | mySecondValue |
+```
+
+The first line of the fields MUST contain `| Key | Value |`.
+
 # Release 2.5.1
 In some cases, a `@PostConstruct` annotation was not executed in the correct order.
 This has now been taken care of by moving the logic it contains to a constructor.
