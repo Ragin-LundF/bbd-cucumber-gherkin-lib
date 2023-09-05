@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '1.9.10'
     ext.jdk_version = 17
     repositories {
         mavenCentral()
@@ -50,7 +50,7 @@ dependencies {
     implementation "org.apache.commons:commons-lang3:3.13.0"
 
     // Defining the version here, because Spring brings 4.5.0, which has a CVE
-    implementation "org.yaml:snakeyaml:2.1"
+    implementation "org.yaml:snakeyaml:2.2"
     implementation "org.liquibase:liquibase-core:4.23.0"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
