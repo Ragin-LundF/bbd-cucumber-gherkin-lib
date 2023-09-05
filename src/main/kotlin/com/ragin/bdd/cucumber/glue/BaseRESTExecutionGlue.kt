@@ -238,9 +238,11 @@ abstract class BaseRESTExecutionGlue(
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         dataTableRowList.forEach { list ->
-            val key = scenarioContextMap[list["Key"]] ?: list["Key"]
-            val value = scenarioContextMap[list["Value"]] ?: list["Value"]
-            map.add(key, value)
+            if (! list["Value"].isNullOrEmpty()) {
+                val key = scenarioContextMap[list["Key"]] ?: list["Key"]
+                val value = scenarioContextMap[list["Value"]] ?: list["Value"]
+                map.add(key, value)
+            }
         }
 
         // create HttpEntity

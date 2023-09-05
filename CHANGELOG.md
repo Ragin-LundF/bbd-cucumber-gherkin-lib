@@ -1,3 +1,6 @@
+# Release 2.6.1
+Small fix for URL encoded calls, to be able to leave a value empty if the parameters are dynamic.
+
 # Release 2.6.0
 
 New sentence added for `application/x-www-form-urlencoded` `POST` calls.
