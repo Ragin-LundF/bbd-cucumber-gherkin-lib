@@ -241,7 +241,9 @@ abstract class BaseRESTExecutionGlue(
             if (! list["Value"].isNullOrEmpty()) {
                 val key = scenarioContextMap[list["Key"]] ?: list["Key"]
                 val value = scenarioContextMap[list["Value"]] ?: list["Value"]
-                map.add(key, value)
+                if (! key.isNullOrEmpty() && ! value.isNullOrEmpty()) {
+                    map.add(key, value)
+                }
             }
         }
 
