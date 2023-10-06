@@ -1,3 +1,22 @@
+# Release 2.7.0
+## Updated Libs
+- Spring Boot to 3.1.4
+- Cucumber Libs to 7.14.0
+- json-unit to 3.2.2
+- liquibase-core to 4.24.0
+
+## Features
+Added a new default matcher (`${json-unit.matches:isNotEqualToScenarioContext}MY_CONTEXT_VALUE`) to compare, that a value is not equal to the context:
+
+```gherkin
+    And I ensure that the body of the response is equal to
+      """ 
+        {
+          "value": "${json-unit.matches:isNotEqualToScenarioContext}MY_CONTEXT_VALUE",
+        }
+      """
+```
+
 # Release 2.6.1
 Small fix for URL encoded calls, to be able to leave a value empty if the parameters are dynamic.
 

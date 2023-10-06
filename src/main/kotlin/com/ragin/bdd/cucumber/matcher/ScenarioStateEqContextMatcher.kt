@@ -7,7 +7,7 @@ import org.hamcrest.Description
 import org.springframework.stereotype.Component
 
 @Component
-class ScenarioStateContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
+class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {
