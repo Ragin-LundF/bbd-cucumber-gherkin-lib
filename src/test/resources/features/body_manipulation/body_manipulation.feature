@@ -56,6 +56,7 @@ Feature: Manipulation of the body
   Scenario: Manipulate the body from a context variable and compare it by context matcher
     Given that the file "requests/request.json" is used as the body
         * that the context contains the key "newUserNameInContext" with the value "Max Done"
+        * that the context contains the key "wrongUserNameInContext" with the value "Max False"
         * that the context contains the key "secondEntry" with the value "unknown"
     Then I set the value of the previously given body property "name" to "newUserNameInContext"
        * I set the value of the previously given body property "ids[1]" to "secondEntry"
@@ -74,6 +75,17 @@ Feature: Manipulation of the body
       ]
     }
     """
+    And I ensure that the body of the response is equal to
+        """
+        {
+          "newName": "${json-unit.matches:isNotEqualToScenarioContext}wrongUserNameInContext",
+          "newIds" : [
+            "first",
+            "${json-unit.matches:isEqualToScenarioContext}secondEntry",
+            "thirdEntry"
+          ]
+        }
+        """
 
 
   Scenario: Manipulate the body and remove the name

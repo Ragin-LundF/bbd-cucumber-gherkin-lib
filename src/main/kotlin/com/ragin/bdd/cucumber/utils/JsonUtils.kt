@@ -8,13 +8,11 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
 import com.ragin.bdd.cucumber.matcher.IBANMatcher
-import com.ragin.bdd.cucumber.matcher.ScenarioStateContextMatcher
+import com.ragin.bdd.cucumber.matcher.ScenarioStateEqContextMatcher
+import com.ragin.bdd.cucumber.matcher.ScenarioStateNeContextMatcher
 import com.ragin.bdd.cucumber.matcher.UUIDMatcher
 import com.ragin.bdd.cucumber.matcher.ValidDateContextMatcher
 import com.ragin.bdd.cucumber.matcher.ValidDateMatcher
-import java.util.Arrays
-import java.util.Optional
-import java.util.stream.Collectors
 import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
@@ -22,6 +20,8 @@ import org.apache.commons.logging.LogFactory
 import org.hamcrest.Matcher
 import org.junit.Assert
 import org.springframework.stereotype.Component
+import java.util.*
+import java.util.stream.Collectors
 
 /**
  * Utility class used to work with JSON objects.
@@ -70,7 +70,8 @@ class JsonUtils(
                 .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
                 .withMatcher("isValidUUID", UUIDMatcher())
                 .withMatcher("isValidIBAN", IBANMatcher())
-                .withMatcher("isEqualToScenarioContext", ScenarioStateContextMatcher())
+                .withMatcher("isEqualToScenarioContext", ScenarioStateEqContextMatcher())
+                .withMatcher("isNotEqualToScenarioContext", ScenarioStateNeContextMatcher())
 
         // add additional options
         for (jsonOption in getJsonPathOptions()) {
