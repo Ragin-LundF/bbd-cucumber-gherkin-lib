@@ -23,14 +23,13 @@ Feature: Header manipulation
     And I ensure that the body of the response is equal to
     """
     {
-      "authorization": "${json-unit.ignore}",
-      "content-length": "0",
-      "accept-language": "en",
-      "host": "${json-unit.ignore}",
-      "content-type": "application/json",
-      "connection": "keep-alive",
-      "accept-encoding": "gzip, x-gzip, deflate",
       "accept": "application/json",
+      "accept-encoding": "gzip, x-gzip, deflate",
+      "accept-language": "en",
+      "authorization": "${json-unit.ignore}",
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "host": "${json-unit.ignore}",
       "user-agent": "${json-unit.ignore}"
     }
     """
@@ -43,7 +42,6 @@ Feature: Header manipulation
     """
     {
       "authorization": "${json-unit.ignore}",
-      "content-length": "0",
       "accept-language": "de_DE",
       "host": "${json-unit.ignore}",
       "content-type": "application/json",
