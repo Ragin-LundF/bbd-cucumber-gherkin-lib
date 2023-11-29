@@ -1,3 +1,9 @@
+# Release 2.8.0
+## Updated Libs
+- Spring Boot to 3.2.0
+- Cucumber Libs to 7.14.1
+- liquibase-core to 4.25.0
+
 # Release 2.7.0
 ## Updated Libs
 - Spring Boot to 3.1.4

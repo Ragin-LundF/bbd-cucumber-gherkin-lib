@@ -154,7 +154,7 @@ abstract class BaseRESTExecutionGlue(
         val headers = createHTTPHeader(authorized)
 
         // create HttpEntity
-        var body: String? = editableBody
+        val body: String? = editableBody
 
         var httpEntity = HttpEntity<String?>(headers)
         if (httpMethod != HttpMethod.GET && ! body.isNullOrEmpty()) {
