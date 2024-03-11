@@ -25,7 +25,6 @@ Feature: Header manipulation
     {
       "accept": "application/json",
       "accept-encoding": "gzip, x-gzip, deflate",
-      "accept-language": "en",
       "authorization": "${json-unit.ignore}",
       "connection": "keep-alive",
       "content-type": "application/json",

@@ -1,3 +1,6 @@
+# Release 2.10.0
+- Removed `Accept-Language` default header.
+
 # Release 2.9.0
 ## Updated Libs
 - Spring Boot to 3.2.3
