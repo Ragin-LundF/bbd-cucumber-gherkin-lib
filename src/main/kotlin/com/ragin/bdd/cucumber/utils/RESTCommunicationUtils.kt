@@ -40,9 +40,6 @@ object RESTCommunicationUtils {
             headers.add("Accept", "application/json")
         }
 
-        if (! headerValues.containsKey("Accept-Language")) {
-            headers.add("Accept-Language", "en")
-        }
         return headers
     }
 
