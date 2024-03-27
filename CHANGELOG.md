@@ -1,3 +1,9 @@
+# Release 2.11.0
+## Updated Libs
+- Spring Boot to 3.2.4
+- Cucumber Libs to 7.16.1
+- liquibase-core to 4.26.0
+
 # Release 2.10.0
 - Removed `Accept-Language` default header.
 
