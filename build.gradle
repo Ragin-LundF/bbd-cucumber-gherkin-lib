@@ -46,7 +46,7 @@ dependencies {
     api "jakarta.validation:jakarta.validation-api:3.0.2"
 
     api "org.apache.commons:commons-text:1.11.0"
-    implementation "commons-io:commons-io:2.15.1"
+    implementation "commons-io:commons-io:2.16.0"
     implementation "org.apache.commons:commons-lang3:3.14.0"
 
     // Defining the version here, because Spring brings 4.5.0, which has a CVE
