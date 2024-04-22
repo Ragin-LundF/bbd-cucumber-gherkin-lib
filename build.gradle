@@ -41,7 +41,7 @@ dependencies {
 
     api "io.cucumber:cucumber-java:7.16.1"
     api "io.cucumber:cucumber-spring:7.16.1"
-    api "io.cucumber:cucumber-junit:7.16.1"
+    api "io.cucumber:cucumber-junit:7.17.0"
 
     api "jakarta.validation:jakarta.validation-api:3.0.2"
 
