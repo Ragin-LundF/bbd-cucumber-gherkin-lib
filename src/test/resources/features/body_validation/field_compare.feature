@@ -26,6 +26,37 @@ Feature: Field validation instead of full JSON comparison
       Then I ensure that the status code of the response is 200
       And I ensure that the body of the response contains a field "string" with the value "@bdd_lib_not is this string"
 
+    Scenario: Validate field with a string that it is not the value
+      When executing a GET call to "/api/v1/fieldValidation"
+      Then I ensure that the status code of the response is 200
+      And I ensure that the body of the response is equal to
+      """
+      {
+        "string": "${json-unit.matches:isNotEqualTo}another string",
+        "number": 12,
+        "boolean": true,
+        "list": [
+          "First",
+          "Second"
+        ],
+        "object": {
+          "firstname": "John",
+          "lastname": "Doe"
+        },
+        "uuid": "${json-unit.matches:isValidUUID}",
+        "objectList": [
+          {
+            "first": 1,
+            "second": 2
+          },
+          {
+            "first": 3,
+            "second": 4
+          }
+        ]
+      }
+      """
+
     Scenario: Validate field with a number
       When executing a GET call to "/api/v1/fieldValidation"
       Then I ensure that the status code of the response is 200

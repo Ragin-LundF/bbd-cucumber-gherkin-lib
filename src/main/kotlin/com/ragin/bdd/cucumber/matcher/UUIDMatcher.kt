@@ -5,14 +5,17 @@ import org.hamcrest.Description
 import org.springframework.stereotype.Component
 
 /**
- * Matcher for valid date
+ * Matcher for valid date.
+ *
+ * ${json-unit.matches:isValidUUID}
  */
 @Component
 class UUIDMatcher : BaseMatcher<Any>() {
     override fun matches(item: Any): Boolean {
         if (item is String) {
             val actualString = item.toString()
-            return actualString.matches("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".toRegex())
+            return actualString.matches("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+                .toRegex())
         }
         return false
     }

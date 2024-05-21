@@ -5,7 +5,9 @@ import org.hamcrest.Description
 import org.springframework.stereotype.Component
 
 /**
- * Matcher for valid IBAN
+ * Matcher for valid IBAN.
+ *
+ * ${json-unit.matches:isValidIBAN}
  */
 @Component
 class IBANMatcher: BaseMatcher<String?>(), BddCucumberJsonMatcher {

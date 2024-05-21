@@ -7,27 +7,26 @@ import org.hamcrest.Description
 import org.springframework.stereotype.Component
 
 /**
- * Is equal to scenario context.
+ * Is not equal to string.
  *
- * ${json-unit.matches:isEqualToScenarioContext}newUserNameInContext
+ * ${json-unit.matches:isNotEqualTo}MY_CONTEXT_VALUE
  */
 @Component
-class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
+class NeStringMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {
-        val parameterFromContext = ScenarioStateContext.scenarioContextMap[parameter]
         val actualAsString = actual.toString()
-        return actualAsString == parameterFromContext
+        return actualAsString != parameter
     }
 
     override fun describeTo(description: Description) {
-        description.appendText("The actual value is not equal to the parameter [$parameter]")
+        description.appendText("The actual value is equal to the parameter [$parameter]")
     }
 
     override fun describeMismatch(item: Any, description: Description) {
         description
-                .appendText("BDD Context value was [")
+                .appendText("The value was [")
                 .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
                 .appendText("].")
                 .appendText(" JSON Value was [")

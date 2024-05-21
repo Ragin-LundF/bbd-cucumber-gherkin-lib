@@ -14,9 +14,9 @@ plugins {
     id "signing"
     id "java-library"
     id "maven-publish"
-    id "org.springframework.boot" version "3.2.4"
-    id "io.spring.dependency-management" version "1.1.4"
-    id "org.liquibase.gradle" version "2.2.1"
+    id "org.springframework.boot" version "3.2.5"
+    id "io.spring.dependency-management" version "1.1.5"
+    id "org.liquibase.gradle" version "2.2.2"
     id "org.sonarqube" version "5.0.0.4638"
 }
 
@@ -39,19 +39,19 @@ dependencies {
 
     api "net.javacrumbs.json-unit:json-unit:3.2.7"
 
-    api "io.cucumber:cucumber-java:7.16.1"
-    api "io.cucumber:cucumber-spring:7.16.1"
-    api "io.cucumber:cucumber-junit:7.16.1"
+    api "io.cucumber:cucumber-java:7.18.0"
+    api "io.cucumber:cucumber-spring:7.18.0"
+    api "io.cucumber:cucumber-junit:7.18.0"
 
     api "jakarta.validation:jakarta.validation-api:3.0.2"
 
-    api "org.apache.commons:commons-text:1.11.0"
-    implementation "commons-io:commons-io:2.15.1"
+    api "org.apache.commons:commons-text:1.12.0"
+    implementation "commons-io:commons-io:2.16.1"
     implementation "org.apache.commons:commons-lang3:3.14.0"
 
     // Defining the version here, because Spring brings 4.5.0, which has a CVE
     implementation "org.yaml:snakeyaml:2.2"
-    implementation "org.liquibase:liquibase-core:4.26.0"
+    implementation "org.liquibase:liquibase-core:4.27.0"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
@@ -68,9 +68,9 @@ dependencies {
     testAnnotationProcessor "org.projectlombok:lombok:1.18.32"
 
     testImplementation "org.postgresql:postgresql:42.7.3"
-    testImplementation "org.testcontainers:testcontainers:1.19.7"
-    testImplementation "org.testcontainers:postgresql:1.19.7"
-    testImplementation "org.testcontainers:junit-jupiter:1.19.7"
+    testImplementation "org.testcontainers:testcontainers:1.19.8"
+    testImplementation "org.testcontainers:postgresql:1.19.8"
+    testImplementation "org.testcontainers:junit-jupiter:1.19.8"
 }
 
 jar {
