@@ -1,3 +1,53 @@
+# Release 2.12.0
+## Updated Libs
+- Spring Boot to 3.2.5
+- Cucumber Libs to 7.18.0
+- liquibase-core to 4.27.0
+
+## Features
+Added a new default matcher (`${json-unit.matches:isNotEqualTo}string`) to compare, that a value is not equal to a given string.
+The string can be anything after the closing bracket:
+
+```json
+{ "string": "${json-unit.matches:isNotEqualTo}another string" }
+```
+
+```gherkin
+  Scenario: Validate field with a string that it is not the value
+    When executing a GET call to "/api/v1/fieldValidation"
+    Then I ensure that the status code of the response is 200
+    And I ensure that the body of the response is equal to
+    """
+      {
+        "string": "${json-unit.matches:isNotEqualTo}another string",
+        "number": 12,
+        "boolean": true,
+        "list": [
+          "First",
+          "Second"
+        ],
+        "object": {
+          "firstname": "John",
+          "lastname": "Doe"
+        },
+        "uuid": "${json-unit.matches:isValidUUID}",
+        "objectList": [
+          {
+            "first": 1,
+            "second": 2
+          },
+          {
+            "first": 3,
+            "second": 4
+          }
+        ]
+      }
+    """
+```
+
+See [src/test/resources/features/body_validation/field_compare.feature](src/test/resources/features/body_validation/field_compare.feature)
+
+
 # Release 2.11.0
 ## Updated Libs
 - Spring Boot to 3.2.4

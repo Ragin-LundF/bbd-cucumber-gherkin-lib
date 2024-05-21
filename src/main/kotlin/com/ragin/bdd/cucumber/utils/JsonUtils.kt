@@ -8,6 +8,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
 import com.ragin.bdd.cucumber.matcher.IBANMatcher
+import com.ragin.bdd.cucumber.matcher.NeStringMatcher
 import com.ragin.bdd.cucumber.matcher.ScenarioStateEqContextMatcher
 import com.ragin.bdd.cucumber.matcher.ScenarioStateNeContextMatcher
 import com.ragin.bdd.cucumber.matcher.UUIDMatcher
@@ -70,6 +71,7 @@ class JsonUtils(
                 .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
                 .withMatcher("isValidUUID", UUIDMatcher())
                 .withMatcher("isValidIBAN", IBANMatcher())
+                .withMatcher("isNotEqualTo", NeStringMatcher())
                 .withMatcher("isEqualToScenarioContext", ScenarioStateEqContextMatcher())
                 .withMatcher("isNotEqualToScenarioContext", ScenarioStateNeContextMatcher())
 

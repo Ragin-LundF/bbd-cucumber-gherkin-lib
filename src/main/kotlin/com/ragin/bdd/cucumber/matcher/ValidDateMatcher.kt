@@ -7,10 +7,14 @@ import org.hamcrest.Description
 import org.springframework.stereotype.Component
 
 /**
- * Matcher for valid date
+ * Matcher for valid date.
+ *
+ * ${json-unit.matches:isValidDate}
  */
 @Component
-class ValidDateMatcher(private val dateTimeFormatCollection: Collection<BddCucumberDateTimeFormat>) : BaseMatcher<Any>() {
+class ValidDateMatcher(
+    private val dateTimeFormatCollection: Collection<BddCucumberDateTimeFormat>
+) : BaseMatcher<Any>() {
     override fun matches(item: Any): Boolean {
         return DateUtils.isValidMandatoryDate(item, dateTimeFormatCollection)
     }

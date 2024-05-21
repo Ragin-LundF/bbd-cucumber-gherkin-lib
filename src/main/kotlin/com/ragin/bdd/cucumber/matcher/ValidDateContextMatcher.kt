@@ -9,8 +9,15 @@ import org.hamcrest.Description
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
 
+/**
+ * Valid date from context matcher.
+ *
+ * ${json-unit.matches:isDateOfContext}3_DAYS_IN_PAST
+ */
 @Component
-class ValidDateContextMatcher(private val dateTimeFormatCollection: Collection<BddCucumberDateTimeFormat>) : BaseMatcher<Any>(), ParametrizedMatcher {
+class ValidDateContextMatcher(
+    private val dateTimeFormatCollection: Collection<BddCucumberDateTimeFormat>
+) : BaseMatcher<Any>(), ParametrizedMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {
