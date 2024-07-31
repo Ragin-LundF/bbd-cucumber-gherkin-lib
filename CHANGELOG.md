@@ -1,4 +1,4 @@
-# Release 2.13.0
+# Release 2.14.0
 ## Updated Gradle structure, code analysis and coverage
 - Updated Gradle structure and split each configuration into separate files
 - Replaced `jacoco` with `kover`
