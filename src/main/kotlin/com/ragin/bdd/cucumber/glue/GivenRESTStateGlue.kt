@@ -197,63 +197,48 @@ class GivenRESTStateGlue(
     @Given("that a date {int} days in the past is stored as {string}")
     fun givenDateDaysInPastStoredInContext(daysInPast: Long, contextKey: String) {
         val now = LocalDate.now();
-        ScenarioStateContext.scenarioContextMap.put(
-            contextKey,
-            now.minusDays(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        )
+        ScenarioStateContext.scenarioContextMap[contextKey] = now.minusDays(daysInPast)
+            .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} months in the past is stored as {string}")
     fun givenDateMonthsInPastStoredInContext(daysInPast: Long, contextKey: String) {
         val now = LocalDate.now();
-        ScenarioStateContext.scenarioContextMap.put(
-            contextKey,
-            now.minusMonths(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        )
+        ScenarioStateContext.scenarioContextMap[contextKey] = now.minusMonths(daysInPast)
+            .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} years in the past is stored as {string}")
     fun givenDateYearsInPastStoredInContext(daysInPast: Long, contextKey: String) {
         val now = LocalDate.now();
-        ScenarioStateContext.scenarioContextMap.put(
-            contextKey,
-            now.minusYears(daysInPast).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        )
+        ScenarioStateContext.scenarioContextMap[contextKey] = now.minusYears(daysInPast)
+            .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} days in the future is stored as {string}")
     fun givenDateDaysInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
         val now = LocalDate.now();
-        ScenarioStateContext.scenarioContextMap.put(
-            contextKey,
-            now.plusDays(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        )
+        ScenarioStateContext.scenarioContextMap[contextKey] = now.plusDays(daysInFuture)
+            .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} months in the future is stored as {string}")
     fun givenDateMonthsInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
         val now = LocalDate.now();
-        ScenarioStateContext.scenarioContextMap.put(
-            contextKey,
-            now.plusMonths(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        )
+        ScenarioStateContext.scenarioContextMap[contextKey] = now.plusMonths(daysInFuture)
+            .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} years in the future is stored as {string}")
     fun givenDateYearsInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
         val now = LocalDate.now();
-        ScenarioStateContext.scenarioContextMap.put(
-            contextKey,
-            now.plusYears(daysInFuture).format(DateTimeFormatter.ISO_LOCAL_DATE)
-        )
+        ScenarioStateContext.scenarioContextMap[contextKey] = now.plusYears(daysInFuture)
+            .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that the file {string} is stored as {string}")
     fun givenFileStoredInContext(filePath: String, contextKey: String) {
         val file = readFileAsByteArray(filePath)
-        ScenarioStateContext.scenarioContextFileMap.put(
-            contextKey,
-            file
-        )
+        ScenarioStateContext.scenarioContextFileMap[contextKey] = file
     }
 }

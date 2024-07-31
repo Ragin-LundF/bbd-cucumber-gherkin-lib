@@ -12,7 +12,7 @@
       <option name="useCurrentConnection" value="false" />
     </extension>
     <option name="PACKAGE_NAME" value="com.ragin.bdd.cucumbertests" />
-    <option name="MAIN_CLASS_NAME" value="com.ragin.bdd.cucumbertests.RunnerCucumber" />
+    <option name="MAIN_CLASS_NAME" value="com.ragin.bdd.cucumbertests.CucumberRunner" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="class" />
     <option name="PARAMETERS" value="" />

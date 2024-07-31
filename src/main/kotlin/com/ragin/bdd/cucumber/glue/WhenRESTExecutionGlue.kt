@@ -136,9 +136,11 @@ class WhenRESTExecutionGlue(
     }
 
     /**
-     * Execute a {httpMethod} call without authentication to the defined URL with body from file and dynamic URL elements.
+     * Execute a {httpMethod} call without authentication to the defined URL with body from file
+     * and dynamic URL elements.
      *
-     * For better separation use the database initializer and use static values instead of transporting them between scenarios!
+     * For better separation use the database initializer and use static values instead
+     * of transporting them between scenarios!
      * <br></br>
      *
      *
@@ -157,12 +159,14 @@ class WhenRESTExecutionGlue(
      * If context var was not found use value directly
      *
      *
-     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.
+     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements,
+     * but sometimes it can be necessary if Cucumber should work as Test-Suite.
      *
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing a {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When("executing a {httpMethod} call with previously given API path, " +
+            "body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingCallToUriWithBodyAndDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -175,7 +179,8 @@ class WhenRESTExecutionGlue(
     /**
      * Execute an authorized {httpMethod} call to the defined URL with body from file and dynamic URL elements.
      *
-     * For better separation use the database initializer and use static values instead of transporting them between scenarios!
+     * For better separation use the database initializer and use static values
+     * instead of transporting them between scenarios!
      * <br></br>
      *
      *
@@ -194,12 +199,14 @@ class WhenRESTExecutionGlue(
      * If context var was not found use value directly
      *
      *
-     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.
+     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements,
+     * but sometimes it can be necessary if Cucumber should work as Test-Suite.
      *
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing an authorized {httpMethod} call with previously given API path, body and these dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When("executing an authorized {httpMethod} call with previously given API path," +
+            " body and these dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingAuthorizedCallToUriWithBodyAndDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -272,7 +279,8 @@ class WhenRESTExecutionGlue(
     /**
      * Execute an authorized {httpMethod} call to the defined URL and dynamic URL elements.
      *
-     * For better separation use the database initializer and use static values instead of transporting them between scenarios!
+     * For better separation use the database initializer and use static values instead of
+     * transporting them between scenarios!
      * <br></br>
      *
      *
@@ -291,12 +299,14 @@ class WhenRESTExecutionGlue(
      * If context var was not found use value directly
      *
      *
-     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.
+     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements,
+     * but sometimes it can be necessary if Cucumber should work as Test-Suite.
      *
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing an authorized {httpMethod} call with previously given API path and these dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When("executing an authorized {httpMethod} call with previously given API path and " +
+            "these dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingAuthorizedCallToUriWithDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -309,7 +319,8 @@ class WhenRESTExecutionGlue(
     /**
      * Execute a {httpMethod} call without authentication to the defined URL with dynamic URL elements.
      *
-     * For better separation use the database initializer and use static values instead of transporting them between scenarios!
+     * For better separation use the database initializer and use static values
+     * instead of transporting them between scenarios!
      * <br></br>
      *
      *
@@ -328,12 +339,14 @@ class WhenRESTExecutionGlue(
      * If context var was not found use value directly
      *
      *
-     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements, but sometimes it can be necessary if Cucumber should work as Test-Suite.
+     * !!!ATTENTION!!! This is an Anti-Pattern if you reuse previously stored elements,
+     * but sometimes it can be necessary if Cucumber should work as Test-Suite.
      *
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing a {httpMethod} call with previously given API path and the dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When("executing a {httpMethod} call with previously given API path and the " +
+            "dynamic 'URI Elements' replaced with the 'URI Values'")
     fun whenExecutingCallToUriWithDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -351,7 +364,8 @@ class WhenRESTExecutionGlue(
      * @param expectedStatusCode the expected HTTP status code
      * @param pathToFile describes the path to the expected JSON response file
      */
-    @Then("executing an authorized {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
+    @Then("executing an authorized {httpMethod} poll request until the response code is" +
+            " {int} and the body is equal to file {string}")
     @Throws(IOException::class)
     fun whenExecutingAuthorizedPollingUntilResponseIsEqualToFile(
         httpMethod: HttpMethod,
@@ -370,7 +384,8 @@ class WhenRESTExecutionGlue(
      * @param expectedStatusCode the expected HTTP status code
      * @param pathToFile describes the path to the expected JSON response file
      */
-    @Then("executing a {httpMethod} poll request until the response code is {int} and the body is equal to file {string}")
+    @Then("executing a {httpMethod} poll request until the response code is" +
+            " {int} and the body is equal to file {string}")
     @Throws(IOException::class)
     fun whenExecutingPollingUntilResponseIsEqualToFile(
         httpMethod: HttpMethod,

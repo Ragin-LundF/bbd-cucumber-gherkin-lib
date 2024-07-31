@@ -2,21 +2,20 @@ package com.ragin.bdd.cucumber.core
 
 import net.javacrumbs.jsonunit.core.Option
 import org.springframework.http.ResponseEntity
-import java.util.*
 
 object ScenarioStateContext {
     var latestResponse: ResponseEntity<String>? = null
     var fileBasePath: String = ""
     var urlBasePath: String = ""
     var bearerToken: String? = null
-    var editableBody: String = ""
+    var editableBody: String? = ""
     var uriPath:String = ""
     var defaultBearerToken: String = ""
-    var headerValues: HashMap<String, String> = HashMap()
-    var scenarioContextMap: HashMap<String, String> = HashMap()
-    var scenarioContextFileMap: HashMap<String, ByteArray> = HashMap()
-    var userTokenMap: HashMap<String, String> = HashMap()
-    private var jsonPathOptions: MutableList<Option> = ArrayList(0)
+    var headerValues: HashMap<String, String> = hashMapOf()
+    var scenarioContextMap: HashMap<String, String> = hashMapOf()
+    var scenarioContextFileMap: HashMap<String, ByteArray> = hashMapOf()
+    var userTokenMap: HashMap<String, String> = hashMapOf()
+    private var jsonPathOptions: MutableList<Option> = mutableListOf()
     var executionTime = -1L
     var polling = Polling()
 
@@ -50,29 +49,22 @@ object ScenarioStateContext {
         fileBasePath = ""
         urlBasePath = ""
         editableBody = ""
-        headerValues = HashMap()
-        jsonPathOptions = ArrayList(0)
+        headerValues = hashMapOf()
+        jsonPathOptions = mutableListOf()
         bearerToken = defaultBearerToken
         polling = Polling()
-        scenarioContextFileMap = HashMap()
+        scenarioContextFileMap = hashMapOf()
     }
 
     fun resolveEntry(key: String): String {
-        var value = scenarioContextMap[key]
-        if (Objects.isNull(value)) {
-            value = key
-        }
-
-        return value!!
+        return scenarioContextMap[key] ?: key
     }
 
     fun resolveFileEntry(key: String): ByteArray {
         val value = scenarioContextFileMap[key]
-        if (Objects.isNull(value)) {
-            throw java.lang.IllegalArgumentException("Entry $key not found in scendario file context")
-        }
+        require(value != null) {"Entry $key not found in scendario file context"}
 
-        return value!!
+        return value
     }
 
     fun getJsonPathOptions(): List<Option> {

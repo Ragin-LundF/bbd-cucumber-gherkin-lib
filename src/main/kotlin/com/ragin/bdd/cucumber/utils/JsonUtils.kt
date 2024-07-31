@@ -1,5 +1,11 @@
 package com.ragin.bdd.cucumber.utils
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import com.ragin.bdd.cucumber.BddLibConstants
@@ -14,14 +20,16 @@ import com.ragin.bdd.cucumber.matcher.ScenarioStateNeContextMatcher
 import com.ragin.bdd.cucumber.matcher.UUIDMatcher
 import com.ragin.bdd.cucumber.matcher.ValidDateContextMatcher
 import com.ragin.bdd.cucumber.matcher.ValidDateMatcher
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
-import org.apache.commons.logging.LogFactory
 import org.hamcrest.Matcher
 import org.junit.Assert
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Arrays
+import java.util.Optional
 import java.util.stream.Collectors
 
 /**
@@ -33,7 +41,16 @@ class JsonUtils(
     private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>
 ) {
     companion object {
-        private val log = LogFactory.getLog(JsonUtils::class.java)
+        private val log = KotlinLogging.logger { }
+        val mapper: ObjectMapper = Jackson2ObjectMapperBuilder()
+            .modules(JavaTimeModule(), KotlinModule.Builder().build())
+            .featuresToDisable(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+                SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
+            )
+            .serializationInclusion(JsonInclude.Include.NON_NULL)
+            .build()
     }
 
     /**
@@ -46,14 +63,22 @@ class JsonUtils(
         try {
             val configuration = createJsonAssertConfiguration()
             JsonAssert.assertJsonEquals(
-                    expectedJSON,
-                    actualJSON,
-                    configuration
+                expectedJSON,
+                actualJSON,
+                configuration
             )
         } catch (error: AssertionError) {
             val minimizedExpected = minimizeJSON(expectedJSON)
             val minimizedActual = minimizeJSON(actualJSON)
-            log.error("JSON comparison failed.\nExpected:\n\t$minimizedExpected\nActual:\n\t$minimizedActual\n")
+            log.error {
+                """
+                        JSON comparison failed.
+                        Expected:
+                            $minimizedExpected
+                        Actual:
+                            $minimizedActual
+                    """.trimIndent()
+            }
             throw error
         }
     }
@@ -66,14 +91,14 @@ class JsonUtils(
     private fun createJsonAssertConfiguration(): Configuration {
         // base configuration
         var configuration = JsonAssert.withTolerance(0.0)
-                .`when`(Option.TREATING_NULL_AS_ABSENT)
-                .withMatcher("isValidDate", ValidDateMatcher(bddCucumberDateTimeFormatter))
-                .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
-                .withMatcher("isValidUUID", UUIDMatcher())
-                .withMatcher("isValidIBAN", IBANMatcher())
-                .withMatcher("isNotEqualTo", NeStringMatcher())
-                .withMatcher("isEqualToScenarioContext", ScenarioStateEqContextMatcher())
-                .withMatcher("isNotEqualToScenarioContext", ScenarioStateNeContextMatcher())
+            .`when`(Option.TREATING_NULL_AS_ABSENT)
+            .withMatcher("isValidDate", ValidDateMatcher(bddCucumberDateTimeFormatter))
+            .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
+            .withMatcher("isValidUUID", UUIDMatcher())
+            .withMatcher("isValidIBAN", IBANMatcher())
+            .withMatcher("isNotEqualTo", NeStringMatcher())
+            .withMatcher("isEqualToScenarioContext", ScenarioStateEqContextMatcher())
+            .withMatcher("isNotEqualToScenarioContext", ScenarioStateNeContextMatcher())
 
         // add additional options
         for (jsonOption in getJsonPathOptions()) {
@@ -100,11 +125,11 @@ class JsonUtils(
         var configurationVar = configuration
         try {
             configurationVar = configurationVar.withMatcher(
-                    matcher.matcherName(),
-                    matcher.matcherClass().getDeclaredConstructor().newInstance()
+                matcher.matcherName(),
+                matcher.matcherClass().getDeclaredConstructor().newInstance()
             )
-        } catch (e: Exception) {
-            log.error("""Unable to instantiate the matcher [${matcher.matcherName()}]""")
+        } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") e: Exception) {
+            log.error { "Unable to instantiate the matcher [${matcher.matcherName()}]" }
         }
         return configurationVar
     }
@@ -206,6 +231,7 @@ class JsonUtils(
      * @param possibleMatcherName   string which possibly contains a matcher name
      * @return  if matcher name was found the matcher name
      */
+    @Suppress("MagicNumber")
     private fun findMatcherName(possibleMatcherName: String): Optional<String> {
         val matcher = BddLibConstants.BDD_LIB_MATCHER_PATTERN.matcher(possibleMatcherName)
         return if (matcher.find() && matcher.groupCount() == 3) {
@@ -229,9 +255,9 @@ class JsonUtils(
     private fun minimizeJSON(json: String?): String {
         val nullSafeJson = json ?: "{}"
         return Arrays.stream(nullSafeJson.split("\n").toTypedArray())
-                .map { line: String -> line.replace("\r", "") }
-                .map { line: String -> line.replace("\": ", "\":") }
-                .map { obj: String -> obj.trim { it <= ' ' } }
-                .collect(Collectors.joining(""))
+            .map { line: String -> line.replace("\r", "") }
+            .map { line: String -> line.replace("\": ", "\":") }
+            .map { obj: String -> obj.trim { it <= ' ' } }
+            .collect(Collectors.joining(""))
     }
 }

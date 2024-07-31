@@ -1,0 +1,70 @@
+configurations.configureEach {
+    exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    exclude group: "ch.qos.logback", module: "logback-classic"
+    exclude group: "ch.qos.logback", module: "logback-core"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.fasterxml.jackson:jackson-bom:2.17.2"
+        mavenBom "org.testcontainers:testcontainers-bom:1.20.0"
+        mavenBom "org.junit:junit-bom:5.10.1"
+        mavenBom "io.cucumber:cucumber-bom:7.18.1"
+    }
+
+    dependencies {
+        dependency "org.slf4j:slf4j-simple:2.0.13"
+        dependency "io.github.oshai:kotlin-logging-jvm:7.0.0"
+        dependency "org.apache.httpcomponents.client5:httpclient5:5.3.1"
+        dependency "net.javacrumbs.json-unit:json-unit:3.4.1"
+        dependency "jakarta.validation:jakarta.validation-api:3.1.0"
+        dependency "org.apache.commons:commons-text:1.12.0"
+        dependency "commons-io:commons-io:2.16.1"
+        dependency "org.apache.commons:commons-lang3:3.15.0"
+        dependency "org.yaml:snakeyaml:2.2"
+        dependency "org.liquibase:liquibase-core:4.29.0"
+        dependency "org.postgresql:postgresql:42.7.3"
+        dependency "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+        dependency "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    }
+}
+
+dependencies {
+    implementation "io.github.oshai:kotlin-logging-jvm"
+
+    api "org.apache.httpcomponents.client5:httpclient5"
+
+    api "net.javacrumbs.json-unit:json-unit"
+
+    api "io.cucumber:cucumber-java"
+    api "io.cucumber:cucumber-spring"
+    api "io.cucumber:cucumber-junit"
+
+    api "jakarta.validation:jakarta.validation-api"
+
+    api "org.apache.commons:commons-text"
+    implementation "commons-io:commons-io"
+    implementation "org.apache.commons:commons-lang3"
+
+    implementation "org.yaml:snakeyaml"
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-test"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    testImplementation "org.postgresql:postgresql"
+    testImplementation "org.slf4j:slf4j-simple"
+    testImplementation "org.testcontainers:testcontainers"
+    testImplementation "org.testcontainers:postgresql"
+    testImplementation "org.testcontainers:junit-jupiter"
+}

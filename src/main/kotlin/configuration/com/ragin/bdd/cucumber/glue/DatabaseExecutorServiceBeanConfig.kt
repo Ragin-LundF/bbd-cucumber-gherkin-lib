@@ -43,10 +43,9 @@ class DatabaseExecutorServiceBeanConfig(
     fun databaseExec(): IDatabaseExecutorService {
         return object : IDatabaseExecutorService {
             @Throws(Exception::class)
-            override fun executeLiquibaseScript(liquibaseScript: String) {
-            }
+            override fun executeLiquibaseScript(liquibaseScript: String) = Unit
 
-            override fun executeSQL(sql: String) {}
+            override fun executeSQL(sql: String) = Unit
             override fun executeQuerySQL(sql: String): List<Map<String, Any>> {
                 return Collections.emptyList()
             }

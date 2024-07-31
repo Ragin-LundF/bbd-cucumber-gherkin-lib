@@ -1,0 +1,23 @@
+// exclude tests, because they are only examples
+test {
+    exclude '**'
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+tasks.register('cucumber', Test) {
+    group 'verification'
+    exclude '**/*Test*'
+    include '**/*CucumberRun*'
+
+    minHeapSize = "512m"
+    maxHeapSize = "1024m"
+
+    onlyIf("Execute only if cucumber task is called directly") {
+        gradle.startParameter.taskNames.contains("cucumber")
+    }
+}

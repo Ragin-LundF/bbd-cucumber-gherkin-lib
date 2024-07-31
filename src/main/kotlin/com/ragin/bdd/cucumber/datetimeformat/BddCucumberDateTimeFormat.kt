@@ -8,5 +8,5 @@ fun interface BddCucumberDateTimeFormat {
      *
      * @return List of patterns to add
      */
-    fun formatters(): List<DateTimeFormatter?>?
+    fun formatters(): List<DateTimeFormatter>?
 }
