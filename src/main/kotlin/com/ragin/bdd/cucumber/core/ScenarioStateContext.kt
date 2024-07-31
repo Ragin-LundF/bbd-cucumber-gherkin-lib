@@ -8,7 +8,7 @@ object ScenarioStateContext {
     var fileBasePath: String = ""
     var urlBasePath: String = ""
     var bearerToken: String? = null
-    var editableBody: String = ""
+    var editableBody: String? = ""
     var uriPath:String = ""
     var defaultBearerToken: String = ""
     var headerValues: HashMap<String, String> = hashMapOf()

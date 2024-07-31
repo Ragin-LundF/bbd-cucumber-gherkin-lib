@@ -28,6 +28,5 @@ class ParameterizedCustomScenarioContextMatcher : BaseMatcher<Any>(), BddCucumbe
         return actualParameter == contextParameter
     }
 
-    override fun describeTo(description: Description) {
-    }
+    override fun describeTo(description: Description) = Unit
 }

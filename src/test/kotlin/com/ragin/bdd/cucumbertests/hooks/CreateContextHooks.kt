@@ -42,6 +42,7 @@ class CreateContextHooks {
     private val dockerNetwork: Network = Network.newNetwork()
 
     @Container
+    @Suppress("UnusedPrivateProperty")
     private val dbContainer: GenericContainer<*> = PostgreSQLContainer(postgresImage)
         .withNetwork(dockerNetwork)
         .withNetworkAliases(dockerNetworkName)

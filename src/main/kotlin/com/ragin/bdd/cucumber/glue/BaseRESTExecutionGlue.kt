@@ -52,8 +52,8 @@ abstract class BaseRESTExecutionGlue(
 
     init {
         // init ScenarioContext
-        bddProperties.scenarioContext?.let { scenarioContextMap.putAll(it) }
-        if (bddProperties.authorization?.bearerToken?.default != null) {
+        bddProperties.scenarioContext.let { scenarioContextMap.putAll(it) }
+        if (bddProperties.authorization.bearerToken.default.isNotEmpty()) {
             setDefaultBearerToken(bddProperties.authorization.bearerToken.default)
         }
 
