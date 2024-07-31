@@ -1,13 +1,17 @@
 package com.ragin.bdd.cucumber.utils
 
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
-import org.apache.commons.logging.LogFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.math.BigDecimal
-import java.time.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
-import java.util.*
+import java.util.Optional
 
 // Methods are public to be used by the project.
 object DateUtils {
@@ -15,7 +19,7 @@ object DateUtils {
      * available dateFormats
      */
     private val dateFormats = createDateList()
-    private val log = LogFactory.getLog(DateUtils::class.java)
+    private val log = KotlinLogging.logger { }
 
     /**
      * Check, that mandatory date is valid.
@@ -27,8 +31,10 @@ object DateUtils {
      * @return              true = valid | false = invalid
      */
     @JvmStatic
-    fun isValidMandatoryDate(dateObject: Any,
-                             bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>): Boolean {
+    fun isValidMandatoryDate(
+        dateObject: Any,
+        bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>
+    ): Boolean {
         return transformToLocalDateTime(dateObject, bddDateTimeFormats) != null
     }
 
@@ -39,13 +45,14 @@ object DateUtils {
      */
     private fun createDateList(): List<DateTimeFormatter> {
         return listOf(
-                DateTimeFormatter.ISO_DATE,
-                DateTimeFormatter.ISO_DATE_TIME,
-                DateTimeFormatterBuilder()
-                        .append(DateTimeFormatter.ISO_LOCAL_DATE)
-                        .appendLiteral(' ')
-                        .append(DateTimeFormatter.ISO_LOCAL_TIME)
-                        .toFormatter())
+            DateTimeFormatter.ISO_DATE,
+            DateTimeFormatter.ISO_DATE_TIME,
+            DateTimeFormatterBuilder()
+                .append(DateTimeFormatter.ISO_LOCAL_DATE)
+                .appendLiteral(' ')
+                .append(DateTimeFormatter.ISO_LOCAL_TIME)
+                .toFormatter()
+        )
     }
 
     /**
@@ -56,21 +63,24 @@ object DateUtils {
      * @return              LocalDateTime if valid date, else null
      * @throws DateTimeParseException   Exception, when date is not parseable
      */
+    @Suppress("ReturnCount")
     fun transformToLocalDateTime(
-            dateObject: Any,
-            bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>): LocalDateTime? {
+        dateObject: Any,
+        bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>
+    ): LocalDateTime? {
         var localDateTime: LocalDateTime? = null
         if (dateObject is Long) {
             // Read Long (timestamp) with LocalDateTime to ensure that it is a valid date
             return LocalDateTime.of(
-                    Instant.ofEpochMilli(dateObject).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
-                    LocalTime.MIN
+                Instant.ofEpochMilli(dateObject).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
+                LocalTime.MIN
             )
         } else if (dateObject is BigDecimal) {
             // Read BigDecimal (e.g. yyyyddmm) with LocalDateTime to ensure that it is a valid date
             return LocalDateTime.of(
-                    Instant.ofEpochMilli(dateObject.toLong()).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
-                    LocalTime.MIN)
+                Instant.ofEpochMilli(dateObject.toLong()).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
+                LocalTime.MIN
+            )
         } else if (dateObject is String) {
             // Parse string with date to ensure that it is a valid date
             // first, check, that it not contains sth. like "null"
@@ -80,7 +90,7 @@ object DateUtils {
 
             // check known date formats if one fits to the object
             for (formatter in createDateFormatters(bddDateTimeFormats)) {
-                log.debug("Try to parse $dateObject with the format $formatter")
+                log.debug { "Try to parse $dateObject with the format $formatter" }
                 localDateTime = parseDate(dateObject.toString(), formatter)
 
                 // if parsing date was null, parse String as dateTime
@@ -113,7 +123,7 @@ object DateUtils {
         return try {
             LocalDateTime.of(LocalDate.parse(date, formatter), LocalTime.MIN)
         } catch (e: DateTimeParseException) {
-            log.debug("Failed to parse as date $date with the format $formatter")
+            log.debug { "Failed to parse as date $date with the format $formatter" }
             null
         }
     }
@@ -129,7 +139,7 @@ object DateUtils {
         return try {
             LocalDateTime.parse(dateTime, formatter)
         } catch (e: DateTimeParseException) {
-            log.debug("Failed to parse as dateTime $dateTime with the format $formatter")
+            log.debug { "Failed to parse as dateTime $dateTime with the format $formatter" }
             null
         }
     }
@@ -140,15 +150,14 @@ object DateUtils {
      * @param bddDateTimeFormats    Collection of custom DateTimeFormatters
      * @return                      Set which contains all DateTimeFormatters
      */
-    private fun createDateFormatters(bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>): Set<DateTimeFormatter> {
+    private fun createDateFormatters(
+        bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>
+    ): Set<DateTimeFormatter> {
         val dateTimeFormatsResult: MutableSet<DateTimeFormatter> = LinkedHashSet(dateFormats)
-        Optional.ofNullable(bddDateTimeFormats).ifPresent {
-            formats: Collection<BddCucumberDateTimeFormat> ->
-            formats.stream()
-                    .map { obj: BddCucumberDateTimeFormat -> obj.formatters() }
-                    .filter { obj: List<DateTimeFormatter?>? -> Objects.nonNull(obj) }
-                    .flatMap { obj: List<DateTimeFormatter?>? -> obj?.stream() }
-                    .forEach { e: DateTimeFormatter? -> dateTimeFormatsResult.add(e!!) }
+        Optional.ofNullable(bddDateTimeFormats).ifPresent { formats: Collection<BddCucumberDateTimeFormat> ->
+            formats.mapNotNull { obj: BddCucumberDateTimeFormat -> obj.formatters() }
+                .flatMap { obj: List<DateTimeFormatter> -> obj.toList() }
+                .forEach { e: DateTimeFormatter -> dateTimeFormatsResult.add(e) }
         }
         return dateTimeFormatsResult
     }

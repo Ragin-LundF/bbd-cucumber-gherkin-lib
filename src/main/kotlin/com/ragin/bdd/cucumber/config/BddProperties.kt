@@ -4,11 +4,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "cucumbertest")
 data class BddProperties(
-    val authorization : Authorization?,
+    val authorization : Authorization,
     val proxy : Proxy?,
     val server: Server?,
     val ssl : SSL?,
-    val scenarioContext : Map<String, String>?
+    val scenarioContext : Map<String, String> = hashMapOf()
 ) {
     data class Authorization(
         val bearerToken: AuthorizationBearer

@@ -1,234 +1,29 @@
-buildscript {
-    ext.kotlin_version = '1.9.23'
-    ext.jdk_version = 17
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+
 plugins {
     id "java"
-    id "jacoco"
     id "signing"
     id "java-library"
     id "maven-publish"
-    id "org.springframework.boot" version "3.2.5"
-    id "io.spring.dependency-management" version "1.1.5"
+    id "org.sonarqube" version "5.1.0.4882"
+    id "io.gitlab.arturbosch.detekt" version "1.23.6"
     id "org.liquibase.gradle" version "2.2.2"
-    id "org.sonarqube" version "5.0.0.4638"
+    id "org.springframework.boot" version "3.3.2"
+    id "io.spring.dependency-management" version "1.1.6"
+    id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
+    id "org.jetbrains.kotlinx.kover" version "0.8.3"
 }
 
-apply plugin: 'kotlin'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+// export classes for config gradles
+ext.Detekt = Detekt
+ext.DetektCreateBaselineTask = DetektCreateBaselineTask
 
-wrapper {
-    gradleVersion = "8.7"
-}
-
-configurations.configureEach {
-    exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
-    exclude group: "ch.qos.logback", module: "logback-classic"
-    exclude group: "ch.qos.logback", module: "logback-core"
-}
-
-dependencies {
-    api "org.apache.httpcomponents.client5:httpclient5:5.3.1"
-
-    api "net.javacrumbs.json-unit:json-unit:3.2.7"
-
-    api "io.cucumber:cucumber-java:7.18.0"
-    api "io.cucumber:cucumber-spring:7.18.0"
-    api "io.cucumber:cucumber-junit:7.18.0"
-
-    api "jakarta.validation:jakarta.validation-api:3.0.2"
-
-    api "org.apache.commons:commons-text:1.12.0"
-    implementation "commons-io:commons-io:2.16.1"
-    implementation "org.apache.commons:commons-lang3:3.14.0"
-
-    // Defining the version here, because Spring brings 4.5.0, which has a CVE
-    implementation "org.yaml:snakeyaml:2.2"
-    implementation "org.liquibase:liquibase-core:4.27.0"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-test"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
-
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    compileOnly "org.projectlombok:lombok:1.18.32"
-    annotationProcessor "org.projectlombok:lombok:1.18.32"
-    testCompileOnly "org.projectlombok:lombok:1.18.32"
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.32"
-
-    testImplementation "org.postgresql:postgresql:42.7.3"
-    testImplementation "org.testcontainers:testcontainers:1.19.8"
-    testImplementation "org.testcontainers:postgresql:1.19.8"
-    testImplementation "org.testcontainers:junit-jupiter:1.19.8"
-}
-
-jar {
-    archiveClassifier.set('')   // remove "plain" suffix for jar files
-}
-
-def pomConfig = {
-    licenses {
-        license {
-            name "MIT"
-            url "https://opensource.org/licenses/MIT"
-            distribution "repo"
-        }
-    }
-    developers {
-        developer {
-            name "ragin"
-        }
-    }
-
-    scm {
-        url "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
-    }
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            artifactId "bdd-cucumber-gherkin-lib"
-            version "${version}"
-            pom {
-                name = "bdd-cucumber-gherkin-lib"
-                description = "Cucumber BDD library for simpler e2e tests with predefined sentences for API and basic database access"
-                url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
-                scm {
-                    connection = "scm:git:git@github.com:Ragin-LundF/bbd-cucumber-gherkin-lib.git"
-                    developerConnection = "scm:git:ssh://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib.git"
-                    url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
-                }
-                licenses {
-                    license {
-                        name = "MIT"
-                        url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/blob/main/LICENSE"
-                    }
-                }
-                developers {
-                    developer {
-                        id = "Ragin-LundF"
-                        name = "Ragin-LundF"
-                        organizationUrl = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
-                    }
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                password = System.getenv("OSSRH_PASSWORD")
-            }
-        }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Ragin-LundF/bbd-cucumber-gherkin-lib")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-}
-
-signing {
-    sign publishing.publications.maven
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-    withSourcesJar()
-    withJavadocJar()
-}
-
-repositories {
-    mavenCentral()
-}
-
-jar {
-    enabled = true
-}
-
-bootJar {
-    enabled = false
-}
-
-// exclude tests, because they are only examples
-test {
-    exclude '**'
-}
-
-configurations {
-    cucumberRuntime {
-        extendsFrom testImplementation
-    }
-}
-
-test {
-    jacoco {
-        enabled = true
-        destinationFile = file("$buildDir/results/jacoco/jacoco.exec")
-        dumpOnExit = true
-        classDumpDir = null
-        output = JacocoTaskExtension.Output.FILE
-        address = "localhost"
-        port = 6300
-        jmx = false
-    }
-}
-
-tasks.register('cucumber') {
-    group "verification"
-    doLast {
-        javaexec {
-            // Jacoco
-            def jacocoAgent = zipTree(configurations.jacocoAgent.singleFile).filter { it.name == "jacocoagent.jar" }.singleFile
-            jvmArgs = ["-javaagent:$jacocoAgent=destfile=$buildDir/results/jacoco/jacoco.exec,append=false"]
-            // Cucumber execution
-            main = "io.cucumber.core.cli.Main"
-            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-            String baseReportDir = "build/cucumberReport/"
-            args = [
-                    '-p', 'pretty',
-                    '-p', 'html:' + baseReportDir + 'cucumber-html',
-                    '-p', 'junit:' + baseReportDir + 'cucumber-junit.xml',
-                    '-p', 'json:' + baseReportDir + 'cucumber-json.json',
-                    '--tags', 'not @ignore',
-                    'src/test/resources/features'
-            ]
-        }
-    }
-    finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-    dependsOn cucumber
-    reports {
-        xml.required = true
-        csv.required = true
-        html.required = true
-    }
-}
+// apply externalized configs
+apply from: "${rootDir}/dependencies.gradle"
+apply from: "${rootDir}/config/gradle/detekt.gradle"
+apply from: "${rootDir}/config/gradle/kover_sonar.gradle"
+apply from: "${rootDir}/config/gradle/java.gradle"
+apply from: "${rootDir}/config/gradle/publishing.gradle"
+apply from: "${rootDir}/config/gradle/tests.gradle"
+apply from: "${rootDir}/config/gradle/wrapper.gradle"

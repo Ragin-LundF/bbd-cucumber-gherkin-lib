@@ -1,6 +1,5 @@
 package com.ragin.bdd.cucumber.glue
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import com.ragin.bdd.cucumber.config.BddProperties
@@ -22,7 +21,7 @@ open class DatabaseGlue(
     bddProperties: BddProperties,
     private val databaseExecutorService: IDatabaseExecutorService
 ) : BaseCucumberCore(jsonUtils, bddProperties) {
-    private val mapper = ObjectMapper()
+    private val mapper = JsonUtils.mapper
 
     /**
      * Initialize the database with a file.
@@ -106,8 +105,9 @@ open class DatabaseGlue(
                 .entries
                 .stream()
                 .filter { entry: Map.Entry<String, Any?> -> entry.value != null }
-                .filter { entry: Map.Entry<String, Any?> -> entry.value !is String || StringUtils.isNotEmpty(entry.value as String?) }
-                .collect(Collectors.toMap(
+                .filter { entry: Map.Entry<String, Any?> ->
+                    entry.value !is String || StringUtils.isNotEmpty(entry.value as String?)
+                }.collect(Collectors.toMap(
                     { columnName: Map.Entry<String, Any?> -> generifyDatabaseColumnName(columnName.key) },
                     { columnValue: Map.Entry<String, Any?> -> generifyDatabaseColumnValue(columnValue.value) }
                 ))

@@ -60,7 +60,7 @@ class ThenRESTValidationGlue(
     fun thenEnsureHeaderIsEqualTo(headerName: String, expectedValue: String) {
         val header = latestResponse!!.headers.getOrEmpty(headerName).joinToString(",")
         Assert.assertEquals(
-            String.format("Header [%s] does not have the value [%s], but [%s]", headerName, expectedValue, header),
+            "Header [$headerName] does not have the value [$expectedValue], but [$header]",
             expectedValue,
             header
         )
@@ -90,7 +90,7 @@ class ThenRESTValidationGlue(
 
     @Then("I ensure that the body of the response contains the following fields and values")
     fun thenEnsureTheBodyOfTheResponseContainsFieldWithValues(dataTable: DataTable) {
-        val contextDataTableMap = dataTable.asMap<String, String>(String::class.java, String::class.java)
+        val contextDataTableMap = dataTable.asMap(String::class.java, String::class.java)
         val keySet: Set<String> = contextDataTableMap.keys
         for (key in keySet) {
             jsonUtils.validateJsonField(latestResponse!!.body, key, contextDataTableMap[key]!!)
@@ -152,10 +152,12 @@ class ThenRESTValidationGlue(
      *
      * !!!ATTENTION!!! This is an Anti-Pattern, but sometimes it can be necessary if Cucumber should work as Test-Suite.
      *
-     * For better separation use the database initializer and use static values instead of transporting them between scenarios!
+     * For better separation use the database initializer and use static values instead
+     * of transporting them between scenarios!
      *
      * @param fieldName     name of the field in the response
-     * @param contextName   name of the field as which it should be stored (should be unique, else it will be overwritten)
+     * @param contextName   name of the field as which it should be stored
+     *                      (should be unique, else it will be overwritten)
      */
     @Then("I store the string of the field {string} in the context {string} for later usage")
     fun storeStringOfFieldInContextForLaterUsage(fieldName: String, contextName: String) {

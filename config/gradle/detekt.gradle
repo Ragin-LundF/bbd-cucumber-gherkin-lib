@@ -1,0 +1,25 @@
+apply plugin: "io.gitlab.arturbosch.detekt"
+
+tasks.withType(Detekt).configureEach {
+    exclude("**/gen/**")
+    reports {
+        html.required.set(true) // observe findings in your browser with structure and code snippets
+        xml.required.set(true) // checkstyle like format mainly for integrations like Jenkins
+        sarif.required.set(true)
+        // standardized SARIF format (https://sarifweb.azurewebsites.net/) to support integrations with Github Code Scanning
+    }
+}
+
+detekt {
+    config.setFrom("${rootDir}/config/detekt.yml")
+    buildUponDefaultConfig = true
+}
+
+tasks.withType(Detekt).configureEach {
+    jvmTarget = JavaVersion.toVersion(jdk_version)
+}
+tasks.withType(DetektCreateBaselineTask).configureEach {
+    jvmTarget = JavaVersion.toVersion(jdk_version)
+}
+
+tasks.assemble.finalizedBy(tasks.detekt)

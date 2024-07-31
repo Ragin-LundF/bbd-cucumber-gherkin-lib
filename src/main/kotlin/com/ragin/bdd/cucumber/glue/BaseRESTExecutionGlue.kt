@@ -13,8 +13,8 @@ import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.createHTTPHeader
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWithDataTable
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.Scenario
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.commons.lang3.StringUtils
-import org.apache.commons.logging.LogFactory
 import org.apache.commons.text.StringSubstitutor
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
@@ -50,10 +50,6 @@ abstract class BaseRESTExecutionGlue(
     @LocalServerPort
     protected var port = 0
 
-    protected fun setLatestResponse(latestResponse: ResponseEntity<String>?) {
-        ScenarioStateContext.latestResponse = latestResponse
-    }
-
     init {
         // init ScenarioContext
         bddProperties.scenarioContext?.let { scenarioContextMap.putAll(it) }
@@ -71,6 +67,10 @@ abstract class BaseRESTExecutionGlue(
                 return statusCode.is5xxServerError
             }
         }
+    }
+
+    protected fun setLatestResponse(latestResponse: ResponseEntity<String>?) {
+        ScenarioStateContext.latestResponse = latestResponse
     }
 
     protected fun createRequestFactory(): ClientHttpRequestFactory {
@@ -167,7 +167,7 @@ abstract class BaseRESTExecutionGlue(
             scenario.log("========")
             scenario.log("HTTP Method: ${httpMethod.name()}")
             scenario.log("HTTP URL   : $targetUrl")
-            log.info("Executing call to [${httpMethod.name()}][$targetUrl]")
+            log.info { "Executing call to [${httpMethod.name()}][$targetUrl]" }
             setLatestResponse(
                 restTemplate.exchange(
                     targetUrl,
@@ -202,7 +202,7 @@ abstract class BaseRESTExecutionGlue(
         val formDataMap: MultiValueMap<String, Any> = LinkedMultiValueMap()
         dataTable.asMap().forEach { entry ->
             val byteArray = scenarioContextFileMap[entry.value]
-            if (Objects.nonNull(byteArray)) {
+            if (byteArray != null) {
                 formDataMap.add(entry.key, byteArray)
             } else {
                 formDataMap.add(entry.key, scenarioContextMap[entry.value] ?: entry.value)
@@ -212,7 +212,7 @@ abstract class BaseRESTExecutionGlue(
         val request = HttpEntity(formDataMap, headers)
         try {
             val targetUrl = fullURLFor(path)
-            log.info("Executing call to [POST][$targetUrl]")
+            log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
                 restTemplate.postForEntity(targetUrl, request, String::class.java)
             )
@@ -259,7 +259,7 @@ abstract class BaseRESTExecutionGlue(
                 scenario.log("  ${pair.key}=${pair.value}")
             }
 
-            log.info("Executing call to [$targetUrl]")
+            log.info { "Executing call to [$targetUrl]" }
             setLatestResponse(
                 restTemplate.exchange(
                     targetUrl,
@@ -337,6 +337,6 @@ abstract class BaseRESTExecutionGlue(
 
     companion object {
         protected const val PLACEHOLDER = "none"
-        private val log = LogFactory.getLog(BaseRESTExecutionGlue::class.java)
+        private val log = KotlinLogging.logger { }
     }
 }

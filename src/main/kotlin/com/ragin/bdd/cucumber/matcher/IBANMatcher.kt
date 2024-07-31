@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
  * ${json-unit.matches:isValidIBAN}
  */
 @Component
-class IBANMatcher: BaseMatcher<String?>(), BddCucumberJsonMatcher {
+class IBANMatcher : BaseMatcher<String?>(), BddCucumberJsonMatcher {
     override fun matcherName(): String {
         return "isValidIBAN"
     }
@@ -76,7 +76,8 @@ class IBANMatcher: BaseMatcher<String?>(), BddCucumberJsonMatcher {
                 "^TN59\\d{20}\$|" +
                 "^TR\\d{7}[0-9A-Z]{17}\$|" +
                 "^AE\\d{21}\$|" +
-                "^GB\\d{2}[A-Z]{4}\\d{14}\$").toRegex()
+                "^GB\\d{2}[A-Z]{4}\\d{14}\$"
+                ).toRegex()
         if (actual is String) {
             val actualString = actual.toString()
             return actualString.matches(ibanRegex)

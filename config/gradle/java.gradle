@@ -1,0 +1,22 @@
+jar {
+    enabled = true
+    archiveClassifier.set('')   // remove "plain" suffix for jar files
+}
+
+bootJar {
+    enabled = false
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(jdk_version))
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(jdk_version))
+    }
+    withSourcesJar()
+    withJavadocJar()
+}

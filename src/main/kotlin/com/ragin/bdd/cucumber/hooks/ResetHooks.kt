@@ -7,13 +7,13 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.addJsonIgnoringExtraFiel
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.reset
 import io.cucumber.java.Before
 import io.cucumber.java.Scenario
-import org.apache.commons.logging.LogFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 open class ResetHooks(private val databaseExecutorService: IDatabaseExecutorService) {
     companion object {
         private const val RESET_DATABASE_FILE = "database/reset_database.xml"
-        private val log = LogFactory.getLog(ResetHooks::class.java)
+        private val log = KotlinLogging.logger { }
     }
 
     /**
@@ -28,10 +28,10 @@ open class ResetHooks(private val databaseExecutorService: IDatabaseExecutorServ
     open fun resetDatabase(scenario: Scenario) {
         // Check if the file exist
         if (javaClass.classLoader.getResource(RESET_DATABASE_FILE) == null) {
-            log.debug("No reset database file ($RESET_DATABASE_FILE) found.")
+            log.debug { "No reset database file ($RESET_DATABASE_FILE) found." }
         } else {
             // Execute the liquibase script to reset the DB
-            log.info("Reset database for scenario ${scenario.name}")
+            log.info { "Reset database for scenario ${scenario.name}" }
             databaseExecutorService.executeLiquibaseScript(RESET_DATABASE_FILE)
         }
     }
@@ -42,25 +42,25 @@ open class ResetHooks(private val databaseExecutorService: IDatabaseExecutorServ
      */
     @Before(order = 3)
     fun resetBaseCucumberCoreState(scenario: Scenario) {
-        log.info("Cleanup test state for scenario ${scenario.name}")
+        log.info { "Cleanup test state for scenario ${scenario.name}" }
         reset()
     }
 
     @Before(order = 10, value = "@bdd_lib_json_ignore_new_array_elements")
     fun jsonIgnoreExtraArrayElements(scenario: Scenario) {
-        log.info("Set JSON ignore for extra array elements for scenario ${scenario.name}")
+        log.info { "Set JSON ignore for extra array elements for scenario ${scenario.name}" }
         addJsonIgnoringExtraArrayElements()
     }
 
     @Before(order = 10, value = "@bdd_lib_json_ignore_extra_fields")
     fun jsonIgnoreNewFields(scenario: Scenario) {
-        log.info("Set JSON ignore for extra fields for scenario ${scenario.name}")
+        log.info { "Set JSON ignore for extra fields for scenario ${scenario.name}" }
         addJsonIgnoringExtraFields()
     }
 
     @Before(order = 10, value = "@bdd_lib_json_ignore_array_order")
     fun jsonIgnoreArrayOrder(scenario: Scenario) {
-        log.info("Set JSON ignore array order for scenario ${scenario.name}")
+        log.info { "Set JSON ignore array order for scenario ${scenario.name}" }
         addJsonIgnoringArrayOrder()
     }
 }

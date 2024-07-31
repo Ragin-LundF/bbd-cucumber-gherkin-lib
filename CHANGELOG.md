@@ -1,3 +1,15 @@
+# Release 2.13.0
+## Updated Gradle structure, code analysis and coverage
+- Updated Gradle structure and split each configuration into separate files
+- Replaced `jacoco` with `kover`
+- Updated Gradle task for `cucumber`
+- Added `Detekt` for static code analysis
+
+## Updated Libs
+- Spring Boot to 3.3.2
+- liquibase-core to 4.29.0
+- Cucumber libs to 7.18.1
+
 # Release 2.12.0
 ## Updated Libs
 - Spring Boot to 3.2.5
@@ -688,7 +700,7 @@ To register this custom class it is necessary to add it `@ContextConfiguration` 
 
 Example:
 
-- [Configuration context](src/test/java/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.java)
+- [Configuration context](src/test/kotlin/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.kt)
 - [Test feature](src/test/resources/features/body_validation/field_compare.feature)
 
 # Release 1.20.7
@@ -963,8 +975,8 @@ If the path contains something like:
 In this case, the `dynamicElement` will be replaced, if it exists in the ScenarioContext.
 
 Support for adding static key/value pairs to the context:
-- [Set a static value to the context](README.md#set-a-static-value-to-the-context)
-- [Set multiple static values to the context](README.md#set-multiple-static-values-to-the-context)
+- [Set a static value to the context](README.md)
+- [Set multiple static values to the context](README.md)
 
 # Release 1.14.0
 
@@ -992,9 +1004,9 @@ The library detects, if the path has the prefix `$.`. If it is not available, it
 # Release 1.11.0
 
 - Adding support for JSON matcher which can compare to values in the ScenarioContext.
-  More information: [README.md#json-unit](README.md#json-unit)
+  More information: [README.md](README.md)
 - Adding support for own custom matcher.
-  More information: [README.md#extension-of-json-unit-matcher](README.md#extension-of-json-unit-matcher)
+  More information: [README.md](README.md)
 
 # Release 1.9.0
 

@@ -5,7 +5,6 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.bearerToken
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.fileBasePath
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import org.apache.commons.io.IOUtils
-import org.apache.commons.lang3.StringUtils
 import org.springframework.stereotype.Component
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -19,12 +18,10 @@ open class BaseCucumberCore(protected val jsonUtils: JsonUtils, protected val bd
      * @param defaultBearerToken default Bearer token
      */
     fun setDefaultBearerToken(defaultBearerToken: String?) {
-        if (StringUtils.isNotEmpty(bddProperties.authorization?.bearerToken?.default)) {
+        if (! bddProperties.authorization?.bearerToken?.default.isNullOrEmpty()) {
             ScenarioStateContext.defaultBearerToken = bddProperties.authorization?.bearerToken?.default!!
         }
-        if (StringUtils.isEmpty(bearerToken)) {
-            bearerToken = defaultBearerToken
-        }
+        bearerToken = bearerToken ?: defaultBearerToken
     }
 
     fun getFilePath(path: String): String {
