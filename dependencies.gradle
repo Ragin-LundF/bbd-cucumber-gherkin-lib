@@ -5,13 +5,6 @@ configurations.configureEach {
 }
 
 dependencyManagement {
-    imports {
-        mavenBom "com.fasterxml.jackson:jackson-bom:2.17.2"
-        mavenBom "org.testcontainers:testcontainers-bom:1.20.0"
-        mavenBom "org.junit:junit-bom:5.10.1"
-        mavenBom "io.cucumber:cucumber-bom:7.18.1"
-    }
-
     dependencies {
         dependency "org.slf4j:slf4j-simple:2.0.13"
         dependency "io.github.oshai:kotlin-logging-jvm:7.0.0"
@@ -36,9 +29,9 @@ dependencies {
 
     api "net.javacrumbs.json-unit:json-unit"
 
-    api "io.cucumber:cucumber-java"
-    api "io.cucumber:cucumber-spring"
-    api "io.cucumber:cucumber-junit"
+    api "io.cucumber:cucumber-java:$version_cucumber"
+    api "io.cucumber:cucumber-spring:$version_cucumber"
+    api "io.cucumber:cucumber-junit:$version_cucumber"
 
     api "jakarta.validation:jakarta.validation-api"
 
@@ -53,18 +46,18 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    implementation "com.fasterxml.jackson.core:jackson-annotations"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:$version_jackson"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$version_jackson"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:$version_jackson"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$version_jackson"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$version_jackson"
 
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     testImplementation "org.postgresql:postgresql"
     testImplementation "org.slf4j:slf4j-simple"
-    testImplementation "org.testcontainers:testcontainers"
-    testImplementation "org.testcontainers:postgresql"
-    testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation "org.testcontainers:testcontainers:$version_testcontainers"
+    testImplementation "org.testcontainers:postgresql:$version_testcontainers"
+    testImplementation "org.testcontainers:junit-jupiter:$version_testcontainers"
 }
