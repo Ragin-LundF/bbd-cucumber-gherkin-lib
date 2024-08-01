@@ -1,3 +1,6 @@
+# Release 2.15.0
+- Fixed issues with BOM's. It was not possible to resolve the transitive dependencies.
+
 # Release 2.14.0
 ## Updated Gradle structure, code analysis and coverage
 - Updated Gradle structure and split each configuration into separate files
