@@ -1,3 +1,7 @@
+# Release 2.16.0
+- Spring Boot to 3.3.3
+- liquibase-core to 4.29.1
+
 # Release 2.15.0
 - Fixed issues with BOM's. It was not possible to resolve the transitive dependencies.
 
