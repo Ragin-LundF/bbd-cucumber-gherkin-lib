@@ -4,43 +4,25 @@ configurations.configureEach {
     exclude group: "ch.qos.logback", module: "logback-core"
 }
 
-dependencyManagement {
-    dependencies {
-        dependency "org.slf4j:slf4j-simple:2.0.16"
-        dependency "io.github.oshai:kotlin-logging-jvm:7.0.0"
-        dependency "org.apache.httpcomponents.client5:httpclient5:5.3.1"
-        dependency "net.javacrumbs.json-unit:json-unit:3.4.1"
-        dependency "jakarta.validation:jakarta.validation-api:3.1.0"
-        dependency "org.apache.commons:commons-text:1.12.0"
-        dependency "commons-io:commons-io:2.16.1"
-        dependency "org.apache.commons:commons-lang3:3.16.0"
-        dependency "org.yaml:snakeyaml:2.2"
-        dependency "org.liquibase:liquibase-core:4.29.1"
-        dependency "org.postgresql:postgresql:42.7.4"
-        dependency "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-        dependency "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    }
-}
-
 dependencies {
-    implementation "io.github.oshai:kotlin-logging-jvm"
+    implementation "io.github.oshai:kotlin-logging-jvm:7.0.0"
 
-    api "org.apache.httpcomponents.client5:httpclient5"
+    api "org.apache.httpcomponents.client5:httpclient5:5.3.1"
 
-    api "net.javacrumbs.json-unit:json-unit"
+    api "net.javacrumbs.json-unit:json-unit:3.4.1"
 
     api "io.cucumber:cucumber-java:$version_cucumber"
     api "io.cucumber:cucumber-spring:$version_cucumber"
     api "io.cucumber:cucumber-junit:$version_cucumber"
 
-    api "jakarta.validation:jakarta.validation-api"
+    api "jakarta.validation:jakarta.validation-api:3.1.0"
 
-    api "org.apache.commons:commons-text"
-    implementation "commons-io:commons-io"
-    implementation "org.apache.commons:commons-lang3"
+    api "org.apache.commons:commons-text:1.12.0"
+    implementation "commons-io:commons-io:2.16.1"
+    implementation "org.apache.commons:commons-lang3:3.16.0"
 
-    implementation "org.yaml:snakeyaml"
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.yaml:snakeyaml:2.2"
+    implementation "org.liquibase:liquibase-core:4.29.1"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
@@ -52,11 +34,11 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$version_jackson"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$version_jackson"
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    testImplementation "org.postgresql:postgresql"
-    testImplementation "org.slf4j:slf4j-simple"
+    testImplementation "org.postgresql:postgresql:42.7.4"
+    testImplementation "org.slf4j:slf4j-simple:2.0.16"
     testImplementation "org.testcontainers:testcontainers:$version_testcontainers"
     testImplementation "org.testcontainers:postgresql:$version_testcontainers"
     testImplementation "org.testcontainers:jdbc:$version_testcontainers"
