@@ -48,7 +48,7 @@ class Authentication(
     fun stubAuthenticatedWithTokenGet(
         @RequestHeader("Authorization") authToken: String
     ): ResponseEntity<String> {
-        if (authToken == BEARER + bddProperties.authorization.bearerToken.default) {
+        if (authToken == BEARER + bddProperties.authorization?.bearerToken?.default) {
             return ResponseEntity.ok().body(createAuthorizedResponse())
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse())
@@ -59,7 +59,7 @@ class Authentication(
         @RequestHeader("Authorization") authToken: String,
         @RequestBody body: String?
     ): ResponseEntity<String> {
-        if (authToken == BEARER + bddProperties.authorization.bearerToken.default) {
+        if (authToken == BEARER + bddProperties.authorization?.bearerToken?.default) {
             return ResponseEntity.ok().body(createAuthorizedResponse())
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse())
@@ -70,7 +70,7 @@ class Authentication(
         @RequestHeader("Authorization") authToken: String,
         @RequestBody body: String?
     ): ResponseEntity<String> {
-        if (authToken == BEARER + bddProperties.authorization.bearerToken.default) {
+        if (authToken == BEARER + bddProperties.authorization?.bearerToken?.default) {
             return ResponseEntity.ok().body(createAuthorizedResponse())
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse())
@@ -81,7 +81,7 @@ class Authentication(
         @RequestHeader("Authorization") authToken: String,
         @RequestBody body: String?
     ): ResponseEntity<String> {
-        if (authToken == BEARER + bddProperties.authorization.bearerToken.default) {
+        if (authToken == BEARER + bddProperties.authorization?.bearerToken?.default) {
             return ResponseEntity.ok().body(createAuthorizedResponse())
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse())
@@ -92,7 +92,7 @@ class Authentication(
         @RequestHeader("Authorization") authToken: String,
         @RequestBody body: String?
     ): ResponseEntity<String> {
-        if (authToken == BEARER + bddProperties.authorization.bearerToken.default) {
+        if (authToken == BEARER + bddProperties.authorization?.bearerToken?.default) {
             return ResponseEntity.ok().body(createAuthorizedResponse())
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createUnauthorizedResponse())
