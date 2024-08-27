@@ -1,3 +1,13 @@
+# Release 2.17.0
+The configuration
+```yaml
+cucumberTest:
+  authorization:
+    ...
+```
+is no longer required.
+It must be set, if a default token can be used. Else the token must be provided via `Background` or inside of the `Scenario`.
+
 # Release 2.16.0
 - Spring Boot to 3.3.3
 - liquibase-core to 4.29.1

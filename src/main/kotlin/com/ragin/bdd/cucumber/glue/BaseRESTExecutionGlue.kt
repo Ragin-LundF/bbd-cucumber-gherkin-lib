@@ -53,8 +53,8 @@ abstract class BaseRESTExecutionGlue(
     init {
         // init ScenarioContext
         bddProperties.scenarioContext.let { scenarioContextMap.putAll(it) }
-        if (bddProperties.authorization.bearerToken.default.isNotEmpty()) {
-            setDefaultBearerToken(bddProperties.authorization.bearerToken.default)
+        if (bddProperties.authorization?.bearerToken?.default.isNullOrEmpty().not()) {
+            setDefaultBearerToken(bddProperties.authorization!!.bearerToken.default)
         }
 
         // https://stackoverflow.com/questions/16748969/java-net-httpretryexception-cannot-retry-due-to-server-authentication-in-strea
