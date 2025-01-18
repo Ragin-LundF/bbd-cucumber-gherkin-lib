@@ -207,7 +207,7 @@ abstract class BaseRESTExecutionGlue(
                 if (byteArray != null) {
                     formDataMap.add(entry.key, object : ByteArrayResource(byteArray) {
                         override fun getFilename(): String {
-                            return scenarioContextMapValue!!
+                            return scenarioContextMapValue ?: entryItem!!
                         }
                     })
                 } else {
