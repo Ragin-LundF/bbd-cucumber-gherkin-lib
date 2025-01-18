@@ -7,6 +7,7 @@ import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Given
 import org.springframework.beans.factory.annotation.Value
+import java.io.File
 import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -240,5 +241,6 @@ class GivenRESTStateGlue(
     fun givenFileStoredInContext(filePath: String, contextKey: String) {
         val file = readFileAsByteArray(filePath)
         ScenarioStateContext.scenarioContextFileMap[contextKey] = file
+        ScenarioStateContext.scenarioContextMap[contextKey] = File(filePath).name
     }
 }

@@ -26,6 +26,7 @@ import org.apache.hc.core5.http.HttpHost
 import org.apache.hc.core5.ssl.SSLContextBuilder
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -40,7 +41,6 @@ import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.HttpServerErrorException
 import java.io.IOException
 import java.net.Proxy
-import java.util.*
 
 abstract class BaseRESTExecutionGlue(
     jsonUtils: JsonUtils,
@@ -200,12 +200,19 @@ abstract class BaseRESTExecutionGlue(
         headers.contentType = MULTIPART_FORM_DATA
 
         val formDataMap: MultiValueMap<String, Any> = LinkedMultiValueMap()
-        dataTable.asMap().forEach { entry ->
-            val byteArray = scenarioContextFileMap[entry.value]
-            if (byteArray != null) {
-                formDataMap.add(entry.key, byteArray)
-            } else {
-                formDataMap.add(entry.key, scenarioContextMap[entry.value] ?: entry.value)
+        dataTable.asMultiValueMap().forEach { entry ->
+            for (entryItem in entry.value) {
+                val scenarioContextMapValue = scenarioContextMap[entryItem]
+                val byteArray = scenarioContextFileMap[entryItem]
+                if (byteArray != null) {
+                    formDataMap.add(entry.key, object : ByteArrayResource(byteArray) {
+                        override fun getFilename(): String {
+                            return scenarioContextMapValue ?: entryItem!!
+                        }
+                    })
+                } else {
+                    formDataMap.add(entry.key, scenarioContextMapValue ?: entryItem)
+                }
             }
         }
 
@@ -333,6 +340,15 @@ abstract class BaseRESTExecutionGlue(
         }
 
         return basePath.toString() + urlBasePath + path
+    }
+
+    fun DataTable.asMultiValueMap(): MultiValueMap<String, String> {
+        val formDataMap: MultiValueMap<String, String> = LinkedMultiValueMap()
+        val lists = this.asLists()
+        for (list in lists) {
+            formDataMap.add(list.first(), list.last())
+        }
+        return formDataMap
     }
 
     companion object {
