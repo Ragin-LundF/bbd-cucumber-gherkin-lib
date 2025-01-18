@@ -26,7 +26,7 @@ import org.apache.hc.core5.http.HttpHost
 import org.apache.hc.core5.ssl.SSLContextBuilder
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -205,7 +205,11 @@ abstract class BaseRESTExecutionGlue(
                 val scenarioContextMapValue = scenarioContextMap[entryItem]
                 val byteArray = scenarioContextFileMap[entryItem]
                 if (byteArray != null) {
-                    formDataMap.add(entry.key, byteArray)
+                    formDataMap.add(entry.key, object : ByteArrayResource(byteArray) {
+                        override fun getFilename(): String {
+                            return scenarioContextMapValue!!
+                        }
+                    })
                 } else {
                     formDataMap.add(entry.key, scenarioContextMapValue ?: entryItem)
                 }
