@@ -1,3 +1,8 @@
+# Release 2.18.0
+- Spring Boot to 3.4.1
+- Kotlin to 2.0.10
+- Some enhancements for form-data
+
 # Release 2.17.0
 The configuration
 ```yaml

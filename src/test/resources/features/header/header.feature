@@ -26,14 +26,15 @@ Feature: Header manipulation
       "accept": "application/json",
       "accept-encoding": "gzip, x-gzip, deflate",
       "authorization": "${json-unit.ignore}",
-      "connection": "keep-alive",
+      "connection": "keep-alive;Upgrade",
       "content-type": "application/json",
       "host": "${json-unit.ignore}",
-      "user-agent": "${json-unit.ignore}"
+      "user-agent": "${json-unit.ignore}",
+      "upgrade": "TLS\/1.2"
     }
     """
 
-  Scenario: Set Accept-Langauge header to something else
+  Scenario: Set Accept-Language header to something else
     Given I set the header "Accept-Language" to "de_DE"
     When executing an authorized GET call to "/api/v1/allHeaders"
     Then I ensure that the status code of the response is 200
@@ -44,10 +45,11 @@ Feature: Header manipulation
       "accept-language": "de_DE",
       "host": "${json-unit.ignore}",
       "content-type": "application/json",
-      "connection": "keep-alive",
+      "connection": "keep-alive;Upgrade",
       "accept-encoding": "gzip, x-gzip, deflate",
       "accept": "application/json",
-      "user-agent": "${json-unit.ignore}"
+      "user-agent": "${json-unit.ignore}",
+      "upgrade": "TLS\/1.2"
     }
     """
 

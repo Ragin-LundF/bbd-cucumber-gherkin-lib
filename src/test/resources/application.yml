@@ -32,7 +32,7 @@ cucumberTest:
 
 spring:
   datasource:
-    url: jdbc:tc:postgresql:14.4:///cucumber
+    url: jdbc:tc:postgresql:16.6:///cucumber
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     username: cucumber
     password: cucumber
