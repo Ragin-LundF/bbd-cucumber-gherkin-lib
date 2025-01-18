@@ -4,7 +4,6 @@ import jakarta.validation.Valid
 import org.apache.commons.lang3.StringUtils
 import org.json.JSONException
 import org.json.JSONObject
-import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestHeader
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 class FormData {
@@ -25,9 +25,9 @@ class FormData {
     fun formDataRequest(
         @RequestParam(value = "fileContext", required = true) fileContext: String,
         @RequestParam(value = "identifier", required = true) identifier: String,
-        @RequestPart("file") file: @Valid Resource?
+        @RequestPart("file") file: @Valid MultipartFile?
     ): ResponseEntity<String> {
-        if (StringUtils.isNoneBlank(fileContext, identifier) && file!!.exists()) {
+        if (StringUtils.isNoneBlank(fileContext, identifier) && ! file!!.isEmpty) {
             return ResponseEntity.status(HttpStatus.CREATED).body(createStatus(fileContext, identifier))
         }
         return ResponseEntity.badRequest().body("{}")
@@ -43,9 +43,9 @@ class FormData {
         @RequestHeader("Authorization") authToken: String,
         @RequestParam(value = "fileContext", required = true) fileContext: String,
         @RequestParam(value = "identifier", required = true) identifier: String,
-        @RequestPart("file") file: @Valid Resource?
+        @RequestPart("file") file: @Valid MultipartFile?
     ): ResponseEntity<String> {
-        if (StringUtils.isNoneBlank(authToken, fileContext, identifier) && file!!.exists()) {
+        if (StringUtils.isNoneBlank(authToken, fileContext, identifier) && ! file!!.isEmpty) {
             return ResponseEntity.status(HttpStatus.CREATED).body(createStatus(fileContext, identifier))
         }
         return ResponseEntity.badRequest().body("{}")

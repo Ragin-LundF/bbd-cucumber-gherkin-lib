@@ -1,3 +1,19 @@
+# Release 2.18.0
+## Dependency Updates
+All dependencies were updated.
+
+Most noticeable:
+
+- Spring Boot to 3.4.1
+- Kotlin to 2.0.10
+
+## Form Data Optimization
+The multi-form-data upload uses now `Resource` as basis instead of `ByteArray`.
+This matches better to the needs of `RestTemplate` and the `MultipartFile` on server-side.
+
+The sentence `Given that the file "<filename>" is stored as "<context>"` stores now the file in the `ScenarioContext` file map, but also the name of the file in the regular map under the same key.
+This is required, because the filename is required for multi-form-data uploads.
+
 # Release 2.17.0
 The configuration
 ```yaml
