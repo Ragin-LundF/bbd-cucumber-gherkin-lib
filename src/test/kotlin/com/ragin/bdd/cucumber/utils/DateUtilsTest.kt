@@ -6,9 +6,9 @@ import junit.framework.TestCase
 import org.junit.Test
 import java.util.stream.Stream
 
-class DateUtilsTest {
+internal class DateUtilsTest {
     @Test
-    fun testIsValidMandatoryDate() {
+    internal fun testIsValidMandatoryDate() {
         Stream.of(
             "2020.11.11",
             "2020-11-11",

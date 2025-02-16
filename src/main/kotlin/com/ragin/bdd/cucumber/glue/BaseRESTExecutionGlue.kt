@@ -19,11 +19,12 @@ import org.apache.commons.text.StringSubstitutor
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy
 import org.apache.hc.client5.http.ssl.TrustAllStrategy
 import org.apache.hc.core5.http.HttpHost
-import org.apache.hc.core5.ssl.SSLContextBuilder
+import org.apache.hc.core5.ssl.SSLContexts
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.core.io.ByteArrayResource
@@ -85,17 +86,18 @@ abstract class BaseRESTExecutionGlue(
         httpClientBuilder.disableRedirectHandling()
 
         if (bddProperties.ssl != null && bddProperties.ssl.disableCheck) {
-            httpClientBuilder.setConnectionManager(
-                PoolingHttpClientConnectionManagerBuilder.create()
-                    .setSSLSocketFactory(
-                        SSLConnectionSocketFactoryBuilder.create()
-                        .setSslContext(
-                            SSLContextBuilder.create()
-                            .loadTrustMaterial(TrustAllStrategy.INSTANCE)
-                            .build())
-                        .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                        .build())
-                    .build())
+            val sslContext = SSLContexts.custom()
+                .loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
+                .build()
+            val tlsStrategy = ClientTlsStrategyBuilder.create()
+                .setSslContext(sslContext)
+                .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                .build()
+            val connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setTlsSocketStrategy(tlsStrategy as TlsSocketStrategy)
+                .build()
+            return HttpClientBuilder.create()
+                .setConnectionManager(connectionManager)
                 .build()
         }
 
@@ -179,10 +181,7 @@ abstract class BaseRESTExecutionGlue(
         } catch (hsee: HttpServerErrorException) {
             setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
         }
-        scenario.log("Response:")
-        scenario.log("========")
-        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
-        scenario.log("Body       : ${ScenarioStateContext.latestResponse?.body}")
+        logResponse(scenario = scenario)
     }
 
     /**
@@ -278,10 +277,7 @@ abstract class BaseRESTExecutionGlue(
         } catch (hsee: HttpServerErrorException) {
             setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
         }
-        scenario.log("Response:")
-        scenario.log("========")
-        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
-        scenario.log("Body       : ${ScenarioStateContext.latestResponse?.body}")
+        logResponse(scenario = scenario)
     }
 
     protected fun preparePath(dataTable: DataTable): String {
@@ -351,8 +347,27 @@ abstract class BaseRESTExecutionGlue(
         return formDataMap
     }
 
+    protected fun logResponse(scenario: Scenario) {
+        val contentType = ScenarioStateContext.latestResponse?.headers?.contentType
+        val response = if (contentType != null && notLoggableSubtypes.contains(contentType.subtype.lowercase())) {
+            "Content type ${contentType.subtype} received."
+        } else {
+            ScenarioStateContext.latestResponse?.body.toString()
+        }
+
+        scenario.log("Response:")
+        scenario.log("========")
+        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
+        scenario.log("Body       : $response")
+    }
+
     companion object {
         protected const val PLACEHOLDER = "none"
+        protected val notLoggableSubtypes = listOf(
+            "pdf",
+            "octet-stream",
+            "zip"
+        )
         private val log = KotlinLogging.logger { }
     }
 }
