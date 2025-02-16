@@ -16,7 +16,8 @@ import org.junit.runner.RunWith
     ],
     plugin = [
         "json:target/reports/cucumber/cucumber.json",
-        "html:target/reports/cucumber/cucumber.html"
+        "html:target/reports/cucumber/cucumber.html",
+        "junit:target/reports/cucumber/cucumber.xml"
     ],
     publish = true,
     tags = "not @ignore"

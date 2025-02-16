@@ -32,10 +32,10 @@ jobs:
       run: ./gradlew cucumber
 
     - name: Publish Test Report
-      uses: ctrf-io/github-test-reporter@v1
+      uses: mikepenz/action-junit-report@v5
+      if: success() || failure() # always run even if the previous step fails
       with:
-        report-path: './target/reports/cucumber/*.json'
-      if: always()
+        report_paths: 'target/reports/cucumber/cucumber.xml'
 
     - name: Sonarqube
       run: ./gradlew sonar
