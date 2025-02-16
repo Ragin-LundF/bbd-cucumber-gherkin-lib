@@ -15,9 +15,9 @@ import org.junit.runner.RunWith
         "com.ragin.bdd.cucumbertests.hooks"
     ],
     plugin = [
-        "json:target/reports/cucumber/cucumber.json",
-        "html:target/reports/cucumber/cucumber.html",
-        "junit:target/reports/cucumber/cucumber.xml"
+        "json:build/reports/cucumber/cucumber.json",
+        "html:build/reports/cucumber/cucumber.html",
+        "junit:build/reports/cucumber/cucumber.xml"
     ],
     publish = true,
     tags = "not @ignore"
