@@ -31,6 +31,12 @@ jobs:
     - name: Execute cucumber tests
       run: ./gradlew cucumber
 
+    - name: Publish Test Report
+      uses: ctrf-io/github-test-reporter@v1
+      with:
+        report-path: './target/reports/cucumber/*.json'
+      if: always()
+
     - name: Sonarqube
       run: ./gradlew sonar
       env:
