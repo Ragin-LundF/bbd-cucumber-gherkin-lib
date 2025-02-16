@@ -18,7 +18,10 @@ import java.time.format.DateTimeFormatter
 class GivenRESTStateGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties
-) : BaseCucumberCore(jsonUtils, bddProperties) {
+) : BaseCucumberCore(
+    jsonUtils = jsonUtils,
+    bddProperties = bddProperties
+) {
     @Value("\${cucumberTest.authorization.bearerToken.noscope:none}")
     private val noScopeBearerToken: String? = null
 
@@ -52,7 +55,8 @@ class GivenRESTStateGlue(
         val userDataMap = userDataTable.asMap(String::class.java, String::class.java)
         val keySet: Set<String> = userDataMap.keys
         for (key in keySet) {
-            ScenarioStateContext.userTokenMap[key] = ScenarioStateContext.resolveEntry(userDataMap[key]!!)
+            ScenarioStateContext.userTokenMap[key] = ScenarioStateContext
+                .resolveEntry(key = userDataMap[key]!!)
         }
     }
 
@@ -63,7 +67,8 @@ class GivenRESTStateGlue(
      */
     @Given("that the user is {string}")
     fun givenThatTheUserIs(user: String) {
-        ScenarioStateContext.bearerToken = ScenarioStateContext.userTokenMap[ScenarioStateContext.resolveEntry(user)]
+        ScenarioStateContext.bearerToken = ScenarioStateContext
+            .userTokenMap[ScenarioStateContext.resolveEntry(key = user)]
     }
 
     /**
@@ -93,7 +98,7 @@ class GivenRESTStateGlue(
     @Given("that the file {string} is used as the body")
     @Throws(IOException::class)
     fun givenThatTheFileIsUsedAsTheBody(pathToFile: String) {
-        ScenarioStateContext.editableBody = readFileAsString(pathToFile)
+        ScenarioStateContext.editableBody = readFileAsString(path = pathToFile)
     }
 
     /**
@@ -239,7 +244,7 @@ class GivenRESTStateGlue(
 
     @Given("that the file {string} is stored as {string}")
     fun givenFileStoredInContext(filePath: String, contextKey: String) {
-        val file = readFileAsByteArray(filePath)
+        val file = readFileAsByteArray(path = filePath)
         ScenarioStateContext.scenarioContextFileMap[contextKey] = file
         ScenarioStateContext.scenarioContextMap[contextKey] = File(filePath).name
     }

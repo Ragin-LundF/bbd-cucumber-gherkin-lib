@@ -9,8 +9,8 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Then
-import org.apache.commons.logging.LogFactory
-import org.junit.Assert
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.assertj.core.api.Assertions.assertThat
 import java.io.IOException
 
 /**
@@ -19,21 +19,17 @@ import java.io.IOException
 class ThenRESTValidationGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties
-) : BaseCucumberCore(jsonUtils, bddProperties) {
-    companion object {
-        private val log = LogFactory.getLog(ThenRESTValidationGlue::class.java)
-    }
-
+) : BaseCucumberCore(
+    jsonUtils = jsonUtils,
+    bddProperties = bddProperties
+) {
     /**
      * Ensure, that the response code is valid
      * @param expectedStatusCode HTTP status code that is expected
      */
     @Then("I ensure that the status code of the response is {int}")
     fun thenEnsureThatTheStatusCodeOfTheResponseIs(expectedStatusCode: Int) {
-        Assert.assertEquals(
-                expectedStatusCode,
-                Integer.valueOf(latestResponse!!.statusCode.value())
-        )
+        assertThat(Integer.valueOf(latestResponse!!.statusCode.value())).isEqualTo(expectedStatusCode)
     }
 
     /**
@@ -49,21 +45,18 @@ class ThenRESTValidationGlue(
     @Then("I ensure that the body of the response is equal to the file {string}")
     @Throws(IOException::class)
     fun thenEnsureTheBodyOfTheResponseIsEqualToTheFile(pathToFile: String) {
-        val expectedBody = readFileAsString(pathToFile)
+        val expectedBody = readFileAsString(path = pathToFile)
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expected = expectedBody,
+            actual = latestResponse!!.body
         )
     }
 
     @Then("I ensure, that the header {string} is equal to {string}")
     fun thenEnsureHeaderIsEqualTo(headerName: String, expectedValue: String) {
         val header = latestResponse!!.headers.getOrEmpty(headerName).joinToString(",")
-        Assert.assertEquals(
-            "Header [$headerName] does not have the value [$expectedValue], but [$header]",
-            expectedValue,
-            header
-        )
+        assertThat(header).isEqualTo(expectedValue)
+            .describedAs("Header [$headerName] does not have the value [$expectedValue], but [$header]")
     }
 
     /**
@@ -78,14 +71,18 @@ class ThenRESTValidationGlue(
     @Then("^I ensure that the body of the response is equal to$")
     fun thenEnsureTheBodyOfTheResponseIsEqualTo(expectedBody: String) {
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expected = expectedBody,
+            actual = latestResponse!!.body
         )
     }
 
     @Then("I ensure that the body of the response contains a field {string} with the value {string}")
     fun thenEnsureTheBodyOfTheResponseContainsFieldWithValue(fieldName: String, value: String) {
-        jsonUtils.validateJsonField(latestResponse!!.body, fieldName, value)
+        jsonUtils.validateJsonField(
+            originalJson = latestResponse!!.body,
+            fieldPath = fieldName,
+            expectedValue = value
+        )
     }
 
     @Then("I ensure that the body of the response contains the following fields and values")
@@ -93,7 +90,11 @@ class ThenRESTValidationGlue(
         val contextDataTableMap = dataTable.asMap(String::class.java, String::class.java)
         val keySet: Set<String> = contextDataTableMap.keys
         for (key in keySet) {
-            jsonUtils.validateJsonField(latestResponse!!.body, key, contextDataTableMap[key]!!)
+            jsonUtils.validateJsonField(
+                originalJson = latestResponse!!.body,
+                fieldPath = key,
+                expectedValue = contextDataTableMap[key]!!
+            )
         }
     }
 
@@ -109,13 +110,10 @@ class ThenRESTValidationGlue(
      */
     @Then("I ensure that the response code is {int} and the body is equal to")
     fun thenEnsureTheResponseCodeAndBodyIsEqualTo(expectedStatusCode: Int, expectedBody: String) {
-        Assert.assertEquals(
-                expectedStatusCode,
-                Integer.valueOf(latestResponse!!.statusCode.value())
-        )
+        assertThat(Integer.valueOf(latestResponse!!.statusCode.value())).isEqualTo(expectedStatusCode)
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expected = expectedBody,
+            actual = latestResponse!!.body
         )
     }
 
@@ -133,17 +131,14 @@ class ThenRESTValidationGlue(
     @Then("I ensure that the response code is {int} and the body is equal to the file {string}")
     @Throws(IOException::class)
     fun thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(
-            expectedStatusCode: Int,
-            pathToFile: String
+        expectedStatusCode: Int,
+        pathToFile: String
     ) {
-        val expectedBody = readFileAsString(pathToFile)
-        Assert.assertEquals(
-                expectedStatusCode,
-                Integer.valueOf(latestResponse!!.statusCode.value())
-        )
+        val expectedBody = readFileAsString(path = pathToFile)
+        assertThat(Integer.valueOf(latestResponse!!.statusCode.value())).isEqualTo(expectedStatusCode)
         assertJSONisEqual(
-                expectedBody,
-                latestResponse!!.body
+            expected = expectedBody,
+            actual = latestResponse!!.body
         )
     }
 
@@ -161,23 +156,18 @@ class ThenRESTValidationGlue(
      */
     @Then("I store the string of the field {string} in the context {string} for later usage")
     fun storeStringOfFieldInContextForLaterUsage(fieldName: String, contextName: String) {
-        Assert.assertNotNull(fieldName)
-        Assert.assertNotNull(contextName)
-        Assert.assertNotNull(
-                "response was null!",
-                latestResponse
-        )
-        Assert.assertNotNull(
-                "body of response was null",
-                latestResponse!!.body
-        )
+        assertThat(fieldName).isNotNull
+        assertThat(contextName).isNotNull
+        assertThat(latestResponse).isNotNull.describedAs("response was null!")
+        assertThat(latestResponse!!.body).isNotNull.describedAs("body of response was null!")
+
         var jsonPath = fieldName
         if (!jsonPath.startsWith("$.")) {
             jsonPath = "$.$jsonPath"
         }
         val documentContext = JsonPath.parse(latestResponse!!.body)
         val field = documentContext.read(jsonPath, Any::class.java)
-        scenarioContextMap[replaceTrailingAndLeadingQuotes(contextName)] = field.toString()
+        scenarioContextMap[replaceTrailingAndLeadingQuotes(value = contextName)] = field.toString()
     }
 
     /**
@@ -189,7 +179,7 @@ class ThenRESTValidationGlue(
     fun ensureThatExecutionTimeIsLessThan(expectedExecutionTime: Long) {
         val executionTime = System.currentTimeMillis() - executionTime
         val executionTimeValid = executionTime <= expectedExecutionTime
-        Assert.assertTrue("The performance was poor with [$executionTime ms]", executionTimeValid)
+        assertThat(executionTimeValid).isTrue.describedAs("The performance was poor with [$executionTime ms]")
     }
 
     /**
@@ -202,7 +192,7 @@ class ThenRESTValidationGlue(
         try {
             Thread.sleep(milliseconds)
         } catch (ie: InterruptedException) {
-            log.error("Wait has detected a problem", ie)
+            log.error(ie) { "Wait has detected a problem" }
         }
     }
 
@@ -221,5 +211,9 @@ class ThenRESTValidationGlue(
             result = result.replace("\"$".toRegex(), "")
         }
         return result
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger { }
     }
 }

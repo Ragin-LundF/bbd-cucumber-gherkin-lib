@@ -14,7 +14,11 @@ class WhenRESTManipulationGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties,
     restTemplate: TestRestTemplate
-) : BaseRESTExecutionGlue(jsonUtils, bddProperties, restTemplate) {
+) : BaseRESTExecutionGlue(
+    jsonUtils = jsonUtils,
+    bddProperties = bddProperties,
+    restTemplate = restTemplate
+) {
     /**
      * set the value of the previously given body property to a new value
      *
@@ -24,36 +28,36 @@ class WhenRESTManipulationGlue(
     @When("I set the value of the previously given body property {string} to {string}")
     fun whenISetTheValueOfTheBodyPropertyTo(propertyPath: String, value: String) {
         // fetch new value from state context if possible. Else use the given value
-        var newValue = resolveEntry(value)
+        var newValue = resolveEntry(key = value)
 
         when {
             "null" == newValue -> {
                 editableBody = jsonUtils.removeJsonField(
-                    editableBody,
-                    propertyPath
+                    originalJson = editableBody,
+                    fieldPath = propertyPath
                 )
             }
             newValue.matches("\\d* bdd_lib_numbers".toRegex()) -> {
                 val numOfChars = newValue.split(" ").toTypedArray()[0].toInt()
                 newValue = StringUtils.rightPad("", numOfChars, "1234567890")
                 editableBody = jsonUtils.editJsonField(
-                    editableBody,
-                    propertyPath,
-                    newValue
+                    originalJson = editableBody,
+                    fieldPath = propertyPath,
+                    newValue = newValue
                 )
             }
             newValue.matches("bdd_lib_uuid".toRegex()) -> {
                 editableBody = jsonUtils.editJsonField(
-                    editableBody,
-                    propertyPath,
-                    UUID.randomUUID().toString()
+                    originalJson = editableBody,
+                    fieldPath = propertyPath,
+                    newValue = UUID.randomUUID().toString()
                 )
             }
             else -> {
                 editableBody = jsonUtils.editJsonField(
-                    editableBody,
-                    propertyPath,
-                    newValue
+                    originalJson = editableBody,
+                    fieldPath = propertyPath,
+                    newValue = newValue
                 )
             }
         }
@@ -67,7 +71,7 @@ class WhenRESTManipulationGlue(
      */
     @When("I set the header {string} to {string}")
     fun whenISetTheHeaderValueTo(header: String, headerValue: String) {
-        headerValues[header] = resolveEntry(headerValue)
+        headerValues[header] = resolveEntry(key = headerValue)
     }
 
     /**
@@ -79,6 +83,6 @@ class WhenRESTManipulationGlue(
      */
     @When("I set the header {string} to {string} prefixed by {string}")
     fun whenISetTheHeaderValueTo(header: String, headerValue: String, headerValuePrefix: String) {
-        headerValues[header] = "${resolveEntry(headerValuePrefix)}${resolveEntry(headerValue)}"
+        headerValues[header] = "${resolveEntry(key = headerValuePrefix)}${resolveEntry(key = headerValue)}"
     }
 }

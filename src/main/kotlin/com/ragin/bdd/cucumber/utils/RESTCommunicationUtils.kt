@@ -5,7 +5,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import io.cucumber.datatable.DataTable
-import org.junit.Assert
+import org.assertj.core.api.Assertions
 import org.springframework.http.HttpHeaders
 
 /**
@@ -55,7 +55,8 @@ object RESTCommunicationUtils {
         var path = uriPath
 
         // assert that given for path and body was previously done
-        Assert.assertNotNull("No given path found", path)
+        Assertions.assertThat(path).isNotNull
+            .describedAs("No given path found")
 
         // Read datatable
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)

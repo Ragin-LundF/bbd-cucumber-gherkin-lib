@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 
-class DatabaseExecutorService(private val datasource: DataSource, private val jdbcTemplate: JdbcTemplate) :
-    IDatabaseExecutorService {
+class DatabaseExecutorService(
+    private val datasource: DataSource,
+    private val jdbcTemplate: JdbcTemplate
+) : IDatabaseExecutorService {
     @Value("\${cucumberTest.liquibase.closeConnection:false}")
     val closeConnection = false
 

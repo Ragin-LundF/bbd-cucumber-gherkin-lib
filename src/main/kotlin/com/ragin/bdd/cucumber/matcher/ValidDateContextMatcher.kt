@@ -22,9 +22,13 @@ class ValidDateContextMatcher(
 
     override fun matches(actual: Any): Boolean {
         val parameterFromContext = ScenarioStateContext.scenarioContextMap[parameter]
-        val jsonDate = DateUtils.transformToLocalDateTime(actual, dateTimeFormatCollection);
+        val jsonDate = DateUtils.transformToLocalDateTime(
+            dateObject = actual,
+            bddDateTimeFormats = dateTimeFormatCollection
+        )
         if (jsonDate != null) {
-            return jsonDate.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE).equals(parameterFromContext)
+            return jsonDate.toLocalDate()
+                .format(DateTimeFormatter.ISO_LOCAL_DATE) == parameterFromContext
         }
         return false
     }
