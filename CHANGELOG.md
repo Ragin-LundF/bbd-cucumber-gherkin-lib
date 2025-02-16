@@ -1,3 +1,19 @@
+# Release 2.19.0
+## Dependency Updates
+All dependencies were updated.
+
+Most noticeable:
+
+- Spring Boot to 3.4.2
+- Cucumber to 7.21.1
+
+## Logging Optimization
+No the logging of the response will only log the body, if it is not a media-subtype of `pdf`, `octet-stream` or `zip`.
+
+## Assertions
+The internal assertions are now using `assertj-core`, which is a dependency of `spring-test` instead of using `jUnit 4`.
+`jUnit 4` is sadly still a dependency, because of `cucumber-junit`.
+
 # Release 2.18.0
 ## Dependency Updates
 All dependencies were updated.

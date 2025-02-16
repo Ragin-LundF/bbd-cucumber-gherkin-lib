@@ -26,11 +26,10 @@ Feature: Header manipulation
       "accept": "application/json",
       "accept-encoding": "gzip, x-gzip, deflate",
       "authorization": "${json-unit.ignore}",
-      "connection": "keep-alive;Upgrade",
+      "connection": "keep-alive",
       "content-type": "application/json",
       "host": "${json-unit.ignore}",
-      "user-agent": "${json-unit.ignore}",
-      "upgrade": "TLS\/1.2"
+      "user-agent": "${json-unit.ignore}"
     }
     """
 
@@ -45,11 +44,10 @@ Feature: Header manipulation
       "accept-language": "de_DE",
       "host": "${json-unit.ignore}",
       "content-type": "application/json",
-      "connection": "keep-alive;Upgrade",
+      "connection": "keep-alive",
       "accept-encoding": "gzip, x-gzip, deflate",
       "accept": "application/json",
-      "user-agent": "${json-unit.ignore}",
-      "upgrade": "TLS\/1.2"
+      "user-agent": "${json-unit.ignore}"
     }
     """
 

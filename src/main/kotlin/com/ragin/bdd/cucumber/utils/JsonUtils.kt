@@ -24,13 +24,11 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matcher
-import org.junit.Assert
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.stereotype.Component
-import java.util.Arrays
 import java.util.Optional
-import java.util.stream.Collectors
 
 /**
  * Utility class used to work with JSON objects.
@@ -40,19 +38,6 @@ class JsonUtils(
     private val jsonMatcher: Collection<BddCucumberJsonMatcher>?,
     private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>
 ) {
-    companion object {
-        private val log = KotlinLogging.logger { }
-        val mapper: ObjectMapper = Jackson2ObjectMapperBuilder()
-            .modules(JavaTimeModule(), KotlinModule.Builder().build())
-            .featuresToDisable(
-                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-                SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
-            )
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-            .build()
-    }
-
     /**
      * Assert that two JSON Strings are equal
      *
@@ -68,8 +53,8 @@ class JsonUtils(
                 configuration
             )
         } catch (error: AssertionError) {
-            val minimizedExpected = minimizeJSON(expectedJSON)
-            val minimizedActual = minimizeJSON(actualJSON)
+            val minimizedExpected = minimizeJSON(json = expectedJSON)
+            val minimizedActual = minimizeJSON(json = actualJSON)
             log.error {
                 """
                         JSON comparison failed.
@@ -92,9 +77,15 @@ class JsonUtils(
         // base configuration
         var configuration = JsonAssert.withTolerance(0.0)
             .`when`(Option.TREATING_NULL_AS_ABSENT)
-            .withMatcher("isValidDate", ValidDateMatcher(bddCucumberDateTimeFormatter))
-            .withMatcher("isDateOfContext", ValidDateContextMatcher(bddCucumberDateTimeFormatter))
-            .withMatcher("isValidUUID", UUIDMatcher())
+            .withMatcher(
+                "isValidDate", ValidDateMatcher(
+                    dateTimeFormatCollection = bddCucumberDateTimeFormatter
+                )
+            ).withMatcher(
+                "isDateOfContext", ValidDateContextMatcher(
+                    dateTimeFormatCollection = bddCucumberDateTimeFormatter
+                )
+            ).withMatcher("isValidUUID", UUIDMatcher())
             .withMatcher("isValidIBAN", IBANMatcher())
             .withMatcher("isNotEqualTo", NeStringMatcher())
             .withMatcher("isEqualToScenarioContext", ScenarioStateEqContextMatcher())
@@ -108,7 +99,7 @@ class JsonUtils(
         // add additional matcher
         if (!jsonMatcher.isNullOrEmpty()) {
             for (matcher in jsonMatcher) {
-                configuration = addMatcherConfiguration(configuration, matcher)
+                configuration = addMatcherConfiguration(configuration = configuration, matcher = matcher)
             }
         }
         return configuration
@@ -128,7 +119,7 @@ class JsonUtils(
                 matcher.matcherName(),
                 matcher.matcherClass().getDeclaredConstructor().newInstance()
             )
-        } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") e: Exception) {
+        } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") _: Exception) {
             log.error { "Unable to instantiate the matcher [${matcher.matcherName()}]" }
         }
         return configurationVar
@@ -142,7 +133,11 @@ class JsonUtils(
      * @return the JSON file as String without the field
      */
     fun removeJsonField(originalJson: String?, fieldPath: String): String {
-        return editJsonField(originalJson, fieldPath, null)
+        return editJsonField(
+            originalJson = originalJson,
+            fieldPath = fieldPath,
+            newValue = null
+        )
     }
 
     /**
@@ -191,10 +186,13 @@ class JsonUtils(
         var fieldValue: Any? = null
         try {
             fieldValue = documentContext.read(fieldJSONPath, Any::class.java)
-            assertFieldValidation(expectedValueToCompare, fieldValue.toString())
+            assertFieldValidation(
+                expectedValueToCompare = expectedValueToCompare,
+                fieldValue = fieldValue.toString()
+            )
         } catch (pnfe: PathNotFoundException) {
             if (BddLibConstants.BDD_LIB_NOT_EXISTS.equals(expectedValueToCompare, ignoreCase = true)) {
-                Assert.assertNull(fieldValue)
+                assertThat(fieldValue).isNull()
             } else {
                 throw pnfe
             }
@@ -204,23 +202,26 @@ class JsonUtils(
     private fun assertFieldValidation(expectedValueToCompare: String, fieldValue: String) {
         val assertConfig = createJsonAssertConfiguration()
         var matcher: Optional<Matcher<*>> = Optional.empty()
-        val matcherName = findMatcherName(expectedValueToCompare)
+        val matcherName = findMatcherName(
+            possibleMatcherName = expectedValueToCompare
+        )
         if (matcherName.isPresent) {
             matcher = Optional.ofNullable(assertConfig.getMatcher(matcherName.get()))
         }
         if (expectedValueToCompare.startsWith(BddLibConstants.BDD_LIB_NOT)) {
             if (matcher.isPresent) {
                 val fieldMatches = matcher.get().matches(fieldValue)
-                Assert.assertFalse(fieldMatches)
+                assertThat(fieldMatches).isFalse
             } else {
-                Assert.assertNotEquals(expectedValueToCompare.substring(BddLibConstants.BDD_LIB_NOT.length), fieldValue)
+                assertThat(fieldValue)
+                    .isNotEqualTo(expectedValueToCompare.substring(BddLibConstants.BDD_LIB_NOT.length))
             }
         } else {
             if (matcher.isPresent) {
                 val fieldMatches = matcher.get().matches(fieldValue)
-                Assert.assertTrue(fieldMatches)
+                assertThat(fieldMatches).isTrue
             } else {
-                Assert.assertEquals(expectedValueToCompare, fieldValue)
+                assertThat(fieldValue).isEqualTo(expectedValueToCompare)
             }
         }
     }
@@ -236,7 +237,9 @@ class JsonUtils(
         val matcher = BddLibConstants.BDD_LIB_MATCHER_PATTERN.matcher(possibleMatcherName)
         return if (matcher.find() && matcher.groupCount() == 3) {
             Optional.of(matcher.group(2))
-        } else Optional.empty()
+        } else {
+            Optional.empty()
+        }
     }
 
     /**
@@ -253,11 +256,33 @@ class JsonUtils(
      * @return minimized JSON string
      */
     private fun minimizeJSON(json: String?): String {
-        val nullSafeJson = json ?: "{}"
-        return Arrays.stream(nullSafeJson.split("\n").toTypedArray())
-            .map { line: String -> line.replace("\r", "") }
-            .map { line: String -> line.replace("\": ", "\":") }
-            .map { obj: String -> obj.trim { it <= ' ' } }
-            .collect(Collectors.joining(""))
+        val nullSafeJson = json ?: EMPTY_JSON
+
+        return nullSafeJson
+            .split(NEW_LINE)
+            .asSequence()
+            .map { it.replace(CARRIAGE_RETURN, "") }
+            .map { it.replace(JSON_SPACING, JSON_COMPACT) }
+            .map { it.trim() }
+            .joinToString("")
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger { }
+        const val EMPTY_JSON = "{}"
+        const val NEW_LINE = "\n"
+        const val CARRIAGE_RETURN = "\r"
+        const val JSON_SPACING = "\": "
+        const val JSON_COMPACT = "\":"
+
+        val mapper: ObjectMapper = Jackson2ObjectMapperBuilder()
+            .modules(JavaTimeModule(), KotlinModule.Builder().build())
+            .featuresToDisable(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+                SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
+            )
+            .serializationInclusion(JsonInclude.Include.NON_NULL)
+            .build()
     }
 }

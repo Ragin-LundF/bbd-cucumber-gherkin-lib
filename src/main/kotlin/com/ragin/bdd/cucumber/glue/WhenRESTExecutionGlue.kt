@@ -11,8 +11,8 @@ import io.cucumber.java.ParameterType
 import io.cucumber.java.Scenario
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
-import org.apache.commons.logging.LogFactory
-import org.junit.Assert
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.assertj.core.api.Assertions.assertThat
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpMethod
 import java.io.IOException
@@ -90,7 +90,7 @@ class WhenRESTExecutionGlue(
      */
     @When("executing an authorized {httpMethod} call to {string} with previously given body")
     fun whenExecutingAuthorizedCallToUriWithPreviouslyGivenBody(httpMethod: HttpMethod, uri: String) {
-        whenExecutingAuthorizedCallToUri(httpMethod, uri)
+        whenExecutingAuthorizedCallToUri(httpMethod = httpMethod, uri = uri)
     }
 
     /**
@@ -105,7 +105,7 @@ class WhenRESTExecutionGlue(
     @Throws(IOException::class)
     fun whenExecutingCallToUriAndBodyFromFile(httpMethod: HttpMethod, uri: String, pathToFile: String) {
         uriPath = uri
-        val body = readFileAsString(pathToFile)
+        val body = readFileAsString(path = pathToFile)
         editableBody = body
         executeRequest(
             httpMethod = httpMethod,
@@ -126,7 +126,7 @@ class WhenRESTExecutionGlue(
     @Throws(IOException::class)
     fun whenExecutingAuthorizedCallToUriWithBodyFromFile(httpMethod: HttpMethod, uri: String, pathToFile: String) {
         uriPath = uri
-        val body = readFileAsString(pathToFile)
+        val body = readFileAsString(path = pathToFile)
         editableBody = body
         executeRequest(
             httpMethod = httpMethod,
@@ -372,8 +372,13 @@ class WhenRESTExecutionGlue(
         expectedStatusCode: Int,
         pathToFile: String
     ) {
-        val expectedBody = readFileAsString(pathToFile)
-        executePollRequestUntilResponseIsEqual(httpMethod, expectedStatusCode, expectedBody, true)
+        val expectedBody = readFileAsString(path = pathToFile)
+        executePollRequestUntilResponseIsEqual(
+            httpMethod = httpMethod,
+            expectedStatusCode = expectedStatusCode,
+            expectedBody = expectedBody,
+            authorized = true
+        )
     }
 
     /**
@@ -530,10 +535,8 @@ class WhenRESTExecutionGlue(
         expectedBody: String? = null,
         authorized: Boolean
     ) {
-        Assert.assertNotEquals("Please configure max number of polls!",
-            -1,
-            ScenarioStateContext.polling.numberOfPolls
-        )
+        assertThat(ScenarioStateContext.polling.numberOfPolls).isNotEqualTo(-1)
+            .describedAs("Please configure max number of polls!")
 
         var repeatLoop = 0
         for (i in 1..ScenarioStateContext.polling.numberOfPolls) {
@@ -544,8 +547,8 @@ class WhenRESTExecutionGlue(
             )
 
             try {
-                evaluateBody(expectedBody)
-                Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
+                evaluateBody(expectedBody = expectedBody)
+                assertThat(ScenarioStateContext.latestResponse!!.statusCode.value()).isEqualTo(expectedStatusCode)
                 repeatLoop = i
                 break
             } catch (_: AssertionError) {
@@ -553,9 +556,9 @@ class WhenRESTExecutionGlue(
             }
         }
 
-        evaluateBody(expectedBody)
-        Assert.assertEquals(expectedStatusCode, ScenarioStateContext.latestResponse!!.statusCode.value())
-        log.info("Polling finished after $repeatLoop repeats")
+        evaluateBody(expectedBody = expectedBody)
+        assertThat(ScenarioStateContext.latestResponse!!.statusCode.value()).isEqualTo(expectedStatusCode)
+        log.info { "Polling finished after $repeatLoop repeats" }
     }
 
     /**
@@ -566,8 +569,8 @@ class WhenRESTExecutionGlue(
     private fun evaluateBody(expectedBody: String?) {
         if (!expectedBody.isNullOrEmpty()) {
             assertJSONisEqual(
-                expectedBody,
-                ScenarioStateContext.latestResponse!!.body
+                expected = expectedBody,
+                actual = ScenarioStateContext.latestResponse!!.body
             )
         }
     }
@@ -584,6 +587,6 @@ class WhenRESTExecutionGlue(
     }
 
     companion object {
-        private val log = LogFactory.getLog(ThenRESTValidationGlue::class.java)
+        private val log = KotlinLogging.logger { }
     }
 }

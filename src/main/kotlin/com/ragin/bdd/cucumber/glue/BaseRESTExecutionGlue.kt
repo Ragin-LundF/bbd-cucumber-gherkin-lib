@@ -19,11 +19,12 @@ import org.apache.commons.text.StringSubstitutor
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy
 import org.apache.hc.client5.http.ssl.TrustAllStrategy
 import org.apache.hc.core5.http.HttpHost
-import org.apache.hc.core5.ssl.SSLContextBuilder
+import org.apache.hc.core5.ssl.SSLContexts
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.core.io.ByteArrayResource
@@ -46,7 +47,10 @@ abstract class BaseRESTExecutionGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties,
     private val restTemplate: TestRestTemplate
-) : BaseCucumberCore(jsonUtils, bddProperties) {
+) : BaseCucumberCore(
+    jsonUtils = jsonUtils,
+    bddProperties = bddProperties
+) {
     @LocalServerPort
     protected var port = 0
 
@@ -54,7 +58,9 @@ abstract class BaseRESTExecutionGlue(
         // init ScenarioContext
         bddProperties.scenarioContext.let { scenarioContextMap.putAll(it) }
         if (bddProperties.authorization?.bearerToken?.default.isNullOrEmpty().not()) {
-            setDefaultBearerToken(bddProperties.authorization!!.bearerToken.default)
+            setDefaultBearerToken(
+                defaultBearerToken = bddProperties.authorization.bearerToken.default
+            )
         }
 
         // https://stackoverflow.com/questions/16748969/java-net-httpretryexception-cannot-retry-due-to-server-authentication-in-strea
@@ -85,17 +91,18 @@ abstract class BaseRESTExecutionGlue(
         httpClientBuilder.disableRedirectHandling()
 
         if (bddProperties.ssl != null && bddProperties.ssl.disableCheck) {
-            httpClientBuilder.setConnectionManager(
-                PoolingHttpClientConnectionManagerBuilder.create()
-                    .setSSLSocketFactory(
-                        SSLConnectionSocketFactoryBuilder.create()
-                        .setSslContext(
-                            SSLContextBuilder.create()
-                            .loadTrustMaterial(TrustAllStrategy.INSTANCE)
-                            .build())
-                        .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                        .build())
-                    .build())
+            val sslContext = SSLContexts.custom()
+                .loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
+                .build()
+            val tlsStrategy = ClientTlsStrategyBuilder.create()
+                .setSslContext(sslContext)
+                .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                .build()
+            val connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setTlsSocketStrategy(tlsStrategy as TlsSocketStrategy)
+                .build()
+            return HttpClientBuilder.create()
+                .setConnectionManager(connectionManager)
                 .build()
         }
 
@@ -148,10 +155,10 @@ abstract class BaseRESTExecutionGlue(
         scenario: Scenario
     ) {
         // Prepare a path with dynamic URLs from datatable
-        val path = preparePath(dataTable)
+        val path = preparePath(dataTable = dataTable)
 
         // Prepare headers
-        val headers = createHTTPHeader(authorized)
+        val headers = createHTTPHeader(addAuthorisation = authorized)
 
         // create HttpEntity
         val body: String? = editableBody
@@ -162,14 +169,15 @@ abstract class BaseRESTExecutionGlue(
             httpEntity = HttpEntity(body, headers)
         }
         try {
-            val targetUrl = fullURLFor(path)
+            val targetUrl = fullURLFor(path = path)
             scenario.log("Request:")
             scenario.log("========")
             scenario.log("HTTP Method: ${httpMethod.name()}")
             scenario.log("HTTP URL   : $targetUrl")
             log.info { "Executing call to [${httpMethod.name()}][$targetUrl]" }
+
             setLatestResponse(
-                restTemplate.exchange(
+                latestResponse = restTemplate.exchange(
                     targetUrl,
                     httpMethod,
                     httpEntity,
@@ -177,12 +185,14 @@ abstract class BaseRESTExecutionGlue(
                 )
             )
         } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+            setLatestResponse(
+                latestResponse = ResponseEntity(
+                    hsee.responseBodyAsString,
+                    hsee.statusCode
+                )
+            )
         }
-        scenario.log("Response:")
-        scenario.log("========")
-        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
-        scenario.log("Body       : ${ScenarioStateContext.latestResponse?.body}")
+        logResponse(scenario = scenario)
     }
 
     /**
@@ -193,10 +203,10 @@ abstract class BaseRESTExecutionGlue(
      * @param authorized    should the request execute authorized or unauthorized (true = authorized)
      */
     protected fun executeFormDataRequest(dataTable: DataTable, authorized: Boolean) {
-        val path = preparePath(DataTable.emptyDataTable())
+        val path = preparePath(dataTable = DataTable.emptyDataTable())
 
         // Prepare headers
-        val headers = createHTTPHeader(authorized)
+        val headers = createHTTPHeader(addAuthorisation = authorized)
         headers.contentType = MULTIPART_FORM_DATA
 
         val formDataMap: MultiValueMap<String, Any> = LinkedMultiValueMap()
@@ -218,13 +228,22 @@ abstract class BaseRESTExecutionGlue(
 
         val request = HttpEntity(formDataMap, headers)
         try {
-            val targetUrl = fullURLFor(path)
+            val targetUrl = fullURLFor(path = path)
             log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
-                restTemplate.postForEntity(targetUrl, request, String::class.java)
+                latestResponse = restTemplate.postForEntity(
+                    targetUrl,
+                    request,
+                    String::class.java
+                )
             )
         } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+            setLatestResponse(
+                latestResponse = ResponseEntity(
+                    hsee.responseBodyAsString,
+                    hsee.statusCode
+                )
+            )
         }
     }
 
@@ -236,7 +255,7 @@ abstract class BaseRESTExecutionGlue(
      */
     protected fun executeUrlEncodedRequest(dataTable: DataTable, authorized: Boolean, scenario: Scenario) {
         // Prepare a path with dynamic URLs from datatable
-        val path = preparePath(dataTable)
+        val path = preparePath(dataTable = dataTable)
 
         // Prepare headers
         val headers = createHTTPHeader(authorized)
@@ -257,7 +276,7 @@ abstract class BaseRESTExecutionGlue(
         // create HttpEntity
         val httpEntity = HttpEntity(map, headers)
         try {
-            val targetUrl = fullURLFor(path)
+            val targetUrl = fullURLFor(path = path)
             scenario.log("Request:")
             scenario.log("========")
             scenario.log("HTTP URL   : $targetUrl")
@@ -268,7 +287,7 @@ abstract class BaseRESTExecutionGlue(
 
             log.info { "Executing call to [$targetUrl]" }
             setLatestResponse(
-                restTemplate.exchange(
+                latestResponse = restTemplate.exchange(
                     targetUrl,
                     HttpMethod.POST,
                     httpEntity,
@@ -276,17 +295,19 @@ abstract class BaseRESTExecutionGlue(
                 )
             )
         } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+            setLatestResponse(
+                latestResponse = ResponseEntity(
+                    hsee.responseBodyAsString,
+                    hsee.statusCode
+                )
+            )
         }
-        scenario.log("Response:")
-        scenario.log("========")
-        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
-        scenario.log("Body       : ${ScenarioStateContext.latestResponse?.body}")
+        logResponse(scenario = scenario)
     }
 
     protected fun preparePath(dataTable: DataTable): String {
         var path: String = if (!dataTable.isEmpty) {
-            prepareDynamicURLWithDataTable(dataTable)
+            prepareDynamicURLWithDataTable(dataTable = dataTable)
         } else {
             uriPath
         }
@@ -296,7 +317,7 @@ abstract class BaseRESTExecutionGlue(
             path = resolvedUri
         }
 
-        return replacePathPlaceholders(path)
+        return replacePathPlaceholders(path = path)
     }
 
     /**
@@ -351,8 +372,27 @@ abstract class BaseRESTExecutionGlue(
         return formDataMap
     }
 
+    protected fun logResponse(scenario: Scenario) {
+        val contentType = ScenarioStateContext.latestResponse?.headers?.contentType
+        val response = if (contentType != null && notLoggableSubtypes.contains(contentType.subtype.lowercase())) {
+            "Content type ${contentType.subtype} received."
+        } else {
+            ScenarioStateContext.latestResponse?.body.toString()
+        }
+
+        scenario.log("Response:")
+        scenario.log("========")
+        scenario.log("Status Code: ${ScenarioStateContext.latestResponse?.statusCode}")
+        scenario.log("Body       : $response")
+    }
+
     companion object {
         protected const val PLACEHOLDER = "none"
+        protected val notLoggableSubtypes = listOf(
+            "pdf",
+            "octet-stream",
+            "zip"
+        )
         private val log = KotlinLogging.logger { }
     }
 }

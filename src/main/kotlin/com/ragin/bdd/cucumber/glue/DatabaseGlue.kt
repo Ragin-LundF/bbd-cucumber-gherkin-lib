@@ -11,7 +11,6 @@ import io.cucumber.java.en.Then
 import org.apache.commons.lang3.StringUtils
 import org.springframework.transaction.annotation.Transactional
 import java.io.IOException
-import java.util.stream.Collectors
 
 /**
  * This class contains database related steps.
@@ -20,7 +19,10 @@ open class DatabaseGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties,
     private val databaseExecutorService: IDatabaseExecutorService
-) : BaseCucumberCore(jsonUtils, bddProperties) {
+) : BaseCucumberCore(
+    jsonUtils = jsonUtils,
+    bddProperties = bddProperties
+) {
     private val mapper = JsonUtils.mapper
 
     /**
@@ -33,7 +35,11 @@ open class DatabaseGlue(
     @Transactional
     @Throws(Exception::class)
     open fun givenThatTheDatabaseWasInitializedWithLiquibaseFile(pathToFile: String) {
-        databaseExecutorService.executeLiquibaseScript(getFilePath(pathToFile))
+        databaseExecutorService.executeLiquibaseScript(
+            liquibaseScript = getFilePath(
+                path = pathToFile
+            )
+        )
     }
 
     /**
@@ -47,9 +53,9 @@ open class DatabaseGlue(
     @Throws(IOException::class)
     open fun givenThatTheDatabaseWasInitializedWithSQLFile(pathToQueryFile: String) {
         // read file
-        val sqlStatements = readFileAsString(pathToQueryFile)
+        val sqlStatements = readFileAsString(path = pathToQueryFile)
         // execute query
-        databaseExecutorService.executeSQL(sqlStatements)
+        databaseExecutorService.executeSQL(sql = sqlStatements)
     }
 
     /**
@@ -64,29 +70,36 @@ open class DatabaseGlue(
     @Throws(IOException::class)
     open fun thenEnsureThatResultOfQueryOfFileIsEqualToCSV(pathToQueryFile: String, pathToCsvFile: String) {
         // read file
-        val sqlStatements = readFileAsString(pathToQueryFile)
+        val sqlStatements = readFileAsString(path = pathToQueryFile)
         // execute query
-        val queryResults = generifyDatabaseJSONFiles(databaseExecutorService.executeQuerySQL(sqlStatements))
+        val queryResults = generifyDatabaseJSONFiles(
+            data = databaseExecutorService.executeQuerySQL(
+                sql = sqlStatements
+            )
+        )
 
         // Generify the results to be database independent
         val iterator: Iterator<Map<String, Any?>> = CsvMapper()
             .readerFor(MutableMap::class.java)
             .with(CsvSchema.emptySchema().withHeader())
-            .readValues(readFileAsString(pathToCsvFile))
+            .readValues(readFileAsString(path = pathToCsvFile))
 
         // write data into list
         val csvList: MutableList<Map<String, Any?>> = ArrayList()
         while (iterator.hasNext()) {
             csvList.add(iterator.next())
         }
-        val data = generifyDatabaseJSONFiles(csvList)
+        val data = generifyDatabaseJSONFiles(data = csvList)
 
         // Convert results to JSON to reuse compare
         val expectedResultAsJSON = mapper.writeValueAsString(data)
         val actualResultAsJSON = mapper.writeValueAsString(queryResults)
 
         // compare JSON
-        assertJSONisEqual(expectedResultAsJSON, actualResultAsJSON)
+        assertJSONisEqual(
+            expected = expectedResultAsJSON,
+            actual = actualResultAsJSON
+        )
     }
 
     /**
@@ -100,18 +113,19 @@ open class DatabaseGlue(
      * @return the generified data to be database independent
      */
     private fun generifyDatabaseJSONFiles(data: List<Map<String, Any?>>): List<Map<String, Any>> {
-        return data.stream().map { original: Map<String, Any?> ->
-            original
-                .entries
-                .stream()
+        return data.map { row ->
+            row.asSequence()
                 .filter { entry: Map.Entry<String, Any?> -> entry.value != null }
                 .filter { entry: Map.Entry<String, Any?> ->
                     entry.value !is String || StringUtils.isNotEmpty(entry.value as String?)
-                }.collect(Collectors.toMap(
-                    { columnName: Map.Entry<String, Any?> -> generifyDatabaseColumnName(columnName.key) },
-                    { columnValue: Map.Entry<String, Any?> -> generifyDatabaseColumnValue(columnValue.value) }
-                ))
-        }.collect(Collectors.toList())
+                }.associate { (columnName, columnValue) ->
+                    generifyDatabaseColumnName(
+                        columnName = columnName
+                    ) to generifyDatabaseColumnValue(
+                        columnValue = columnValue!!
+                    )
+                }
+        }
     }
 
     /**
