@@ -27,7 +27,8 @@ class ValidDateContextMatcher(
             bddDateTimeFormats = dateTimeFormatCollection
         )
         if (jsonDate != null) {
-            return jsonDate.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE).equals(parameterFromContext)
+            return jsonDate.toLocalDate()
+                .format(DateTimeFormatter.ISO_LOCAL_DATE) == parameterFromContext
         }
         return false
     }

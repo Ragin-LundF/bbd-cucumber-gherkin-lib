@@ -72,44 +72,50 @@ object DateUtils {
         bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>
     ): LocalDateTime? {
         var localDateTime: LocalDateTime? = null
-        if (dateObject is Long) {
-            // Read Long (timestamp) with LocalDateTime to ensure that it is a valid date
-            return LocalDateTime.of(
-                Instant.ofEpochMilli(dateObject).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
-                LocalTime.MIN
-            )
-        } else if (dateObject is BigDecimal) {
-            // Read BigDecimal (e.g. yyyyddmm) with LocalDateTime to ensure that it is a valid date
-            return LocalDateTime.of(
-                Instant.ofEpochMilli(dateObject.toLong()).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
-                LocalTime.MIN
-            )
-        } else if (dateObject is String) {
-            // Parse string with date to ensure that it is a valid date
-            // first, check, that it not contains sth. like "null"
-            if ("null".equals(dateObject.toString(), ignoreCase = true)) {
-                return null
+        when (dateObject) {
+            is Long -> {
+                // Read Long (timestamp) with LocalDateTime to ensure that it is a valid date
+                return LocalDateTime.of(
+                    Instant.ofEpochMilli(dateObject).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
+                    LocalTime.MIN
+                )
             }
 
-            // check known date formats if one fits to the object
-            for (formatter in createDateFormatters(bddDateTimeFormats = bddDateTimeFormats)) {
-                log.debug { "Try to parse $dateObject with the format $formatter" }
-                localDateTime = parseDate(date = dateObject.toString(), formatter = formatter)
+            is BigDecimal -> {
+                // Read BigDecimal (e.g. yyyyddmm) with LocalDateTime to ensure that it is a valid date
+                return LocalDateTime.of(
+                    Instant.ofEpochMilli(dateObject.toLong()).atZone(ZoneId.of("Europe/Berlin")).toLocalDate(),
+                    LocalTime.MIN
+                )
+            }
 
-                // if parsing date was null, parse String as dateTime
+            is String -> {
+                // Parse string with date to ensure that it is a valid date
+                // first, check, that it not contains sth. like "null"
+                if ("null".equals(dateObject.toString(), ignoreCase = true)) {
+                    return null
+                }
+
+                // check known date formats if one fits to the object
+                for (formatter in createDateFormatters(bddDateTimeFormats = bddDateTimeFormats)) {
+                    log.debug { "Try to parse $dateObject with the format $formatter" }
+                    localDateTime = parseDate(date = dateObject.toString(), formatter = formatter)
+
+                    // if parsing date was null, parse String as dateTime
+                    if (null == localDateTime) {
+                        localDateTime = parseDateTime(dateTime = dateObject.toString(), formatter = formatter)
+                    }
+
+                    // if it is not null the String was parsed and is valid!
+                    if (null != localDateTime) {
+                        break
+                    }
+                }
+
+                // seems not to be a valid date
                 if (null == localDateTime) {
-                    localDateTime = parseDateTime(dateTime = dateObject.toString(), formatter = formatter)
+                    throw DateTimeParseException("No parser for $dateObject", dateObject.toString(), 0)
                 }
-
-                // if it is not null the String was parsed and is valid!
-                if (null != localDateTime) {
-                    break
-                }
-            }
-
-            // seems not to be a valid date
-            if (null == localDateTime) {
-                throw DateTimeParseException("No parser for $dateObject", dateObject.toString(), 0)
             }
         }
         return localDateTime
@@ -125,7 +131,7 @@ object DateUtils {
     private fun parseDate(date: String, formatter: DateTimeFormatter): LocalDateTime? {
         return try {
             LocalDateTime.of(LocalDate.parse(date, formatter), LocalTime.MIN)
-        } catch (e: DateTimeParseException) {
+        } catch (_: DateTimeParseException) {
             log.debug { "Failed to parse as date $date with the format $formatter" }
             null
         }
@@ -141,7 +147,7 @@ object DateUtils {
     private fun parseDateTime(dateTime: String, formatter: DateTimeFormatter): LocalDateTime? {
         return try {
             LocalDateTime.parse(dateTime, formatter)
-        } catch (e: DateTimeParseException) {
+        } catch (_: DateTimeParseException) {
             log.debug { "Failed to parse as dateTime $dateTime with the format $formatter" }
             null
         }
