@@ -16,7 +16,7 @@ class ValidDateMatcher(
     private val dateTimeFormatCollection: Collection<BddCucumberDateTimeFormat>
 ) : BaseMatcher<Any>() {
     override fun matches(item: Any): Boolean {
-        return DateUtils.isValidMandatoryDate(item, dateTimeFormatCollection)
+        return DateUtils.isValidMandatoryDate(dateObject = item, bddDateTimeFormats = dateTimeFormatCollection)
     }
 
     override fun describeMismatch(item: Any, description: Description) {

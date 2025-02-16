@@ -23,21 +23,21 @@ object ScenarioStateContext {
      * Add IGNORING_EXTRA_ARRAY_ITEMS option to the jsonPathOptions
      */
     fun addJsonIgnoringExtraArrayElements() {
-        jsonPathOptions.add(Option.IGNORING_EXTRA_ARRAY_ITEMS)
+        jsonPathOptions.add(element = Option.IGNORING_EXTRA_ARRAY_ITEMS)
     }
 
     /**
      * Add IGNORING_EXTRA_FIELDS option to the jsonPathOptions
      */
     fun addJsonIgnoringExtraFields() {
-        jsonPathOptions.add(Option.IGNORING_EXTRA_FIELDS)
+        jsonPathOptions.add(element = Option.IGNORING_EXTRA_FIELDS)
     }
 
     /**
      * Add IGNORING_ARRAY_ORDER option to the jsonPathOptions
      */
     fun addJsonIgnoringArrayOrder() {
-        jsonPathOptions.add(Option.IGNORING_ARRAY_ORDER)
+        jsonPathOptions.add(element = Option.IGNORING_ARRAY_ORDER)
     }
 
     /**

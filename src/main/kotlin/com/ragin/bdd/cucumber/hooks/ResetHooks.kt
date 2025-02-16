@@ -32,7 +32,7 @@ open class ResetHooks(private val databaseExecutorService: IDatabaseExecutorServ
         } else {
             // Execute the liquibase script to reset the DB
             log.info { "Reset database for scenario ${scenario.name}" }
-            databaseExecutorService.executeLiquibaseScript(RESET_DATABASE_FILE)
+            databaseExecutorService.executeLiquibaseScript(liquibaseScript = RESET_DATABASE_FILE)
         }
     }
 

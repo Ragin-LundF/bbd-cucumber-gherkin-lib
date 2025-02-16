@@ -47,7 +47,10 @@ abstract class BaseRESTExecutionGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties,
     private val restTemplate: TestRestTemplate
-) : BaseCucumberCore(jsonUtils, bddProperties) {
+) : BaseCucumberCore(
+    jsonUtils = jsonUtils,
+    bddProperties = bddProperties
+) {
     @LocalServerPort
     protected var port = 0
 
@@ -55,7 +58,9 @@ abstract class BaseRESTExecutionGlue(
         // init ScenarioContext
         bddProperties.scenarioContext.let { scenarioContextMap.putAll(it) }
         if (bddProperties.authorization?.bearerToken?.default.isNullOrEmpty().not()) {
-            setDefaultBearerToken(bddProperties.authorization!!.bearerToken.default)
+            setDefaultBearerToken(
+                defaultBearerToken = bddProperties.authorization.bearerToken.default
+            )
         }
 
         // https://stackoverflow.com/questions/16748969/java-net-httpretryexception-cannot-retry-due-to-server-authentication-in-strea
@@ -150,10 +155,10 @@ abstract class BaseRESTExecutionGlue(
         scenario: Scenario
     ) {
         // Prepare a path with dynamic URLs from datatable
-        val path = preparePath(dataTable)
+        val path = preparePath(dataTable = dataTable)
 
         // Prepare headers
-        val headers = createHTTPHeader(authorized)
+        val headers = createHTTPHeader(addAuthorisation = authorized)
 
         // create HttpEntity
         val body: String? = editableBody
@@ -164,14 +169,15 @@ abstract class BaseRESTExecutionGlue(
             httpEntity = HttpEntity(body, headers)
         }
         try {
-            val targetUrl = fullURLFor(path)
+            val targetUrl = fullURLFor(path = path)
             scenario.log("Request:")
             scenario.log("========")
             scenario.log("HTTP Method: ${httpMethod.name()}")
             scenario.log("HTTP URL   : $targetUrl")
             log.info { "Executing call to [${httpMethod.name()}][$targetUrl]" }
+
             setLatestResponse(
-                restTemplate.exchange(
+                latestResponse = restTemplate.exchange(
                     targetUrl,
                     httpMethod,
                     httpEntity,
@@ -179,7 +185,12 @@ abstract class BaseRESTExecutionGlue(
                 )
             )
         } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+            setLatestResponse(
+                latestResponse = ResponseEntity(
+                    hsee.responseBodyAsString,
+                    hsee.statusCode
+                )
+            )
         }
         logResponse(scenario = scenario)
     }
@@ -192,10 +203,10 @@ abstract class BaseRESTExecutionGlue(
      * @param authorized    should the request execute authorized or unauthorized (true = authorized)
      */
     protected fun executeFormDataRequest(dataTable: DataTable, authorized: Boolean) {
-        val path = preparePath(DataTable.emptyDataTable())
+        val path = preparePath(dataTable = DataTable.emptyDataTable())
 
         // Prepare headers
-        val headers = createHTTPHeader(authorized)
+        val headers = createHTTPHeader(addAuthorisation = authorized)
         headers.contentType = MULTIPART_FORM_DATA
 
         val formDataMap: MultiValueMap<String, Any> = LinkedMultiValueMap()
@@ -217,13 +228,22 @@ abstract class BaseRESTExecutionGlue(
 
         val request = HttpEntity(formDataMap, headers)
         try {
-            val targetUrl = fullURLFor(path)
+            val targetUrl = fullURLFor(path = path)
             log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
-                restTemplate.postForEntity(targetUrl, request, String::class.java)
+                latestResponse = restTemplate.postForEntity(
+                    targetUrl,
+                    request,
+                    String::class.java
+                )
             )
         } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+            setLatestResponse(
+                latestResponse = ResponseEntity(
+                    hsee.responseBodyAsString,
+                    hsee.statusCode
+                )
+            )
         }
     }
 
@@ -235,7 +255,7 @@ abstract class BaseRESTExecutionGlue(
      */
     protected fun executeUrlEncodedRequest(dataTable: DataTable, authorized: Boolean, scenario: Scenario) {
         // Prepare a path with dynamic URLs from datatable
-        val path = preparePath(dataTable)
+        val path = preparePath(dataTable = dataTable)
 
         // Prepare headers
         val headers = createHTTPHeader(authorized)
@@ -256,7 +276,7 @@ abstract class BaseRESTExecutionGlue(
         // create HttpEntity
         val httpEntity = HttpEntity(map, headers)
         try {
-            val targetUrl = fullURLFor(path)
+            val targetUrl = fullURLFor(path = path)
             scenario.log("Request:")
             scenario.log("========")
             scenario.log("HTTP URL   : $targetUrl")
@@ -267,7 +287,7 @@ abstract class BaseRESTExecutionGlue(
 
             log.info { "Executing call to [$targetUrl]" }
             setLatestResponse(
-                restTemplate.exchange(
+                latestResponse = restTemplate.exchange(
                     targetUrl,
                     HttpMethod.POST,
                     httpEntity,
@@ -275,14 +295,19 @@ abstract class BaseRESTExecutionGlue(
                 )
             )
         } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(ResponseEntity(hsee.responseBodyAsString, hsee.statusCode))
+            setLatestResponse(
+                latestResponse = ResponseEntity(
+                    hsee.responseBodyAsString,
+                    hsee.statusCode
+                )
+            )
         }
         logResponse(scenario = scenario)
     }
 
     protected fun preparePath(dataTable: DataTable): String {
         var path: String = if (!dataTable.isEmpty) {
-            prepareDynamicURLWithDataTable(dataTable)
+            prepareDynamicURLWithDataTable(dataTable = dataTable)
         } else {
             uriPath
         }
@@ -292,7 +317,7 @@ abstract class BaseRESTExecutionGlue(
             path = resolvedUri
         }
 
-        return replacePathPlaceholders(path)
+        return replacePathPlaceholders(path = path)
     }
 
     /**

@@ -35,7 +35,10 @@ object DateUtils {
         dateObject: Any,
         bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>
     ): Boolean {
-        return transformToLocalDateTime(dateObject, bddDateTimeFormats) != null
+        return transformToLocalDateTime(
+            dateObject = dateObject,
+            bddDateTimeFormats = bddDateTimeFormats
+        ) != null
     }
 
     /**
@@ -89,13 +92,13 @@ object DateUtils {
             }
 
             // check known date formats if one fits to the object
-            for (formatter in createDateFormatters(bddDateTimeFormats)) {
+            for (formatter in createDateFormatters(bddDateTimeFormats = bddDateTimeFormats)) {
                 log.debug { "Try to parse $dateObject with the format $formatter" }
-                localDateTime = parseDate(dateObject.toString(), formatter)
+                localDateTime = parseDate(date = dateObject.toString(), formatter = formatter)
 
                 // if parsing date was null, parse String as dateTime
                 if (null == localDateTime) {
-                    localDateTime = parseDateTime(dateObject.toString(), formatter)
+                    localDateTime = parseDateTime(dateTime = dateObject.toString(), formatter = formatter)
                 }
 
                 // if it is not null the String was parsed and is valid!
