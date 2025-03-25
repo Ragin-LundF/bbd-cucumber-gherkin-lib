@@ -1,3 +1,11 @@
+# Release 2.21.0
+## Dependency Updates
+All dependencies were updated.
+
+Most noticeable:
+
+- Spring Boot to 3.4.4
+
 # Release 2.20.0
 ## Dependency Updates
 All dependencies were updated.
