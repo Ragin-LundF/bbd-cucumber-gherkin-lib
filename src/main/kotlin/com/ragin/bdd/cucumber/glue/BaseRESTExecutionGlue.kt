@@ -101,9 +101,7 @@ abstract class BaseRESTExecutionGlue(
             val connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
                 .setTlsSocketStrategy(tlsStrategy as TlsSocketStrategy)
                 .build()
-            return HttpClientBuilder.create()
-                .setConnectionManager(connectionManager)
-                .build()
+            httpClientBuilder.setConnectionManager(connectionManager)
         }
 
         if (bddProperties.proxy != null

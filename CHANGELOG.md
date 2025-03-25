@@ -1,3 +1,7 @@
+# Release 2.22.0
+## Fixes
+The SSL configuration has returned a wrong HTTP client configuration, which was not ignoring redirects from the server.
+
 # Release 2.21.0
 ## Dependency Updates
 All dependencies were updated.
