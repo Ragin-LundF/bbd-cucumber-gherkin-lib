@@ -46,7 +46,7 @@ import java.net.Proxy
 abstract class BaseRESTExecutionGlue(
     jsonUtils: JsonUtils,
     bddProperties: BddProperties,
-    private val restTemplate: TestRestTemplate
+    val restTemplate: TestRestTemplate
 ) : BaseCucumberCore(
     jsonUtils = jsonUtils,
     bddProperties = bddProperties
@@ -86,7 +86,7 @@ abstract class BaseRESTExecutionGlue(
     }
 
     @Suppress("ComplexCondition")
-    protected fun createHttpClient(): CloseableHttpClient {
+    protected fun createHttpClient(proxyHost: String? = null, proxyPort: Int? = null): CloseableHttpClient {
         val httpClientBuilder = HttpClientBuilder.create()
         httpClientBuilder.disableRedirectHandling()
 
@@ -104,15 +104,26 @@ abstract class BaseRESTExecutionGlue(
             httpClientBuilder.setConnectionManager(connectionManager)
         }
 
+        var proxyHostUsed: String? = null
+        var proxyPortUsed: Int? = null
         if (bddProperties.proxy != null
             && !StringUtils.isEmpty(bddProperties.proxy.host)
             && bddProperties.proxy.port != null && bddProperties.proxy.port > 0
         ) {
+            proxyHostUsed = bddProperties.proxy.host
+            proxyPortUsed = bddProperties.proxy.port
+        }
+        if (proxyHost != null && proxyPort != null) {
+            proxyHostUsed = proxyHost
+            proxyPortUsed = proxyPort
+        }
+
+        if (ScenarioStateContext.dynamicProxyHost != null && ScenarioStateContext.dynamicProxyPort != null) {
             httpClientBuilder.setProxy(
                 HttpHost(
                     Proxy.Type.HTTP.name,
-                    bddProperties.proxy.host,
-                    bddProperties.proxy.port,
+                    ScenarioStateContext.dynamicProxyHost,
+                    ScenarioStateContext.dynamicProxyPort!!,
                 )
             )
         }
