@@ -17,6 +17,8 @@ object ScenarioStateContext {
     var userTokenMap: HashMap<String, String> = hashMapOf()
     private var jsonPathOptions: MutableList<Option> = mutableListOf()
     var executionTime = -1L
+    var dynamicProxyHost: String? = null
+    var dynamicProxyPort: Int? = null
     var polling = Polling()
 
     /**

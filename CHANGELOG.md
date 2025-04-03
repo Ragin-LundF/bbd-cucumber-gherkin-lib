@@ -1,3 +1,25 @@
+# Release 2.23.0
+## New sentence to set a proxy for the communication at "runtime"
+
+This introduces a sentence for dynamic proxy settings.
+
+```gherkin
+Given that a proxy with host "<string>" and port "<string>" is configured
+```
+Both the host and the port can either be the host/proxy or a variable from the `ScenarioStateContext`.
+
+This helps, for example, to set proxies started via test containers (e.g. Burp Scanner or Mock Server) during the test.
+This way it is not necessary to assign a fixed port to the proxy.
+This can then be written in another sentence or after starting a proxy container in the `ScenarioContext`.
+
+Alternatively, the proxy can also be written directly to the `ScenarioStateContext`:
+
+```kotlin
+ScenarioStateContext.current().dynamicProxyHost = "localhost"
+ScenarioStateContext.current().dynamicProxyPort = "8808"
+```
+
+
 # Release 2.22.0
 ## Fixes
 The SSL configuration has returned a wrong HTTP client configuration, which was not ignoring redirects from the server.

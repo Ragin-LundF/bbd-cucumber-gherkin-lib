@@ -9,6 +9,7 @@ import io.cucumber.datatable.DataTable
 import io.cucumber.java.Before
 import io.cucumber.java.ParameterType
 import io.cucumber.java.Scenario
+import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -36,6 +37,16 @@ class WhenRESTExecutionGlue(
     @Before
     fun injectScenario(scenario: Scenario) {
         scenarioState = scenario
+    }
+
+    @Given("that a proxy with host {string} and port {string} is configured")
+    fun givenProxy(host: String, port: String) {
+        val finalHost = ScenarioStateContext.resolveEntry(key = host)
+        val finalPort = ScenarioStateContext.resolveEntry(key = port).toInt()
+
+        ScenarioStateContext.dynamicProxyHost = finalHost
+        ScenarioStateContext.dynamicProxyPort = finalPort
+        restTemplate.restTemplate.requestFactory = createRequestFactory()
     }
 
     /**
