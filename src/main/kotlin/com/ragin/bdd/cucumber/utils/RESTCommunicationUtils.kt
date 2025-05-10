@@ -1,5 +1,7 @@
 package com.ragin.bdd.cucumber.utils
 
+import com.ragin.bdd.cucumber.BddLibConstants.BDD_URI_ELEMENTS
+import com.ragin.bdd.cucumber.BddLibConstants.BDD_URI_VALUES
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.bearerToken
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
@@ -7,6 +9,9 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import io.cucumber.datatable.DataTable
 import org.assertj.core.api.Assertions
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpHeaders.ACCEPT
+import org.springframework.http.HttpHeaders.CONTENT_TYPE
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 
 /**
  * Utils class for common REST communication methods
@@ -32,12 +37,12 @@ object RESTCommunicationUtils {
             }
         }
 
-        if (! headerValues.containsKey("Content-Type")) {
-            headers.add("Content-Type", "application/json")
+        if (! headerValues.containsKey(CONTENT_TYPE)) {
+            headers.add(CONTENT_TYPE, APPLICATION_JSON_VALUE)
         }
 
-        if (! headerValues.containsKey("Accept")) {
-            headers.add("Accept", "application/json")
+        if (! headerValues.containsKey(ACCEPT)) {
+            headers.add(ACCEPT, APPLICATION_JSON_VALUE)
         }
 
         return headers
@@ -62,15 +67,15 @@ object RESTCommunicationUtils {
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
         for (stringStringMap in dataTableRowList) {
             // Try to resolve value from context map
-            if (! stringStringMap["URI Values"].isNullOrEmpty()) {
-                var uriValue = scenarioContextMap[stringStringMap["URI Values"]]
+            if (! stringStringMap[BDD_URI_VALUES].isNullOrEmpty()) {
+                var uriValue = scenarioContextMap[stringStringMap[BDD_URI_VALUES]]
                 // If context map knows nothing about the value, use value directly
                 if (uriValue == null) {
-                    uriValue = stringStringMap["URI Values"]
+                    uriValue = stringStringMap[BDD_URI_VALUES]
                 }
                 // replace path with URI key and URI value
                 path = path.replace(
-                    "{${stringStringMap["URI Elements"]}}",
+                    "{${stringStringMap[BDD_URI_ELEMENTS]}}",
                     uriValue!!
                 )
             }
