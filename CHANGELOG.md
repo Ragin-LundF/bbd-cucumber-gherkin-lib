@@ -1,3 +1,7 @@
+# Release 2.24.0
+Update Dependencies
+
+
 # Release 2.23.0
 ## New sentence to set a proxy for the communication at "runtime"
 

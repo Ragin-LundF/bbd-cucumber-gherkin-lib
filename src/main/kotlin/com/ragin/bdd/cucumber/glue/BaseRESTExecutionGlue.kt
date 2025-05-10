@@ -113,21 +113,33 @@ abstract class BaseRESTExecutionGlue(
             proxyHostUsed = bddProperties.proxy.host
             proxyPortUsed = bddProperties.proxy.port
         }
+
         if (proxyHost != null && proxyPort != null) {
             proxyHostUsed = proxyHost
             proxyPortUsed = proxyPort
         }
 
-        if (ScenarioStateContext.dynamicProxyHost != null && ScenarioStateContext.dynamicProxyPort != null) {
+        val proxy = proxyOrNull(proxyHost = proxyHostUsed, proxyPort = proxyPortUsed)
+        if (proxy != null) {
             httpClientBuilder.setProxy(
                 HttpHost(
                     Proxy.Type.HTTP.name,
-                    ScenarioStateContext.dynamicProxyHost,
-                    ScenarioStateContext.dynamicProxyPort!!,
+                    proxy.first,
+                    proxy.second,
                 )
             )
         }
         return httpClientBuilder.build()
+    }
+
+    private fun proxyOrNull(proxyHost: String?, proxyPort: Int?): Pair<String, Int>? {
+        return if (ScenarioStateContext.dynamicProxyHost != null && ScenarioStateContext.dynamicProxyPort != null) {
+            Pair(ScenarioStateContext.dynamicProxyHost!!, ScenarioStateContext.dynamicProxyPort!!)
+        } else if (proxyHost != null && proxyPort != null) {
+            Pair(proxyHost, proxyPort)
+        } else {
+            null
+        }
     }
 
     /**
@@ -173,7 +185,7 @@ abstract class BaseRESTExecutionGlue(
         val body: String? = editableBody
 
         var httpEntity = HttpEntity<String?>(headers)
-        if (httpMethod != HttpMethod.GET && ! body.isNullOrEmpty()) {
+        if (httpMethod != HttpMethod.GET && !body.isNullOrEmpty()) {
             // there was a body...replace with new entity with body
             httpEntity = HttpEntity(body, headers)
         }
@@ -273,10 +285,10 @@ abstract class BaseRESTExecutionGlue(
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
         val map: MultiValueMap<String, String> = LinkedMultiValueMap()
         dataTableRowList.forEach { list ->
-            if (! list["Value"].isNullOrEmpty()) {
+            if (!list["Value"].isNullOrEmpty()) {
                 val key = scenarioContextMap[list["Key"]] ?: list["Key"]
                 val value = scenarioContextMap[list["Value"]] ?: list["Value"]
-                if (! key.isNullOrEmpty() && ! value.isNullOrEmpty()) {
+                if (!key.isNullOrEmpty() && !value.isNullOrEmpty()) {
                     map.add(key, value)
                 }
             }
@@ -365,7 +377,7 @@ abstract class BaseRESTExecutionGlue(
                 basePath.append(":").append(bddProperties.server.port)
             }
         }
-        if (! basePath.endsWith("/") && basePath.length > 2 && !urlBasePath.startsWith("/")) {
+        if (!basePath.endsWith("/") && basePath.length > 2 && !urlBasePath.startsWith("/")) {
             basePath.append("/")
         }
 
