@@ -1,6 +1,7 @@
 // exclude tests, because they are only examples
 test {
     exclude '**'
+    useJUnitPlatform()
 }
 
 configurations {

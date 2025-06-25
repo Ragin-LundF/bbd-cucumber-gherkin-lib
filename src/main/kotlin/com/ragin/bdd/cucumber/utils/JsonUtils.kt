@@ -56,13 +56,14 @@ class JsonUtils(
             val minimizedExpected = minimizeJSON(json = expectedJSON)
             val minimizedActual = minimizeJSON(json = actualJSON)
             log.error {
-                """
-                        JSON comparison failed.
-                        Expected:
-                            $minimizedExpected
-                        Actual:
-                            $minimizedActual
-                    """.trimIndent()
+            """
+            JSON comparison failed.
+            Expected:
+                $minimizedExpected
+
+            Actual:
+                $minimizedActual
+            """.trimIndent()
             }
             throw error
         }

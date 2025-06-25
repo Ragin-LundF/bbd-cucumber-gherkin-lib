@@ -192,7 +192,7 @@ class ThenRESTValidationGlue(
         try {
             Thread.sleep(milliseconds)
         } catch (ie: InterruptedException) {
-            log.error(ie) { "Wait has detected a problem" }
+            log.error(throwable = ie) { "Wait has detected a problem" }
         }
     }
 
@@ -204,16 +204,18 @@ class ThenRESTValidationGlue(
      */
     private fun replaceTrailingAndLeadingQuotes(value: String): String {
         var result = value
-        if (result.startsWith("\"")) {
-            result = result.replaceFirst("\"".toRegex(), "")
+        if (result.startsWith(prefix = "\"")) {
+            result = result.replaceFirst(regex = REGEX_QUOTE, replacement = "")
         }
         if (result.endsWith("\"")) {
-            result = result.replace("\"$".toRegex(), "")
+            result = result.replace(regex = REGEX_QUOTE_DOLLAR, replacement = "")
         }
         return result
     }
 
     companion object {
         private val log = KotlinLogging.logger { }
+        private val REGEX_QUOTE = "\"".toRegex()
+        private val REGEX_QUOTE_DOLLAR = "\"$".toRegex()
     }
 }

@@ -37,7 +37,7 @@ class WhenRESTManipulationGlue(
                     fieldPath = propertyPath
                 )
             }
-            newValue.matches("\\d* bdd_lib_numbers".toRegex()) -> {
+            newValue.matches(regex = BDD_LIB_NUMBERS) -> {
                 val numOfChars = newValue.split(" ").toTypedArray()[0].toInt()
                 newValue = StringUtils.rightPad("", numOfChars, "1234567890")
                 editableBody = jsonUtils.editJsonField(
@@ -46,7 +46,7 @@ class WhenRESTManipulationGlue(
                     newValue = newValue
                 )
             }
-            newValue.matches("bdd_lib_uuid".toRegex()) -> {
+            newValue.matches(regex = BDD_LIB_UUID) -> {
                 editableBody = jsonUtils.editJsonField(
                     originalJson = editableBody,
                     fieldPath = propertyPath,
@@ -84,5 +84,10 @@ class WhenRESTManipulationGlue(
     @When("I set the header {string} to {string} prefixed by {string}")
     fun whenISetTheHeaderValueTo(header: String, headerValue: String, headerValuePrefix: String) {
         headerValues[header] = "${resolveEntry(key = headerValuePrefix)}${resolveEntry(key = headerValue)}"
+    }
+
+    companion object {
+        private val BDD_LIB_UUID = "bdd_lib_uuid".toRegex()
+        private val BDD_LIB_NUMBERS = "\\d* bdd_lib_numbers".toRegex()
     }
 }
