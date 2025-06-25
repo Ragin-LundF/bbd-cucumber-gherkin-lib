@@ -13,7 +13,8 @@ dependencies {
 
     api "io.cucumber:cucumber-java:$version_cucumber"
     api "io.cucumber:cucumber-spring:$version_cucumber"
-    api "io.cucumber:cucumber-junit:$version_cucumber"
+    api "io.cucumber:cucumber-junit-platform-engine:$version_cucumber"
+    api "org.junit.platform:junit-platform-suite"
 
     api "jakarta.validation:jakarta.validation-api:3.1.1"
 
