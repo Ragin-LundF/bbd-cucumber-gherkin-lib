@@ -97,7 +97,7 @@ abstract class BaseRESTExecutionGlue(
             val tlsStrategy = ClientTlsStrategyBuilder.create()
                 .setSslContext(sslContext)
                 .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                .build()
+                .buildClassic()
             val connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
                 .setTlsSocketStrategy(tlsStrategy as TlsSocketStrategy)
                 .build()
@@ -134,9 +134,9 @@ abstract class BaseRESTExecutionGlue(
 
     private fun proxyOrNull(proxyHost: String?, proxyPort: Int?): Pair<String, Int>? {
         return if (ScenarioStateContext.dynamicProxyHost != null && ScenarioStateContext.dynamicProxyPort != null) {
-            Pair(ScenarioStateContext.dynamicProxyHost!!, ScenarioStateContext.dynamicProxyPort!!)
+            Pair(first = ScenarioStateContext.dynamicProxyHost!!, second = ScenarioStateContext.dynamicProxyPort!!)
         } else if (proxyHost != null && proxyPort != null) {
-            Pair(proxyHost, proxyPort)
+            Pair(first = proxyHost, second = proxyPort)
         } else {
             null
         }

@@ -75,8 +75,8 @@ object RESTCommunicationUtils {
                 }
                 // replace path with URI key and URI value
                 path = path.replace(
-                    "{${stringStringMap[BDD_URI_ELEMENTS]}}",
-                    uriValue!!
+                    oldValue = "{${stringStringMap[BDD_URI_ELEMENTS]}}",
+                    newValue = uriValue!!
                 )
             }
         }

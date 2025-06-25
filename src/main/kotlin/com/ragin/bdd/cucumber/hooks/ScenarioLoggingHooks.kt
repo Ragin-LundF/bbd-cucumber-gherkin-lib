@@ -11,10 +11,6 @@ import org.springframework.http.ResponseEntity
  * Hooks for logging the Scenarios
  */
 class ScenarioLoggingHooks {
-    companion object {
-        private val log = KotlinLogging.logger { }
-    }
-
     @Before(order = 1)
     fun logBeforeScenario(scenario: Scenario) {
         log.info { "Entering scenario ${scenario.id}" }
@@ -37,5 +33,9 @@ class ScenarioLoggingHooks {
                 log.error { "Scenario FAIL: Exiting ${scenario.id}%n----------------%n" }
             }
         }
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger { }
     }
 }

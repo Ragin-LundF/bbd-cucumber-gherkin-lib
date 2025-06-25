@@ -7,22 +7,23 @@ configurations.configureEach {
 dependencies {
     implementation "io.github.oshai:kotlin-logging-jvm:7.0.7"
 
-    api "org.apache.httpcomponents.client5:httpclient5:5.4.4"
+    api "org.apache.httpcomponents.client5:httpclient5:5.5"
 
-    api "net.javacrumbs.json-unit:json-unit:4.1.0"
+    api "net.javacrumbs.json-unit:json-unit:4.1.1"
 
     api "io.cucumber:cucumber-java:$version_cucumber"
     api "io.cucumber:cucumber-spring:$version_cucumber"
-    api "io.cucumber:cucumber-junit:$version_cucumber"
+    api "io.cucumber:cucumber-junit-platform-engine:$version_cucumber"
+    api "org.junit.platform:junit-platform-suite"
 
     api "jakarta.validation:jakarta.validation-api:3.1.1"
 
     api "org.apache.commons:commons-text:1.13.1"
-    implementation "commons-io:commons-io:2.18.0"
+    implementation "commons-io:commons-io:2.19.0"
     implementation "org.apache.commons:commons-lang3:3.17.0"
 
     implementation "org.yaml:snakeyaml:2.4"
-    implementation "org.liquibase:liquibase-core:4.31.1"
+    implementation "org.liquibase:liquibase-core:4.32.0"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
@@ -37,7 +38,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    testImplementation "org.postgresql:postgresql:42.7.5"
+    testImplementation "org.postgresql:postgresql:42.7.7"
     testImplementation "org.slf4j:slf4j-simple:2.0.17"
     testImplementation "org.testcontainers:testcontainers:$version_testcontainers"
     testImplementation "org.testcontainers:postgresql:$version_testcontainers"
