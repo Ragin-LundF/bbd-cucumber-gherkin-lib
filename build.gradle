@@ -8,7 +8,7 @@ plugins {
     id "maven-publish"
     id "org.sonarqube" version "6.2.0.5505"
     id "io.gitlab.arturbosch.detekt" version "1.23.8"
-    id "org.springframework.boot" version "3.5.3"
+    id "org.springframework.boot" version "3.5.4"
     id "io.spring.dependency-management" version "1.1.7"
     id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
     id "org.jetbrains.kotlinx.kover" version "0.9.1"
@@ -26,3 +26,11 @@ apply from: "${rootDir}/config/gradle/java.gradle"
 apply from: "${rootDir}/config/gradle/publishing.gradle"
 apply from: "${rootDir}/config/gradle/tests.gradle"
 apply from: "${rootDir}/config/gradle/wrapper.gradle"
+
+configurations.matching { it.name == "detekt" }.configureEach {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == "org.jetbrains.kotlin") {
+            details.useVersion(io.gitlab.arturbosch.detekt.DetektPluginKt.getSupportedKotlinVersion())
+        }
+    }
+}

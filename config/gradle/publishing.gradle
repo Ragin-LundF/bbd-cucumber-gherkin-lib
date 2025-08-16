@@ -22,8 +22,8 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifactId "bdd-cucumber-gherkin-lib"
-            version "${version}"
+            artifactId = "bdd-cucumber-gherkin-lib"
+            version = "${version}"
             pom {
                 name = "bdd-cucumber-gherkin-lib"
                 description = "Cucumber BDD library for simpler e2e tests with predefined sentences for API and basic database access"
