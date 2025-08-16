@@ -1,3 +1,10 @@
+# Release 2.26.0
+
+- Library Updates, e.g.:
+  - Spring Boot 3.5.4
+  - Cucumber 7.24.0
+  - Liquibase 4.33.1
+
 # Release 2.25.0
 
 - JDK 21 is now minimum requirement

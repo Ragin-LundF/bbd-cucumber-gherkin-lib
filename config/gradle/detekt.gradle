@@ -3,9 +3,9 @@ apply plugin: "io.gitlab.arturbosch.detekt"
 tasks.withType(Detekt).configureEach {
     exclude("**/gen/**")
     reports {
-        html.required.set(true) // observe findings in your browser with structure and code snippets
-        xml.required.set(true) // checkstyle like format mainly for integrations like Jenkins
-        sarif.required.set(true)
+        html.required = true // observe findings in your browser with structure and code snippets
+        xml.required = true // checkstyle like format mainly for integrations like Jenkins
+        sarif.required = true
         // standardized SARIF format (https://sarifweb.azurewebsites.net/) to support integrations with Github Code Scanning
     }
 }

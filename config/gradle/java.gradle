@@ -9,13 +9,13 @@ bootJar {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(jdk_version))
+        languageVersion = JavaLanguageVersion.of(jdk_version)
     }
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(jdk_version))
+        languageVersion = JavaLanguageVersion.of(jdk_version)
     }
     withSourcesJar()
     withJavadocJar()
