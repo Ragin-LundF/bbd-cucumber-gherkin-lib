@@ -11,9 +11,12 @@ configurations {
 }
 
 tasks.register('cucumber', Test) {
-    group 'verification'
+    useJUnitPlatform()
+    group = 'verification'
     exclude '**/*Test*'
     include '**/*CucumberRun*'
+    testClassesDirs = testing.suites.test.sources.output.classesDirs
+    classpath = testing.suites.test.sources.runtimeClasspath
 
     minHeapSize = "512m"
     maxHeapSize = "1024m"

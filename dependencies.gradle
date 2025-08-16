@@ -3,9 +3,14 @@ configurations.configureEach {
     exclude group: "ch.qos.logback", module: "logback-classic"
     exclude group: "ch.qos.logback", module: "logback-core"
 }
+dependencyManagement {
+    imports {
+        mavenBom "org.junit:junit-bom:5.13.4"
+    }
+}
 
 dependencies {
-    implementation "io.github.oshai:kotlin-logging-jvm:7.0.7"
+    implementation "io.github.oshai:kotlin-logging-jvm:7.0.12"
 
     api "org.apache.httpcomponents.client5:httpclient5:5.5"
 
@@ -18,12 +23,12 @@ dependencies {
 
     api "jakarta.validation:jakarta.validation-api:3.1.1"
 
-    api "org.apache.commons:commons-text:1.13.1"
-    implementation "commons-io:commons-io:2.19.0"
-    implementation "org.apache.commons:commons-lang3:3.17.0"
+    api "org.apache.commons:commons-text:1.14.0"
+    implementation "commons-io:commons-io:2.20.0"
+    implementation "org.apache.commons:commons-lang3:3.18.0"
 
     implementation "org.yaml:snakeyaml:2.4"
-    implementation "org.liquibase:liquibase-core:4.32.0"
+    implementation "org.liquibase:liquibase-core:4.33.0"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-test"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
