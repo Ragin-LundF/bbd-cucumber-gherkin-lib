@@ -26,9 +26,9 @@ jobs:
 
       - name: Publish package to Maven Central and Github
         env:
-          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASSWORD }}
+          JRELEASER_MAVENCENTRAL_SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          JRELEASER_MAVENCENTRAL_SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
         # If we split on '/' and take the 3rd value,
