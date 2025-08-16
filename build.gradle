@@ -26,3 +26,11 @@ apply from: "${rootDir}/config/gradle/java.gradle"
 apply from: "${rootDir}/config/gradle/publishing.gradle"
 apply from: "${rootDir}/config/gradle/tests.gradle"
 apply from: "${rootDir}/config/gradle/wrapper.gradle"
+
+configurations.matching { it.name == "detekt" }.configureEach {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == "org.jetbrains.kotlin") {
+            details.useVersion(io.gitlab.arturbosch.detekt.DetektPluginKt.getSupportedKotlinVersion())
+        }
+    }
+}

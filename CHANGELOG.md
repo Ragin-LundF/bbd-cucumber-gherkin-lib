@@ -4,6 +4,19 @@
   - Spring Boot 3.5.4
   - Cucumber 7.24.0
   - Liquibase 4.33.1
+- Update Kotlin to 2.2.10
+
+If you have trouble with Detekt, you can add the following to your `build.gradle`:
+
+```groovy
+configurations.matching { it.name == "detekt" }.configureEach {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == "org.jetbrains.kotlin") {
+            details.useVersion(io.gitlab.arturbosch.detekt.DetektPluginKt.getSupportedKotlinVersion())
+        }
+    }
+}
+```
 
 # Release 2.25.0
 
