@@ -21,14 +21,14 @@ jobs:
 
       - name: Decode GPG for Maven Central
         run: |
-          echo "${{ secrets.SONATYPE_GPG_PUBLIC }}" > sonatype_public.gpg
-          echo "${{ secrets.SONATYPE_GPG_SECRET_KEY }}" > sonatype_secring.gpg
+          echo "${{ secrets.GPG_RAGIN_PUBLIC }}" > ragin_public.pgp
+          echo "${{ secrets.GPG_RAGIN_SECRET }}" > ragin_secret.pgp
 
       - name: Publish package to Maven Central and Github
         env:
           JRELEASER_MAVENCENTRAL_SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           JRELEASER_MAVENCENTRAL_SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASSWORD }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
         # If we split on '/' and take the 3rd value,

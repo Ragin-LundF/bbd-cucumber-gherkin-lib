@@ -1,8 +1,8 @@
-# Release 2.26.0
+# Release 2.27.0
 
 ## Summary
 
-Release 2.26.0 updates versions across Gradle, Spring Boot, Kotlin, libraries, and Testcontainers.
+Release 2.27.0 updates versions across Gradle, Spring Boot, Kotlin, libraries, and Testcontainers.
 Adds a JUnit 5 BOM, enforces Kotlin alignment for Detekt, tweaks Gradle task configurations (including cucumber with
 JUnit Platform), updates Gradle wrapper and scripts, and adjusts a test datasource image tag.
 
@@ -29,6 +29,10 @@ configurations.matching { it.name == "detekt" }.configureEach {
     }
 }
 ```
+
+# # Release 2.26.0
+n/a
+-> Maven Central Changes
 
 # Release 2.25.0
 

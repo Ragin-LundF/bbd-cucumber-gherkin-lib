@@ -71,7 +71,8 @@ jreleaser {
         verify = false
         armored = true
         mode = 'FILE'
-        secretKey = 'sonatype_secring.gpg'
+        publicKey = 'ragin_public.pgp'
+        secretKey = 'ragin_secret.pgp'
     }
     deploy {
         maven {
