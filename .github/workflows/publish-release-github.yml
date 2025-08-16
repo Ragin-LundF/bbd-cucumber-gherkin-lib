@@ -1,4 +1,4 @@
-name: Publish release to Github
+name: Publish release to Github and MavenCentral
 
 on:
   release:
@@ -21,13 +21,15 @@ jobs:
 
       - name: Decode GPG for Maven Central
         run: |
-          echo "${{ secrets.GPG_KEY_ARMOR }}" | base64 --decode > secring.gpg
+          echo "${{ secrets.SONATYPE_GPG_PUBLIC }}" | base64 --decode > sonatype_public.gpg
+          echo "${{ secrets.SONATYPE_GPG_SECRET_KEY }}" | base64 --decode > sonatype_secring.gpg
 
       - name: Publish package to Maven Central and Github
         env:
+          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
         # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
         # If we split on '/' and take the 3rd value,
         # we can get the release name.

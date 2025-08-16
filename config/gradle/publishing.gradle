@@ -52,12 +52,7 @@ publishing {
 
     repositories {
         maven {
-            name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                password = System.getenv("OSSRH_PASSWORD")
-            }
+            url = layout.buildDirectory.dir('staging-deploy')
         }
         maven {
             name = "GitHubPackages"
@@ -70,6 +65,23 @@ publishing {
     }
 }
 
-signing {
-    sign publishing.publications.maven
+jreleaser {
+    signing {
+        active = 'ALWAYS'
+        armored = true
+        mode = 'FILE'
+        publicKey = 'sonatype_public.gpg'
+        secretKey = 'sonatype_secring.gpg'
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+        }
+    }
 }
