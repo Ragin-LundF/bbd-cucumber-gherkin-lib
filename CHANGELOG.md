@@ -18,7 +18,7 @@ JUnit Platform), updates Gradle wrapper and scripts, and adjusts a test datasour
 | **Project/version properties**<br>`gradle.properties`                                                                                   | Version 2.25.0 → 2.26.0; Kotlin 2.0.21 → 2.2.10; Cucumber 7.23.0 → 7.27.0; Testcontainers 1.21.2 → 1.21.3; Jackson 2.19.1 → 2.19.2.                          |
 | **Test resource adjustment**<br>`src/test/resources/application.yml`                                                                    | Updated Testcontainers PostgreSQL image tag from 16.6 to 17 for cucumberTest datasource.                                                                     |
 
-If you have trouble with Detekt, you can add the following to your `build.gradle`:
+If you have trouble with Detekt and Kotlin 2.2.10, you can add the following to your `build.gradle`:
 
 ```groovy
 configurations.matching { it.name == "detekt" }.configureEach {
