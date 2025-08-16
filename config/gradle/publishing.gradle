@@ -68,9 +68,9 @@ publishing {
 jreleaser {
     signing {
         active = 'ALWAYS'
+        verify = false
         armored = true
         mode = 'FILE'
-        publicKey = 'sonatype_public.gpg'
         secretKey = 'sonatype_secring.gpg'
     }
     deploy {
