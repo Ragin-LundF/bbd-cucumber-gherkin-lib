@@ -1,3 +1,13 @@
+# Release 2.28.0
+
+## Changes
+
+| Cohort / File(s)                                                                                                                        | Summary of Changes                                          |
+|-----------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|
+| **Build plugin and Detekt alignment**<br>`build.gradle`                                                                                 | Spring Boot plugin 3.5.4 → 3.5.5.                           |
+| **Dependency versions and BOM**<br>`dependencies.gradle`                                                                                | Bumped io.github.oshai:kotlin-logging-jvm 7.0.12 -> 7.0.13. |
+| **Project/version properties**<br>`gradle.properties`                                                                                   | Version 2.27.0 → 2.28.0; Cucumber 7.27.0 → 7.27.2.          |
+
 # Release 2.27.0
 
 ## Summary
@@ -31,6 +41,7 @@ configurations.matching { it.name == "detekt" }.configureEach {
 ```
 
 # # Release 2.26.0
+
 n/a
 -> Maven Central Changes
 
