@@ -1,3 +1,15 @@
+# Release 2.28.0
+
+## Summary
+
+Release 2.28.0 provides a minor update to Cucumber-JVM from version 7.27.0 to 7.27.2, incorporating bug fixes and improvements in the Cucumber testing framework.
+
+## Changes
+
+| Cohort / File(s)                                                                                                                        | Summary of Changes                                                                                                                                           |
+|-----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Dependency versions**<br>`gradle.properties`                                                                                         | Updated Cucumber from 7.27.0 → 7.27.2 for latest bug fixes and improvements.                                                                               |
+
 # Release 2.27.0
 
 ## Summary
