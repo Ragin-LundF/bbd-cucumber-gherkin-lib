@@ -92,18 +92,18 @@ object DateUtils {
             is String -> {
                 // Parse string with date to ensure that it is a valid date
                 // first, check, that it not contains sth. like "null"
-                if ("null".equals(dateObject.toString(), ignoreCase = true)) {
+                if ("null".equals(dateObject, ignoreCase = true)) {
                     return null
                 }
 
                 // check known date formats if one fits to the object
                 for (formatter in createDateFormatters(bddDateTimeFormats = bddDateTimeFormats)) {
                     log.debug { "Try to parse $dateObject with the format $formatter" }
-                    localDateTime = parseDate(date = dateObject.toString(), formatter = formatter)
+                    localDateTime = parseDate(date = dateObject, formatter = formatter)
 
                     // if parsing date was null, parse String as dateTime
                     if (null == localDateTime) {
-                        localDateTime = parseDateTime(dateTime = dateObject.toString(), formatter = formatter)
+                        localDateTime = parseDateTime(dateTime = dateObject, formatter = formatter)
                     }
 
                     // if it is not null the String was parsed and is valid!
@@ -114,7 +114,11 @@ object DateUtils {
 
                 // seems not to be a valid date
                 if (null == localDateTime) {
-                    throw DateTimeParseException("No parser for $dateObject", dateObject.toString(), 0)
+                    throw DateTimeParseException(
+                        "No parser for $dateObject",
+                        dateObject,
+                        0
+                    )
                 }
             }
         }

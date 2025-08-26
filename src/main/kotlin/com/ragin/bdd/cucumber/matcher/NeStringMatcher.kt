@@ -26,12 +26,15 @@ class NeStringMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
 
     override fun describeMismatch(item: Any, description: Description) {
         description
-                .appendText("The value was [")
-                .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
-                .appendText("].")
-                .appendText(" JSON Value was [")
-                .appendValue(item)
-                .appendText("].")
+            .appendText("Parameter was [")
+            .appendValue(parameter)
+            .appendText("].")
+            .appendText("BDD Context value was [")
+            .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
+            .appendText("].")
+            .appendText(" JSON Value was [")
+            .appendValue(item)
+            .appendText("].")
     }
 
     override fun setParameter(parameter: String) {
