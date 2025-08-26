@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.matcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 /**
  * Matcher for valid date.
@@ -12,13 +13,12 @@ import org.springframework.stereotype.Component
 @Component
 class UUIDMatcher : BaseMatcher<Any>() {
     override fun matches(item: Any): Boolean {
-        if (item is String) {
-            val actualString = item.toString()
-            return actualString.matches(
-                "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".toRegex()
-            )
-        }
-        return false
+        return runCatching {
+            UUID.fromString(item.toString())
+        }.fold(
+            onSuccess = { true },
+            onFailure = { false }
+        )
     }
 
     override fun describeMismatch(item: Any, description: Description) {
