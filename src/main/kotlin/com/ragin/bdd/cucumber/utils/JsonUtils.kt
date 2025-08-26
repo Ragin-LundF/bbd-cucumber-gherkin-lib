@@ -77,7 +77,9 @@ class JsonUtils(
     private fun createJsonAssertConfiguration(): Configuration {
         // base configuration
         var configuration = JsonAssert.withTolerance(0.0)
-            .`when`(Option.TREATING_NULL_AS_ABSENT)
+            .`when`(
+                Option.TREATING_NULL_AS_ABSENT
+            )
             .withMatcher(
                 "isValidDate", ValidDateMatcher(
                     dateTimeFormatCollection = bddCucumberDateTimeFormatter

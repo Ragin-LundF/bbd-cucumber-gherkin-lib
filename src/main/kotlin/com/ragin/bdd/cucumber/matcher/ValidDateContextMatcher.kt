@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.matcher
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
 import com.ragin.bdd.cucumber.utils.DateUtils
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
@@ -26,6 +27,8 @@ class ValidDateContextMatcher(
             dateObject = actual,
             bddDateTimeFormats = dateTimeFormatCollection
         )
+
+        log.info { "Compare actual '$actual' with parameter 'parameter' as '$parameterFromContext'" }
         if (jsonDate != null) {
             return jsonDate.toLocalDate()
                 .format(DateTimeFormatter.ISO_LOCAL_DATE) == parameterFromContext
@@ -39,15 +42,22 @@ class ValidDateContextMatcher(
 
     override fun describeMismatch(item: Any, description: Description) {
         description
-                .appendText("BDD Context value was [")
-                .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
-                .appendText("].")
-                .appendText(" JSON Value was [")
-                .appendValue(item)
-                .appendText("].")
+            .appendText("Parameter was [")
+            .appendValue(parameter)
+            .appendText("].")
+            .appendText("BDD Context value was [")
+            .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
+            .appendText("].")
+            .appendText(" JSON Value was [")
+            .appendValue(item)
+            .appendText("].")
     }
 
     override fun setParameter(parameter: String) {
         this.parameter = parameter
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger {}
     }
 }
