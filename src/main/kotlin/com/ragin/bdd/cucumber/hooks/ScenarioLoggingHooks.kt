@@ -25,12 +25,12 @@ class ScenarioLoggingHooks {
             if (latestResponse != null) {
                 log.error {
                     "Scenario FAIL: Exiting ${scenario.id}" +
-                            "%nResponse status:${latestResponse.statusCode.value()}" +
-                            "%nResponse body:%n${latestResponse.body}" +
-                            "%n----------------%n"
+                            "\nResponse status:${latestResponse.statusCode.value()}" +
+                            "\nResponse body:\n${latestResponse.body}" +
+                            "\n----------------\n"
                 }
             } else {
-                log.error { "Scenario FAIL: Exiting ${scenario.id}%n----------------%n" }
+                log.error { "Scenario FAIL: Exiting ${scenario.id}\n----------------\n" }
             }
         }
     }
