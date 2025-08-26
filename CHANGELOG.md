@@ -1,12 +1,21 @@
+# Release 2.29.0
+
+## Changes
+
+| Cohort / File(s) | Summary of Changes                                |
+|------------------|---------------------------------------------------|
+| **Matcher**      | Added some more logging of context and parameter. |
+
+
 # Release 2.28.0
 
 ## Changes
 
-| Cohort / File(s)                                                                                                                        | Summary of Changes                                          |
-|-----------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|
-| **Build plugin and Detekt alignment**<br>`build.gradle`                                                                                 | Spring Boot plugin 3.5.4 → 3.5.5.                           |
-| **Dependency versions and BOM**<br>`dependencies.gradle`                                                                                | Bumped io.github.oshai:kotlin-logging-jvm 7.0.12 -> 7.0.13. |
-| **Project/version properties**<br>`gradle.properties`                                                                                   | Version 2.27.0 → 2.28.0; Cucumber 7.27.0 → 7.27.2.          |
+| Cohort / File(s)                                         | Summary of Changes                                          |
+|----------------------------------------------------------|-------------------------------------------------------------|
+| **Build plugin and Detekt alignment**<br>`build.gradle`  | Spring Boot plugin 3.5.4 → 3.5.5.                           |
+| **Dependency versions and BOM**<br>`dependencies.gradle` | Bumped io.github.oshai:kotlin-logging-jvm 7.0.12 -> 7.0.13. |
+| **Project/version properties**<br>`gradle.properties`    | Version 2.27.0 → 2.28.0; Cucumber 7.27.0 → 7.27.2.          |
 
 # Release 2.27.0
 

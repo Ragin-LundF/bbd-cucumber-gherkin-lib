@@ -27,6 +27,9 @@ class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
 
     override fun describeMismatch(item: Any, description: Description) {
         description
+                .appendText("Parameter was [")
+                .appendValue(parameter)
+                .appendText("].")
                 .appendText("BDD Context value was [")
                 .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
                 .appendText("].")

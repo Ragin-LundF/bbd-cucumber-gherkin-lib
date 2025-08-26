@@ -1,8 +1,10 @@
 package com.ragin.bdd.cucumber.matcher
 
+import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.springframework.stereotype.Component
+import kotlin.collections.get
 
 /**
  * Matcher for valid IBAN.
@@ -23,14 +25,20 @@ class IBANMatcher : BaseMatcher<String?>(), BddCucumberJsonMatcher {
     override fun matches(actual: Any): Boolean {
 
         if (actual is String) {
-            val actualString = actual.toString()
-            return actualString.matches(IBAN_REGEX)
+            return actual.matches(IBAN_REGEX)
         }
         return false
     }
 
     override fun describeTo(description: Description) {
         description.appendText("IBAN matching")
+    }
+
+    override fun describeMismatch(item: Any, description: Description) {
+        description
+            .appendText("JSON Value was [")
+            .appendValue(item)
+            .appendText("].")
     }
 
     companion object {
