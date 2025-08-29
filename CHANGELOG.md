@@ -1,3 +1,12 @@
+# Release 2.30.0
+
+## Changes
+
+| Cohort / File(s) | Summary of Changes                             |
+|------------------|------------------------------------------------|
+| **Bearer Token** | The default bearer token was not set properly. |
+
+
 # Release 2.29.0
 
 ## Changes

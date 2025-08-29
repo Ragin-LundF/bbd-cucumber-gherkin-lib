@@ -24,7 +24,11 @@ open class BaseCucumberCore(
         if (bddProperties.authorization?.bearerToken?.default.isNullOrEmpty().not()) {
             ScenarioStateContext.defaultBearerToken = bddProperties.authorization.bearerToken.default
         }
-        bearerToken = bearerToken ?: defaultBearerToken
+        bearerToken = if (bearerToken.isNullOrEmpty()) {
+            defaultBearerToken
+        } else {
+            bearerToken
+        }
     }
 
     fun getFilePath(path: String): String {
