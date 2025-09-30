@@ -1,7 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -15,12 +14,11 @@ class RestErrors {
     }
 
     private fun createErrorMessage(): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("error", "CONTAINS_AN_ERROR")
-            jsonObject.put("message", "Something went wrong.")
-        } catch (_: JSONException) {
-        }
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "error" to "CONTAINS_AN_ERROR",
+                "message" to "Something went wrong."
+            )
+        )
     }
 }

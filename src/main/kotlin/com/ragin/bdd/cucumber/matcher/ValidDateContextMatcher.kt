@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter
 @Component
 class ValidDateContextMatcher(
     private val dateTimeFormatCollection: Collection<BddCucumberDateTimeFormat>
-) : BaseMatcher<Any>(), ParametrizedMatcher {
+) : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJsonMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {
@@ -55,6 +55,14 @@ class ValidDateContextMatcher(
 
     override fun setParameter(parameter: String) {
         this.parameter = parameter
+    }
+
+    override fun matcherName(): String {
+        return "isDateOfContext"
+    }
+
+    override fun matcherClass(): Class<out BaseMatcher<*>> {
+        return this::class.java
     }
 
     companion object {

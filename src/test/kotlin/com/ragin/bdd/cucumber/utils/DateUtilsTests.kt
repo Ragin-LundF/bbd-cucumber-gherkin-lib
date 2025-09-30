@@ -2,14 +2,13 @@ package com.ragin.bdd.cucumber.utils
 
 import com.ragin.bdd.cucumber.utils.DateUtils.isValidMandatoryDate
 import com.ragin.bdd.cucumbertests.hooks.CustomDateTimeFormatter
-import junit.framework.TestCase
-import org.junit.Test
-import java.util.stream.Stream
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-internal class DateUtilsTest {
+internal class DateUtilsTests {
     @Test
-    internal fun testIsValidMandatoryDate() {
-        Stream.of(
+    internal fun `Mandatory date formats should be valid`() {
+        listOf(
             "2020.11.11",
             "2020-11-11",
             "2020-11-11 17:53",
@@ -37,8 +36,8 @@ internal class DateUtilsTest {
             "2020-11-11T17:53:37.1234678",
             "2020-11-11T17:53:37.12346789"
         ).forEach { sample: String ->
-            TestCase.assertTrue(
-                isValidMandatoryDate(
+            assertTrue(
+                actual = isValidMandatoryDate(
                     dateObject = sample,
                     bddDateTimeFormats = listOf(CustomDateTimeFormatter())
                 )

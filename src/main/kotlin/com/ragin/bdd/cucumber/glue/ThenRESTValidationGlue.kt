@@ -189,10 +189,10 @@ class ThenRESTValidationGlue(
      */
     @Then("I wait for {long} ms")
     fun waitForSeconds(milliseconds: Long) {
-        try {
+        runCatching {
             Thread.sleep(milliseconds)
-        } catch (ie: InterruptedException) {
-            log.error(throwable = ie) { "Wait has detected a problem" }
+        }.onFailure { error ->
+            log.error(throwable = error) { "Wait has detected a problem" }
         }
     }
 

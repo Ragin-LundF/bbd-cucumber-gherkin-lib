@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumbertests.hooks
 
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
-import com.ragin.bdd.cucumber.utils.JsonUtils
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
@@ -18,10 +18,8 @@ class ParameterizedCustomMultiParameterMatcher : BaseMatcher<Any>(), BddCucumber
     }
 
     override fun setParameter(parameter: String) {
-        try {
-            val objectMapper = JsonUtils.mapper
-            this.jsonParameter = objectMapper.readValue(parameter, JsonParameter::class.java)
-        } catch (_: Exception) {
+        runCatching {
+            this.jsonParameter = JacksonUtils.mapper.readValue(parameter, JsonParameter::class.java)
         }
     }
 

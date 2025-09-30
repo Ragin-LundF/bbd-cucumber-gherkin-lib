@@ -1,8 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.apache.commons.lang3.StringUtils
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,45 +15,57 @@ class Polling {
     @GetMapping("/api/v1/polling")
     fun doPolling(): ResponseEntity<String> {
         if (RUN_COUNTER_POLLING.incrementAndGet() < 3) {
-            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(createMessage("NOT_READY"))
+            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(
+                createMessage(message = "NOT_READY")
+            )
         }
         RUN_COUNTER_POLLING.set(0)
-        return ResponseEntity.ok().body(createMessage("SUCCESSFUL"))
+        return ResponseEntity.ok().body(
+            createMessage(message = "SUCCESSFUL")
+        )
     }
 
     @GetMapping("/api/v1/pollingAuth")
     fun pollingAuthorized(@RequestHeader("Authorization") authToken: String): ResponseEntity<String> {
-        if (StringUtils.isEmpty(authToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createMessage("UNAUTHORIZED"))
+        if (authToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                createMessage(message = "UNAUTHORIZED")
+            )
         }
 
         if (RUN_COUNTER_POLLING.incrementAndGet() < 3) {
-            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(createMessage("NOT_READY"))
+            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(
+                createMessage(message = "NOT_READY")
+            )
         }
         RUN_COUNTER_POLLING.set(0)
-        return ResponseEntity.ok().body(createMessage("SUCCESSFUL"))
+        return ResponseEntity.ok().body(
+            createMessage(message = "SUCCESSFUL")
+        )
     }
 
     @PostMapping("/api/v1/polling")
     fun pollingPost(@RequestBody body: PollingRequest): ResponseEntity<String> {
         if (RUN_COUNTER_POLLING.incrementAndGet() < 3) {
-            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(createMessage("NOT_READY"))
+            return ResponseEntity.status(HttpStatus.TOO_EARLY).body(
+                createMessage(message = "NOT_READY")
+            )
         }
         RUN_COUNTER_POLLING.set(0)
         if (body.postExample.isNullOrEmpty()) {
-            return ResponseEntity.badRequest().body(createMessage("INVALID PARAMETER"))
+            return ResponseEntity.badRequest().body(
+                createMessage(message = "INVALID PARAMETER")
+            )
         }
-        return ResponseEntity.ok().body(createMessage("SUCCESSFUL"))
+        return ResponseEntity.ok().body(
+            createMessage(message = "SUCCESSFUL")
+        )
     }
 
     private fun createMessage(message: String): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("message", message)
-        } catch (ignored: JSONException) {
-        }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf("message" to message)
+        )
     }
 
     data class PollingRequest(

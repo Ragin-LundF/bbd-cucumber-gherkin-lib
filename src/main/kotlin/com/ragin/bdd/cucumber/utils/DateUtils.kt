@@ -133,12 +133,11 @@ object DateUtils {
      * @return              LocalDateTime if valid, null if not parseable
      */
     private fun parseDate(date: String, formatter: DateTimeFormatter): LocalDateTime? {
-        return try {
+        return runCatching {
             LocalDateTime.of(LocalDate.parse(date, formatter), LocalTime.MIN)
-        } catch (_: DateTimeParseException) {
+        }.onFailure {
             log.debug { "Failed to parse as date $date with the format $formatter" }
-            null
-        }
+        }.getOrNull()
     }
 
     /**
@@ -149,12 +148,11 @@ object DateUtils {
      * @return              LocalDateTime if valid, null if not parseable
      */
     private fun parseDateTime(dateTime: String, formatter: DateTimeFormatter): LocalDateTime? {
-        return try {
+        return runCatching {
             LocalDateTime.parse(dateTime, formatter)
-        } catch (_: DateTimeParseException) {
+        }.onFailure {
             log.debug { "Failed to parse as dateTime $dateTime with the format $formatter" }
-            null
-        }
+        }.getOrNull()
     }
 
     /**

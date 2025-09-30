@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.IDatabaseExecutorService
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
@@ -23,7 +24,7 @@ open class DatabaseGlue(
     jsonUtils = jsonUtils,
     bddProperties = bddProperties
 ) {
-    private val mapper = JsonUtils.mapper
+    private val mapper = JacksonUtils.mapper
 
     /**
      * Initialize the database with a file.

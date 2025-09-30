@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class ValidDateMatcher(
     private val dateTimeFormatCollection: Collection<BddCucumberDateTimeFormat>
-) : BaseMatcher<Any>() {
+) : BaseMatcher<Any>(), BddCucumberJsonMatcher {
     override fun matches(item: Any): Boolean {
         return DateUtils.isValidMandatoryDate(
             dateObject = item,
@@ -28,5 +28,13 @@ class ValidDateMatcher(
 
     override fun describeTo(description: Description) {
         // nothing to describe here
+    }
+
+    override fun matcherName(): String {
+        return "isValidDate"
+    }
+
+    override fun matcherClass(): Class<out BaseMatcher<*>> {
+        return this::class.java
     }
 }

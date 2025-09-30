@@ -1,8 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,16 +17,12 @@ class BodyManipulation {
     }
 
     private fun createManipulatedBodyResponse(body: StubBody): String {
-        val jsonObject = JSONObject()
-        try {
-            val newIdsArray = JSONArray()
-            body.ids.forEach { o: String? -> newIdsArray.put(o) }
-
-            jsonObject.put("newName", body.name)
-            jsonObject.put("newIds", newIdsArray)
-        } catch (_: JSONException) {
-        }
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "newName" to body.name,
+                "newIds" to body.ids
+            )
+        )
     }
 
     data class StubBody(

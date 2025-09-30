@@ -1,7 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,15 +15,11 @@ class IBANMatcherCheck {
     }
 
     private fun createResponse(): String {
-        val jsonObject = JSONObject()
+        val bodyMap = mutableMapOf<String, Any>()
         ibanList.forEach { iban: String ->
-            try {
-                jsonObject.put(iban.substring(0, 2), iban)
-            } catch (_: JSONException) {
-            }
+            bodyMap[iban.take(n = 2)] = iban
         }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(bodyMap)
     }
 
     companion object {
