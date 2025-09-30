@@ -1,4 +1,4 @@
-package com.ragin.bdd.cucumber
+package com.ragin.bdd.architecture
 
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.container.KoScope

@@ -1,28 +1,29 @@
-package com.ragin.bdd.cucumber.matcher
+package com.ragin.bdd.architecture.glue
 
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.container.KoScope
 import com.lemonappdev.konsist.api.verify.assertTrue
+import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import kotlin.test.Test
 
-internal class MatcherKonsistTests {
+internal class GlueKonsistTests {
     @Test
-    internal fun `Konsist Matcher - Check consistence of file names`() {
+    internal fun `Konsist Glue - Check consistence of file names`() {
         konsistDirectoryScope()
             .classes()
             .assertTrue {
-                it.hasNameEndingWith(suffix = "Matcher")
+                it.hasNameEndingWith(suffix = "Glue")
             }
     }
 
     @Test
-    internal fun `Konsist Matcher - Code must implement from BddCucumberJsonMatcher`() {
+    internal fun `Konsist Glue - Code must extend from BaseCucumberCore or BaseRESTExecutionGlue`() {
         konsistDirectoryScope()
             .classes()
             .assertTrue {
                 it.hasParentOf(
                     names = listOf(
-                        BddCucumberJsonMatcher::class
+                        BaseCucumberCore::class
                     ),
                     indirectParents = true
                 )
@@ -32,7 +33,7 @@ internal class MatcherKonsistTests {
     private fun konsistDirectoryScope(): KoScope {
         return Konsist.scopeFromDirectories(
             paths = listOf(
-                "src/main/kotlin/com/ragin/bdd/cucumber/matcher"
+                "src/main/kotlin/com/ragin/bdd/cucumber/glue"
             )
         )
     }
