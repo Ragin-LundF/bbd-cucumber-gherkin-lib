@@ -7,7 +7,7 @@ import kotlin.test.Test
 
 internal class HooksKonsistTests {
     @Test
-    internal fun `Konsist Hooks - Check consistence of file names`() {
+    internal fun `Konsist Hooks - Check consistency of file names`() {
         konsistDirectoryScope()
             .classes()
             .assertTrue {

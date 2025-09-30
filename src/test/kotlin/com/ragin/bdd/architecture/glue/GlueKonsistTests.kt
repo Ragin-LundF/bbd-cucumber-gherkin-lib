@@ -8,7 +8,7 @@ import kotlin.test.Test
 
 internal class GlueKonsistTests {
     @Test
-    internal fun `Konsist Glue - Check consistence of file names`() {
+    internal fun `Konsist Glue - Check consistency of file names`() {
         konsistDirectoryScope()
             .classes()
             .assertTrue {
@@ -17,7 +17,7 @@ internal class GlueKonsistTests {
     }
 
     @Test
-    internal fun `Konsist Glue - Code must extend from BaseCucumberCore or BaseRESTExecutionGlue`() {
+    internal fun `Konsist Glue - Code must extend from BaseCucumberCore`() {
         konsistDirectoryScope()
             .classes()
             .assertTrue {

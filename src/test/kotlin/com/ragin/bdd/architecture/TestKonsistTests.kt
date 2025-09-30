@@ -40,7 +40,7 @@ internal class TestKonsistTests {
     }
 
     @Test
-    fun `Konsist Tests - Test classes should have all members private besides tests`() {
+    internal fun `Konsist Tests - Test classes should have all members private besides tests`() {
         konsistDirectoryScope()
             .classes()
             .declarations()

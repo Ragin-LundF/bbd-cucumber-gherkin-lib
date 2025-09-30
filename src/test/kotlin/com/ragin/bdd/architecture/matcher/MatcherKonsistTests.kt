@@ -8,7 +8,7 @@ import kotlin.test.Test
 
 internal class MatcherKonsistTests {
     @Test
-    internal fun `Konsist Matcher - Check consistence of file names`() {
+    internal fun `Konsist Matcher - Check consistency of file names`() {
         konsistDirectoryScope()
             .classes()
             .assertTrue {

@@ -1,4 +1,4 @@
-// exclude tests, because they are only examples
+// exclude CucumberRunner tests from default test task
 test {
     exclude '**/*CucumberRunner*'
     useJUnitPlatform()

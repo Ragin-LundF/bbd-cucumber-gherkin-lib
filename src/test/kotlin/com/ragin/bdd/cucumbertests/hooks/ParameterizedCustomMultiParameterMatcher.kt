@@ -2,6 +2,7 @@ package com.ragin.bdd.cucumbertests.hooks
 
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
 import com.ragin.bdd.cucumber.utils.JacksonUtils
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
@@ -20,6 +21,8 @@ class ParameterizedCustomMultiParameterMatcher : BaseMatcher<Any>(), BddCucumber
     override fun setParameter(parameter: String) {
         runCatching {
             this.jsonParameter = JacksonUtils.mapper.readValue(parameter, JsonParameter::class.java)
+        }.onFailure {
+            log.error { "Parameter not parsable: $parameter" }
         }
     }
 
@@ -45,5 +48,9 @@ class ParameterizedCustomMultiParameterMatcher : BaseMatcher<Any>(), BddCucumber
     internal class JsonParameter {
         var firstArgument: String? = null
         var secondArgument: String? = null
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger {}
     }
 }
