@@ -1,3 +1,78 @@
+# Release 2.31.0
+
+Version bumps in build/dependency configs; test configuration tweaks for Cucumber patterns; dependency reshuffle from
+Spring Boot starters to individual modules; introduction of JacksonUtils and migration from org.json; functional
+error-handling refactors using runCatching across core utils/glue; matcher classes now implement BddCucumberJsonMatcher;
+new Konsist architectural tests; minor message fix.
+
+## Changes
+
+| Cohort / File(s)                                                                                                                                                                                                                                                            | Summary                                                                                                                                                                                                                                                                                                                                                           |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Build and plugins**<br>`build.gradle`, `gradle.properties`                                                                                                                                                                                                                | Updated plugin versions (JReleaser, SonarQube, Spring Boot, Kover). Bumped project to 2.31.0 and Cucumber to 7.29.0.                                                                                                                                                                                                                                              |
+| **Dependencies restructuring**<br>`dependencies.gradle`                                                                                                                                                                                                                     | Replaced Spring Boot starters with granular Spring modules; added Jackson Blackbird, json-path; bumped commons-lang3, snakeyaml, PostgreSQL; added test deps (Kotlin test, Konsist, Spring Boot starters for tests).                                                                                                                                              |
+| **Test config**<br>`config/gradle/tests.gradle`                                                                                                                                                                                                                             | Narrowed test exclusions to only `**/*CucumberRunner*`; aligned Cucumber task includes to `**/*CucumberRunner*`.                                                                                                                                                                                                                                                  |
+| **Core error-handling refactors**<br>`.../core/DatabaseExecutorService.kt`, `.../glue/BaseRESTExecutionGlue.kt`, `.../glue/ThenRESTValidationGlue.kt`, `.../glue/WhenRESTExecutionGlue.kt`, `.../utils/DateUtils.kt`                                                        | Replaced try/catch/finally with runCatching and onFailure/also across DB init, REST execution, sleeps, polling logic, and date parsing. DatabaseExecutorService now captures exceptions without rethrowing while always closing connections.                                                                                                                      |
+| **JSON utilities and glue**<br>`.../utils/JacksonUtils.kt`, `.../utils/JsonUtils.kt`, `.../glue/DatabaseGlue.kt`                                                                                                                                                            | Added JacksonUtils with an ObjectMapper (Kotlin, JavaTime, Blackbird modules). JsonUtils refactored matcher registration and error handling; DatabaseGlue switched to JacksonUtils.mapper.                                                                                                                                                                        |
+| **Matchers API conformance**<br>`.../matcher/NeStringMatcher.kt`, `.../matcher/ScenarioStateEqContextMatcher.kt`, `.../matcher/ScenarioStateNeContextMatcher.kt`, `.../matcher/UUIDMatcher.kt`, `.../matcher/ValidDateContextMatcher.kt`, `.../matcher/ValidDateMatcher.kt` | Matchers now implement BddCucumberJsonMatcher and add matcherName()/matcherClass() overrides; matching logic unchanged.                                                                                                                                                                                                                                           |
+| **Minor message fix**<br>`.../core/ScenarioStateContext.kt`                                                                                                                                                                                                                 | Corrected error message typo (“scendario” → “scenario”).                                                                                                                                                                                                                                                                                                          |
+| **Konsist architectural tests**<br>`src/test/kotlin/com/ragin/bdd/architecture/*`                                                                                                                                                                                           | Added Konsist-based tests for naming and inheritance conventions in tests, glue, hooks, and matchers.                                                                                                                                                                                                                                                             |
+| **Unit test modernization**<br>`.../utils/DateUtilsTests.kt`                                                                                                                                                                                                                | Migrated to Kotlin test API; renamed and reformatted assertions.                                                                                                                                                                                                                                                                                                  |
+| **Test stubs: org.json → Jackson**<br>`src/test/kotlin/com/ragin/bdd/cucumbertests/library/test/*`                                                                                                                                                                          | Replaced org.json construction with JacksonUtils.mapper serialization across Authentication, BodyManipulation, CustomDateTime, CustomHeader, FieldValidation, FormData, HeaderCheck, IBANMatcherCheck, JsonTolerance, PathManipulation, Polling, RestErrors, UserSelection. Also updated ParameterizedCustomMultiParameterMatcher to use Jackson and runCatching. |
+
+## Sequence Diagram(s)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Step as Step Definition
+  participant Glue as BaseRESTExecutionGlue
+  participant Client as HTTP Client
+  participant State as ScenarioState
+
+  Step->>Glue: executeRequest(...)
+  rect rgb(240,248,255)
+    note right of Glue: runCatching { invoke HTTP }
+    Glue->>Client: send(request)
+    Client-->>Glue: response or HttpServerErrorException
+  end
+  alt Success
+    Glue->>State: update latestResponse (status/body)
+    State-->>Step: OK
+  else HttpServerErrorException
+    note right of Glue: onFailure branch
+    Glue->>State: update latestResponse from error body/status
+    State-->>Step: handled error response
+  else Other exception
+    note right of Glue: onFailure (no special handling)
+    Glue-->>Step: propagate/handle upstream as implemented
+  end
+```
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant App as App Startup
+  participant DB as DatabaseExecutorService
+  participant Conn as DB Connection
+  participant LB as Liquibase
+
+  App->>DB: initDatabase(...)
+  rect rgb(245,245,245)
+    note right of DB: runCatching { update }
+    DB->>Conn: getConnection()
+    DB->>LB: new Liquibase(...).update(...)
+    LB-->>DB: success or exception
+  end
+  DB-->>Conn: close() (always via also)
+  alt Success
+    DB-->>App: return (no error)
+  else Failure
+    note right of DB: exception captured, not rethrown
+    DB-->>App: return without error propagation
+  end
+```
+
 # Release 2.30.0
 
 ## Changes
@@ -6,7 +81,6 @@
 |------------------|------------------------------------------------|
 | **Bearer Token** | The default bearer token was not set properly. |
 
-
 # Release 2.29.0
 
 ## Changes
@@ -14,7 +88,6 @@
 | Cohort / File(s) | Summary of Changes                                |
 |------------------|---------------------------------------------------|
 | **Matcher**      | Added some more logging of context and parameter. |
-
 
 # Release 2.28.0
 

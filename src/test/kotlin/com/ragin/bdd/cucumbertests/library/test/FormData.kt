@@ -1,9 +1,8 @@
 package com.ragin.bdd.cucumbertests.library.test
 
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import jakarta.validation.Valid
 import org.apache.commons.lang3.StringUtils
-import org.json.JSONException
-import org.json.JSONObject
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestHeader
@@ -52,13 +51,11 @@ class FormData {
     }
 
     private fun createStatus(fileContext: String, identifier: String): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("fileContext", fileContext)
-            jsonObject.put("identifier", identifier)
-        } catch (_: JSONException) {
-        }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "fileContext" to fileContext,
+                "identifier" to identifier,
+            )
+        )
     }
 }

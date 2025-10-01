@@ -1,7 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,12 +16,10 @@ class HeaderCheck {
     }
 
     private fun createResponse(): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("status", "ok")
-        } catch (_: JSONException) {
-        }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "status" to "ok"
+            )
+        )
     }
 }

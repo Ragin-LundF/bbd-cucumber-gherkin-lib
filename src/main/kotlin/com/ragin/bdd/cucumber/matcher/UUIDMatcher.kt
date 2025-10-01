@@ -11,7 +11,7 @@ import java.util.UUID
  * ${json-unit.matches:isValidUUID}
  */
 @Component
-class UUIDMatcher : BaseMatcher<Any>() {
+class UUIDMatcher : BaseMatcher<Any>(), BddCucumberJsonMatcher {
     override fun matches(item: Any): Boolean {
         return runCatching {
             UUID.fromString(item.toString())
@@ -27,5 +27,13 @@ class UUIDMatcher : BaseMatcher<Any>() {
 
     override fun describeTo(description: Description) {
         // nothing to describe here
+    }
+
+    override fun matcherName(): String {
+        return "isValidUUID"
+    }
+
+    override fun matcherClass(): Class<out BaseMatcher<*>> {
+        return this::class.java
     }
 }

@@ -1,6 +1,6 @@
-// exclude tests, because they are only examples
+// exclude CucumberRunner tests from default test task
 test {
-    exclude '**'
+    exclude '**/*CucumberRunner*'
     useJUnitPlatform()
 }
 
@@ -14,7 +14,7 @@ tasks.register('cucumber', Test) {
     useJUnitPlatform()
     group = 'verification'
     exclude '**/*Test*'
-    include '**/*CucumberRun*'
+    include '**/*CucumberRunner*'
     testClassesDirs = testing.suites.test.sources.output.classesDirs
     classpath = testing.suites.test.sources.runtimeClasspath
 

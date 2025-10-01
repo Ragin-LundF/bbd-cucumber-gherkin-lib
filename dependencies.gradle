@@ -25,17 +25,22 @@ dependencies {
 
     api "org.apache.commons:commons-text:1.14.0"
     implementation "commons-io:commons-io:2.20.0"
-    implementation "org.apache.commons:commons-lang3:3.18.0"
+    implementation "org.apache.commons:commons-lang3:3.19.0"
 
-    implementation "org.yaml:snakeyaml:2.4"
+    implementation "org.yaml:snakeyaml:2.5"
     implementation "org.liquibase:liquibase-core:4.33.0"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-test"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework:spring-web"
+    implementation "org.springframework:spring-jdbc"
+    implementation "org.springframework:spring-tx"
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "org.springframework.boot:spring-boot-test"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    implementation "com.jayway.jsonpath:json-path:2.9.0"
 
     implementation "com.fasterxml.jackson.core:jackson-annotations:$version_jackson"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$version_jackson"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird:$version_jackson"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:$version_jackson"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$version_jackson"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$version_jackson"
@@ -43,10 +48,15 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    testImplementation "org.postgresql:postgresql:42.7.7"
+    testImplementation "org.postgresql:postgresql:42.7.8"
+    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    testImplementation "org.springframework.boot:spring-boot-starter-web"
+
     testImplementation "org.slf4j:slf4j-simple:2.0.17"
     testImplementation "org.testcontainers:testcontainers:$version_testcontainers"
     testImplementation "org.testcontainers:postgresql:$version_testcontainers"
     testImplementation "org.testcontainers:jdbc:$version_testcontainers"
     testImplementation "org.testcontainers:junit-jupiter:$version_testcontainers"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
+    testImplementation "com.lemonappdev:konsist:0.17.3"
 }

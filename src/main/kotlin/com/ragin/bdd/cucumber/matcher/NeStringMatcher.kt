@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
  * ${json-unit.matches:isNotEqualTo}MY_CONTEXT_VALUE
  */
 @Component
-class NeStringMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
+class NeStringMatcher : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJsonMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {
@@ -39,5 +39,13 @@ class NeStringMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
 
     override fun setParameter(parameter: String) {
         this.parameter = parameter
+    }
+
+    override fun matcherName(): String {
+        return "isNotEqualTo"
+    }
+
+    override fun matcherClass(): Class<out BaseMatcher<*>> {
+        return this::class.java
     }
 }

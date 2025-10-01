@@ -26,7 +26,7 @@ class DatabaseExecutorService(
     @Throws(Exception::class)
     override fun executeLiquibaseScript(liquibaseScript: String) {
         val connection = JdbcConnection(datasource.connection)
-        try {
+        runCatching {
             Liquibase(
                     liquibaseScript,
                     ClassLoaderResourceAccessor(),
@@ -38,7 +38,7 @@ class DatabaseExecutorService(
                         false
                 )
             }
-        } finally {
+        }.also {
             if (closeConnection) {
                 connection.close()
             }

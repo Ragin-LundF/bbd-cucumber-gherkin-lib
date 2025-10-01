@@ -189,7 +189,7 @@ abstract class BaseRESTExecutionGlue(
             // there was a body...replace with new entity with body
             httpEntity = HttpEntity(body, headers)
         }
-        try {
+        runCatching {
             val targetUrl = fullURLFor(path = path)
             scenario.log("Request:")
             scenario.log("========")
@@ -205,13 +205,16 @@ abstract class BaseRESTExecutionGlue(
                     String::class.java
                 )
             )
-        } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(
-                latestResponse = ResponseEntity(
-                    hsee.responseBodyAsString,
-                    hsee.statusCode
-                )
-            )
+        }.onFailure { error ->
+            when (error) {
+                is HttpServerErrorException ->
+                    setLatestResponse(
+                        latestResponse = ResponseEntity(
+                            error.responseBodyAsString,
+                            error.statusCode
+                        )
+                    )
+            }
         }
         logResponse(scenario = scenario)
     }
@@ -248,7 +251,7 @@ abstract class BaseRESTExecutionGlue(
         }
 
         val request = HttpEntity(formDataMap, headers)
-        try {
+        runCatching {
             val targetUrl = fullURLFor(path = path)
             log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
@@ -258,13 +261,16 @@ abstract class BaseRESTExecutionGlue(
                     String::class.java
                 )
             )
-        } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(
-                latestResponse = ResponseEntity(
-                    hsee.responseBodyAsString,
-                    hsee.statusCode
-                )
-            )
+        }.onFailure { error ->
+            when (error) {
+                is HttpServerErrorException ->
+                    setLatestResponse(
+                        latestResponse = ResponseEntity(
+                            error.responseBodyAsString,
+                            error.statusCode
+                        )
+                    )
+            }
         }
     }
 
@@ -296,7 +302,7 @@ abstract class BaseRESTExecutionGlue(
 
         // create HttpEntity
         val httpEntity = HttpEntity(map, headers)
-        try {
+        runCatching {
             val targetUrl = fullURLFor(path = path)
             scenario.log("Request:")
             scenario.log("========")
@@ -315,13 +321,16 @@ abstract class BaseRESTExecutionGlue(
                     String::class.java
                 )
             )
-        } catch (hsee: HttpServerErrorException) {
-            setLatestResponse(
-                latestResponse = ResponseEntity(
-                    hsee.responseBodyAsString,
-                    hsee.statusCode
-                )
-            )
+        }.onFailure { error ->
+            when (error) {
+                is HttpServerErrorException ->
+                    setLatestResponse(
+                        latestResponse = ResponseEntity(
+                            error.responseBodyAsString,
+                            error.statusCode
+                        )
+                    )
+            }
         }
         logResponse(scenario = scenario)
     }
