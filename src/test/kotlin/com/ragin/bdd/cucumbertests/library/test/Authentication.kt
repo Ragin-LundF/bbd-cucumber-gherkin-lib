@@ -1,8 +1,7 @@
 package com.ragin.bdd.cucumbertests.library.test
 
 import com.ragin.bdd.cucumber.config.BddProperties
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -99,24 +98,20 @@ class Authentication(
     }
 
     private fun createAuthorizedResponse(): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("status", "ok")
-        } catch (_: JSONException) {
-        }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "status" to "ok"
+            )
+        )
     }
 
     private fun createUnauthorizedResponse(): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("error", "unauthorized")
-            jsonObject.put("error_description", "Full authentication is required to access this resource")
-        } catch (_: JSONException) {
-        }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "error" to "unauthorized",
+                "error_description" to "Full authentication is required to access this resource"
+            )
+        )
     }
 
     companion object {

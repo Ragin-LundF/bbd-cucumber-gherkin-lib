@@ -64,7 +64,7 @@ object ScenarioStateContext {
 
     fun resolveFileEntry(key: String): ByteArray {
         val value = scenarioContextFileMap[key]
-        require(value != null) {"Entry $key not found in scendario file context"}
+        require(value != null) {"Entry $key not found in scenario file context"}
 
         return value
     }

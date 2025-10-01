@@ -557,12 +557,12 @@ class WhenRESTExecutionGlue(
                 scenario = scenarioState
             )
 
-            try {
+            runCatching {
                 evaluateBody(expectedBody = expectedBody)
                 assertThat(ScenarioStateContext.latestResponse!!.statusCode.value()).isEqualTo(expectedStatusCode)
                 repeatLoop = i
                 break
-            } catch (_: AssertionError) {
+            }.onFailure {
                 TimeUnit.SECONDS.sleep(ScenarioStateContext.polling.pollEverySeconds)
             }
         }

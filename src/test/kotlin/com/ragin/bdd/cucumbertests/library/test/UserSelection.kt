@@ -1,7 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,7 +17,12 @@ class UserSelection {
         @PathVariable("username") username: String?
     ): ResponseEntity<String> {
         if (token != null && username != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(createUserResponse(token, username))
+            return ResponseEntity.status(HttpStatus.OK).body(
+                createUserResponse(
+                    token = token,
+                    username = username
+                )
+            )
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}")
     }
@@ -27,12 +31,11 @@ class UserSelection {
         token: String,
         username: String
     ): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("username", username)
-            jsonObject.put("token", token)
-        } catch (_: JSONException) {
-        }
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "username" to username,
+                "token" to token
+            )
+        )
     }
 }

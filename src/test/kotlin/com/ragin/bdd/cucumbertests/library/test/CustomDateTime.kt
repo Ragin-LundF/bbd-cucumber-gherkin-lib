@@ -1,7 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -75,22 +74,18 @@ class CustomDateTime {
     }
 
     private fun createDateJson(date: String): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("date", date)
-        } catch (_: JSONException) {
-        }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "date" to date
+            )
+        )
     }
 
     private fun createCustomDateTime(): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("validDate", "2020.04.30")
-        } catch (_: JSONException) {
-        }
-
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "validDate" to "2020.04.30",
+            )
+        )
     }
 }

@@ -1,7 +1,6 @@
 package com.ragin.bdd.cucumbertests.library.test
 
-import org.json.JSONException
-import org.json.JSONObject
+import com.ragin.bdd.cucumber.utils.JacksonUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,22 +17,26 @@ class PathManipulation {
         @PathVariable("resourceId") resourceId: String,
         @PathVariable("subResourceId") subResourceId: String
     ): ResponseEntity<String> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(createDynamicPathResponse(resourceId, subResourceId))
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            createDynamicPathResponse(
+                resourceId = resourceId,
+                subResourceId = subResourceId
+            )
+        )
     }
 
     private fun createDynamicPathResponse(
         resourceId: String,
         subResourceId: String
     ): String {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("resourceId", resourceId)
-            jsonObject.put("subResourceId", subResourceId)
-            jsonObject.put("regexValue", UUID.randomUUID().toString())
-            jsonObject.put("ignorableValue", UUID.randomUUID().toString())
-            jsonObject.put("validDate", SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date()))
-        } catch (_: JSONException) {
-        }
-        return jsonObject.toString()
+        return JacksonUtils.mapper.writeValueAsString(
+            mapOf(
+                "resourceId" to resourceId,
+                "subResourceId" to subResourceId,
+                "regexValue" to UUID.randomUUID().toString(),
+                "ignorableValue" to UUID.randomUUID().toString(),
+                "validDate" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date())
+            )
+        )
     }
 }

@@ -1,13 +1,6 @@
 package com.ragin.bdd.cucumber.utils
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.jayway.jsonpath.JsonPath
-import com.jayway.jsonpath.PathNotFoundException
 import com.ragin.bdd.cucumber.BddLibConstants
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.getJsonPathOptions
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
@@ -26,7 +19,6 @@ import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matcher
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.stereotype.Component
 import java.util.Optional
 
@@ -45,14 +37,14 @@ class JsonUtils(
      * @param actualJSON   actual JSON as String
      */
     fun assertJsonEquals(expectedJSON: String?, actualJSON: String?) {
-        try {
+        runCatching {
             val configuration = createJsonAssertConfiguration()
             JsonAssert.assertJsonEquals(
                 expectedJSON,
                 actualJSON,
                 configuration
             )
-        } catch (error: AssertionError) {
+        }.onFailure { error ->
             val minimizedExpected = minimizeJSON(json = expectedJSON)
             val minimizedActual = minimizeJSON(json = actualJSON)
             log.error {
@@ -76,23 +68,23 @@ class JsonUtils(
      */
     private fun createJsonAssertConfiguration(): Configuration {
         // base configuration
+        val validDateTimeContextMatcher = ValidDateMatcher(
+            dateTimeFormatCollection = bddCucumberDateTimeFormatter
+        )
+        val validDateContextMatcher = ValidDateContextMatcher(
+            dateTimeFormatCollection = bddCucumberDateTimeFormatter
+        )
         var configuration = JsonAssert.withTolerance(0.0)
             .`when`(
                 Option.TREATING_NULL_AS_ABSENT
             )
-            .withMatcher(
-                "isValidDate", ValidDateMatcher(
-                    dateTimeFormatCollection = bddCucumberDateTimeFormatter
-                )
-            ).withMatcher(
-                "isDateOfContext", ValidDateContextMatcher(
-                    dateTimeFormatCollection = bddCucumberDateTimeFormatter
-                )
-            ).withMatcher("isValidUUID", UUIDMatcher())
-            .withMatcher("isValidIBAN", IBANMatcher())
-            .withMatcher("isNotEqualTo", NeStringMatcher())
-            .withMatcher("isEqualToScenarioContext", ScenarioStateEqContextMatcher())
-            .withMatcher("isNotEqualToScenarioContext", ScenarioStateNeContextMatcher())
+            .withMatcher(validDateContextMatcher.matcherName(), validDateContextMatcher)
+            .withMatcher(validDateTimeContextMatcher.matcherName(), validDateTimeContextMatcher)
+            .withMatcher(uuidMatcher.matcherName(), uuidMatcher)
+            .withMatcher(ibanMatcher.matcherName(), ibanMatcher)
+            .withMatcher(neStringMatcher.matcherName(), neStringMatcher)
+            .withMatcher(scenarioStateEqContextMatcher.matcherName(), scenarioStateEqContextMatcher)
+            .withMatcher(scenarioStateNeContextMatcher.matcherName(), scenarioStateNeContextMatcher)
 
         // add additional options
         for (jsonOption in getJsonPathOptions()) {
@@ -117,12 +109,12 @@ class JsonUtils(
      */
     private fun addMatcherConfiguration(configuration: Configuration, matcher: BddCucumberJsonMatcher): Configuration {
         var configurationVar = configuration
-        try {
+        runCatching {
             configurationVar = configurationVar.withMatcher(
                 matcher.matcherName(),
                 matcher.matcherClass().getDeclaredConstructor().newInstance()
             )
-        } catch (@Suppress("SwallowedException", "TooGenericExceptionCaught") _: Exception) {
+        }.onFailure {
             log.error { "Unable to instantiate the matcher [${matcher.matcherName()}]" }
         }
         return configurationVar
@@ -187,17 +179,17 @@ class JsonUtils(
         // read document
         val documentContext = JsonPath.parse(originalJson)
         var fieldValue: Any? = null
-        try {
+        runCatching {
             fieldValue = documentContext.read(fieldJSONPath, Any::class.java)
             assertFieldValidation(
                 expectedValueToCompare = expectedValueToCompare,
                 fieldValue = fieldValue.toString()
             )
-        } catch (pnfe: PathNotFoundException) {
+        }.onFailure { error ->
             if (BddLibConstants.BDD_LIB_NOT_EXISTS.equals(expectedValueToCompare, ignoreCase = true)) {
                 assertThat(fieldValue).isNull()
             } else {
-                throw pnfe
+                throw error
             }
         }
     }
@@ -278,14 +270,10 @@ class JsonUtils(
         const val JSON_SPACING = "\": "
         const val JSON_COMPACT = "\":"
 
-        val mapper: ObjectMapper = Jackson2ObjectMapperBuilder()
-            .modules(JavaTimeModule(), KotlinModule.Builder().build())
-            .featuresToDisable(
-                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-                SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
-            )
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-            .build()
+        private val uuidMatcher = UUIDMatcher()
+        private val ibanMatcher = IBANMatcher()
+        private val neStringMatcher = NeStringMatcher()
+        private val scenarioStateEqContextMatcher = ScenarioStateEqContextMatcher()
+        private val scenarioStateNeContextMatcher = ScenarioStateNeContextMatcher()
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
  * ${json-unit.matches:isEqualToScenarioContext}newUserNameInContext
  */
 @Component
-class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
+class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJsonMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {
@@ -40,5 +40,13 @@ class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher {
 
     override fun setParameter(parameter: String) {
         this.parameter = parameter
+    }
+
+    override fun matcherName(): String {
+        return "isEqualToScenarioContext"
+    }
+
+    override fun matcherClass(): Class<out BaseMatcher<*>> {
+        return this::class.java
     }
 }
