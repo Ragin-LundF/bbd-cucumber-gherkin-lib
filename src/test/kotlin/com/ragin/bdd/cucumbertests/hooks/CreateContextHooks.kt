@@ -5,8 +5,6 @@ import com.ragin.bdd.cucumber.core.DatabaseExecutorService
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.java.Before
 import io.cucumber.spring.CucumberContextConfiguration
-import org.junit.Ignore
-import org.junit.Test
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.test.context.SpringBootContextLoader
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,8 +12,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
-import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.postgresql.PostgreSQLContainer
+import kotlin.test.Ignore
+import kotlin.test.Test
 
 @ActiveProfiles("cucumberTest")
 @CucumberContextConfiguration

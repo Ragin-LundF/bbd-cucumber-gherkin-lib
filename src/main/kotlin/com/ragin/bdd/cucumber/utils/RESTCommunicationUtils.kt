@@ -7,11 +7,11 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import io.cucumber.datatable.DataTable
-import org.assertj.core.api.Assertions
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpHeaders.ACCEPT
 import org.springframework.http.HttpHeaders.CONTENT_TYPE
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import kotlin.test.assertNotNull
 
 /**
  * Utils class for common REST communication methods
@@ -60,8 +60,10 @@ object RESTCommunicationUtils {
         var path = uriPath
 
         // assert that given for path and body was previously done
-        Assertions.assertThat(path).isNotNull
-            .describedAs("No given path found")
+        assertNotNull(
+            actual = path,
+            message = "No given path found"
+        )
 
         // Read datatable
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)

@@ -37,7 +37,7 @@ class NeStringMatcher : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJson
             .appendText("].")
     }
 
-    override fun setParameter(parameter: String) {
+    override fun setParameter(parameter: String?) {
         this.parameter = parameter
     }
 

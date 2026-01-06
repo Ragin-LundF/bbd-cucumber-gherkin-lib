@@ -26,6 +26,8 @@ import org.apache.hc.client5.http.ssl.TrustAllStrategy
 import org.apache.hc.core5.http.HttpHost
 import org.apache.hc.core5.ssl.SSLContexts
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpEntity
@@ -198,11 +200,10 @@ abstract class BaseRESTExecutionGlue(
             log.info { "Executing call to [${httpMethod.name()}][$targetUrl]" }
 
             setLatestResponse(
-                latestResponse = restTemplate.exchange(
-                    targetUrl,
-                    httpMethod,
-                    httpEntity,
-                    String::class.java
+                latestResponse = restTemplate.exchange<String>(
+                    url = targetUrl,
+                    method = httpMethod,
+                    requestEntity = httpEntity
                 )
             )
         }.onFailure { error ->
@@ -214,6 +215,8 @@ abstract class BaseRESTExecutionGlue(
                             error.statusCode
                         )
                     )
+
+                else -> log.error(error) { "Error during REST call execution" }
             }
         }
         logResponse(scenario = scenario)
@@ -255,10 +258,9 @@ abstract class BaseRESTExecutionGlue(
             val targetUrl = fullURLFor(path = path)
             log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
-                latestResponse = restTemplate.postForEntity(
-                    targetUrl,
-                    request,
-                    String::class.java
+                latestResponse = restTemplate.postForEntity<String>(
+                    url = targetUrl,
+                    request = request
                 )
             )
         }.onFailure { error ->
@@ -314,11 +316,10 @@ abstract class BaseRESTExecutionGlue(
 
             log.info { "Executing call to [$targetUrl]" }
             setLatestResponse(
-                latestResponse = restTemplate.exchange(
-                    targetUrl,
-                    HttpMethod.POST,
-                    httpEntity,
-                    String::class.java
+                latestResponse = restTemplate.exchange<String>(
+                    url = targetUrl,
+                    method = HttpMethod.POST,
+                    requestEntity = httpEntity
                 )
             )
         }.onFailure { error ->
@@ -386,7 +387,7 @@ abstract class BaseRESTExecutionGlue(
                 basePath.append(":").append(bddProperties.server.port)
             }
         }
-        if (!basePath.endsWith("/") && basePath.length > 2 && !urlBasePath.startsWith("/")) {
+        if (!basePath.endsWith("/") && basePath.length > 2 && !urlBasePath.startsWith(prefix = "/")) {
             basePath.append("/")
         }
 

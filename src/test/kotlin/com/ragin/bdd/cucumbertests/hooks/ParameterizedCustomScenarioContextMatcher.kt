@@ -5,6 +5,7 @@ import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
+import kotlin.test.assertNotNull
 
 class ParameterizedCustomScenarioContextMatcher : BaseMatcher<Any>(), BddCucumberJsonMatcher, ParametrizedMatcher {
     private var jsonParameter: String? = null
@@ -17,7 +18,11 @@ class ParameterizedCustomScenarioContextMatcher : BaseMatcher<Any>(), BddCucumbe
         return this.javaClass
     }
 
-    override fun setParameter(parameter: String) {
+    override fun setParameter(parameter: String?) {
+        assertNotNull(
+            actual = parameter,
+            message = "The parameter {$parameter} of 'isInContextAvailable' matcher cannot be null."
+        )
         this.jsonParameter = parameter
     }
 
