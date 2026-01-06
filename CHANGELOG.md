@@ -1,3 +1,14 @@
+# Release 2.32.0
+
+Version bumps in build/dependency configs
+
+| Cohort / File(s)                                             | Summary of Changes                                                                                                                                                                                                     |
+|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Build file**<br>`build.gradle`                             | Spring Boot 3.5.6 → 3.5.9, Kover 0.9.2 → 0.9.4                                                                                                                                                                         |
+| **Dependency file**<br>`dependencies.gradle`                 | `kotlin-logging-jvm` 7.0.13 → 7.0.14, `httpclient5` 5.5 → 5.5.2, `json-unit` 4.1.1 → 5.1.0, `commons-text` 1.14.0 → 1.15.0, `commons-io` 2.20.0 → 2.21.0, `commons-lang3` 3.19.0 → 3.20.0, `json-path` 2.9.0 → 2.10.0. |
+| **Configuration for dependency file**<br>`gradle.properties` | `cucumber` 7.29.0 → 7.33.0, `testcontainers` 1.21.3 → 2.0.3, `jackson` 2.19.2 → 2.20.1.                                                                                                                                |
+
+
 # Release 2.31.0
 
 Version bumps in build/dependency configs; test configuration tweaks for Cucumber patterns; dependency reshuffle from

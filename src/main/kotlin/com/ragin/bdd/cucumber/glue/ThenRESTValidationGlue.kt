@@ -10,8 +10,10 @@ import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Then
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.assertj.core.api.Assertions.assertThat
 import java.io.IOException
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /**
  * This class contains HTTP response validations.
@@ -24,16 +26,21 @@ class ThenRESTValidationGlue(
     bddProperties = bddProperties
 ) {
     /**
-     * Ensure, that the response code is valid
+     * Ensure that the response code is valid
      * @param expectedStatusCode HTTP status code that is expected
      */
     @Then("I ensure that the status code of the response is {int}")
     fun thenEnsureThatTheStatusCodeOfTheResponseIs(expectedStatusCode: Int) {
-        assertThat(Integer.valueOf(latestResponse!!.statusCode.value())).isEqualTo(expectedStatusCode)
+        assertEquals(
+            expected = expectedStatusCode,
+            actual = latestResponse?.statusCode?.value(),
+            message = "Status code does not match! " +
+                    "Expected: $expectedStatusCode, actual: ${latestResponse?.statusCode?.value()}"
+        )
     }
 
     /**
-     * Ensure, that the response is equal to a file.
+     * Ensure that the response is equal to a file.
      *
      * This evaluates also JSON unit statements
      *
@@ -55,12 +62,15 @@ class ThenRESTValidationGlue(
     @Then("I ensure, that the header {string} is equal to {string}")
     fun thenEnsureHeaderIsEqualTo(headerName: String, expectedValue: String) {
         val header = latestResponse!!.headers.getOrEmpty(headerName).joinToString(",")
-        assertThat(header).isEqualTo(expectedValue)
-            .describedAs("Header [$headerName] does not have the value [$expectedValue], but [$header]")
+        assertEquals(
+            expected = expectedValue,
+            actual = header,
+            message = "Header [$headerName] does not have the value [$expectedValue], but [$header]"
+        )
     }
 
     /**
-     * Ensure, that the response is equal to a directly given body.
+     * Ensure that the response is equal to a directly given body.
      *
      * This evaluates also JSON unit statements
      *
@@ -99,7 +109,7 @@ class ThenRESTValidationGlue(
     }
 
     /**
-     * Ensure, that the response code and body is equal to directly given status code and body
+     * Ensure that the response code and body is equal to directly given status code and body
      *
      * This evaluates also JSON unit statements
      *
@@ -110,7 +120,11 @@ class ThenRESTValidationGlue(
      */
     @Then("I ensure that the response code is {int} and the body is equal to")
     fun thenEnsureTheResponseCodeAndBodyIsEqualTo(expectedStatusCode: Int, expectedBody: String) {
-        assertThat(Integer.valueOf(latestResponse!!.statusCode.value())).isEqualTo(expectedStatusCode)
+        assertEquals(
+            expected = expectedStatusCode,
+            actual = Integer.valueOf(latestResponse!!.statusCode.value()),
+            message = "Status code does not match!"
+        )
         assertJSONisEqual(
             expected = expectedBody,
             actual = latestResponse!!.body
@@ -118,7 +132,7 @@ class ThenRESTValidationGlue(
     }
 
     /**
-     * Ensure, that the response code and body is equal to directly given status code and body as file
+     * Ensure that the response code and body is equal to directly given status code and body as file
      *
      * This evaluates also JSON unit statements
      *
@@ -135,7 +149,11 @@ class ThenRESTValidationGlue(
         pathToFile: String
     ) {
         val expectedBody = readFileAsString(path = pathToFile)
-        assertThat(Integer.valueOf(latestResponse!!.statusCode.value())).isEqualTo(expectedStatusCode)
+        assertEquals(
+            expected = expectedStatusCode,
+            actual = Integer.valueOf(latestResponse!!.statusCode.value()),
+            message = "Status code does not match!"
+        )
         assertJSONisEqual(
             expected = expectedBody,
             actual = latestResponse!!.body
@@ -147,7 +165,7 @@ class ThenRESTValidationGlue(
      *
      * !!!ATTENTION!!! This is an Anti-Pattern, but sometimes it can be necessary if Cucumber should work as Test-Suite.
      *
-     * For better separation use the database initializer and use static values instead
+     * For better separation, use the database initializer and use static values instead
      * of transporting them between scenarios!
      *
      * @param fieldName     name of the field in the response
@@ -156,10 +174,16 @@ class ThenRESTValidationGlue(
      */
     @Then("I store the string of the field {string} in the context {string} for later usage")
     fun storeStringOfFieldInContextForLaterUsage(fieldName: String, contextName: String) {
-        assertThat(fieldName).isNotNull
-        assertThat(contextName).isNotNull
-        assertThat(latestResponse).isNotNull.describedAs("response was null!")
-        assertThat(latestResponse!!.body).isNotNull.describedAs("body of response was null!")
+        assertNotNull(actual = fieldName)
+        assertNotNull(actual = contextName)
+        assertNotNull(
+            actual = latestResponse,
+            message = "response was null!"
+        )
+        assertNotNull(
+            actual = latestResponse!!.body,
+            message = "body of response was null!"
+        )
 
         var jsonPath = fieldName
         if (!jsonPath.startsWith("$.")) {
@@ -179,7 +203,10 @@ class ThenRESTValidationGlue(
     fun ensureThatExecutionTimeIsLessThan(expectedExecutionTime: Long) {
         val executionTime = System.currentTimeMillis() - executionTime
         val executionTimeValid = executionTime <= expectedExecutionTime
-        assertThat(executionTimeValid).isTrue.describedAs("The performance was poor with [$executionTime ms]")
+        assertTrue(
+            actual = executionTimeValid,
+            message = "The performance was poor with [$executionTime ms]"
+        )
     }
 
     /**

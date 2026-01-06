@@ -17,10 +17,14 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
-import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matcher
+import org.junit.jupiter.api.assertNull
 import org.springframework.stereotype.Component
 import java.util.Optional
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 /**
  * Utility class used to work with JSON objects.
@@ -186,8 +190,8 @@ class JsonUtils(
                 fieldValue = fieldValue.toString()
             )
         }.onFailure { error ->
-            if (BddLibConstants.BDD_LIB_NOT_EXISTS.equals(expectedValueToCompare, ignoreCase = true)) {
-                assertThat(fieldValue).isNull()
+            if (BddLibConstants.BDD_LIB_NOT_EXISTS.equals(other = expectedValueToCompare, ignoreCase = true)) {
+                assertNull(actual = fieldValue)
             } else {
                 throw error
             }
@@ -206,17 +210,22 @@ class JsonUtils(
         if (expectedValueToCompare.startsWith(BddLibConstants.BDD_LIB_NOT)) {
             if (matcher.isPresent) {
                 val fieldMatches = matcher.get().matches(fieldValue)
-                assertThat(fieldMatches).isFalse
+                assertFalse(actual = fieldMatches)
             } else {
-                assertThat(fieldValue)
-                    .isNotEqualTo(expectedValueToCompare.substring(BddLibConstants.BDD_LIB_NOT.length))
+                assertNotEquals(
+                    actual = fieldValue,
+                    illegal = expectedValueToCompare.substring(BddLibConstants.BDD_LIB_NOT.length)
+                )
             }
         } else {
             if (matcher.isPresent) {
                 val fieldMatches = matcher.get().matches(fieldValue)
-                assertThat(fieldMatches).isTrue
+                assertTrue(actual = fieldMatches)
             } else {
-                assertThat(fieldValue).isEqualTo(expectedValueToCompare)
+                assertEquals(
+                    expected = expectedValueToCompare,
+                    actual = fieldValue
+                )
             }
         }
     }
@@ -256,10 +265,9 @@ class JsonUtils(
         return nullSafeJson
             .split(NEW_LINE)
             .asSequence()
-            .map { it.replace(CARRIAGE_RETURN, "") }
-            .map { it.replace(JSON_SPACING, JSON_COMPACT) }
-            .map { it.trim() }
-            .joinToString("")
+            .map { it.replace(oldValue = CARRIAGE_RETURN, newValue = "") }
+            .map { it.replace(oldValue = JSON_SPACING, newValue = JSON_COMPACT) }
+            .joinToString(separator = "") { it.trim() }
     }
 
     companion object {

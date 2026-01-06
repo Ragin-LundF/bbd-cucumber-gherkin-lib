@@ -4,6 +4,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
+import org.junit.jupiter.api.assertNotNull
 import org.springframework.stereotype.Component
 
 /**
@@ -38,7 +39,11 @@ class ScenarioStateNeContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher, B
             .appendText("].")
     }
 
-    override fun setParameter(parameter: String) {
+    override fun setParameter(parameter: String?) {
+        assertNotNull(
+            actual = parameter,
+            message = "Parameter for 'json-unit.matches:isNotEqualToScenarioContext' matcher must not be null"
+        )
         this.parameter = parameter
     }
 

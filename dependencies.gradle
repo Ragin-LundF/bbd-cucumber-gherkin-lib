@@ -10,11 +10,11 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation "io.github.oshai:kotlin-logging-jvm:7.0.13"
+    implementation "io.github.oshai:kotlin-logging-jvm:7.0.14"
 
-    api "org.apache.httpcomponents.client5:httpclient5:5.5"
+    api "org.apache.httpcomponents.client5:httpclient5:5.5.2"
 
-    api "net.javacrumbs.json-unit:json-unit:4.1.1"
+    api "net.javacrumbs.json-unit:json-unit:5.1.0"
 
     api "io.cucumber:cucumber-java:$version_cucumber"
     api "io.cucumber:cucumber-spring:$version_cucumber"
@@ -23,9 +23,9 @@ dependencies {
 
     api "jakarta.validation:jakarta.validation-api:3.1.1"
 
-    api "org.apache.commons:commons-text:1.14.0"
-    implementation "commons-io:commons-io:2.20.0"
-    implementation "org.apache.commons:commons-lang3:3.19.0"
+    api "org.apache.commons:commons-text:1.15.0"
+    implementation "commons-io:commons-io:2.21.0"
+    implementation "org.apache.commons:commons-lang3:3.20.0"
 
     implementation "org.yaml:snakeyaml:2.5"
     implementation "org.liquibase:liquibase-core:4.33.0"
@@ -36,9 +36,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-test"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    implementation "com.jayway.jsonpath:json-path:2.9.0"
+    implementation "com.jayway.jsonpath:json-path:2.10.0"
 
-    implementation "com.fasterxml.jackson.core:jackson-annotations:$version_jackson"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.20"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$version_jackson"
     implementation "com.fasterxml.jackson.module:jackson-module-blackbird:$version_jackson"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:$version_jackson"
@@ -48,15 +48,16 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
+    implementation "org.jetbrains.kotlin:kotlin-test-junit5"
+
     testImplementation "org.postgresql:postgresql:42.7.8"
     testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.springframework.boot:spring-boot-starter-web"
 
     testImplementation "org.slf4j:slf4j-simple:2.0.17"
     testImplementation "org.testcontainers:testcontainers:$version_testcontainers"
-    testImplementation "org.testcontainers:postgresql:$version_testcontainers"
-    testImplementation "org.testcontainers:jdbc:$version_testcontainers"
-    testImplementation "org.testcontainers:junit-jupiter:$version_testcontainers"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
+    testImplementation "org.testcontainers:testcontainers-postgresql:$version_testcontainers"
+    testImplementation "org.testcontainers:testcontainers-jdbc:$version_testcontainers"
+    testImplementation "org.testcontainers:testcontainers-junit-jupiter:$version_testcontainers"
     testImplementation "com.lemonappdev:konsist:0.17.3"
 }

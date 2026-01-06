@@ -38,7 +38,7 @@ class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher, B
                 .appendText("].")
     }
 
-    override fun setParameter(parameter: String) {
+    override fun setParameter(parameter: String?) {
         this.parameter = parameter
     }
 

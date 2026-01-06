@@ -6,6 +6,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
+import org.junit.jupiter.api.assertNotNull
 
 class ParameterizedCustomMultiParameterMatcher : BaseMatcher<Any>(), BddCucumberJsonMatcher, ParametrizedMatcher {
     private var jsonParameter: JsonParameter? = null
@@ -18,7 +19,11 @@ class ParameterizedCustomMultiParameterMatcher : BaseMatcher<Any>(), BddCucumber
         return this.javaClass
     }
 
-    override fun setParameter(parameter: String) {
+    override fun setParameter(parameter: String?) {
+        assertNotNull(
+            actual = parameter,
+            message = "The parameter {$parameter} of 'containsOneOf' matcher cannot be null."
+        )
         runCatching {
             this.jsonParameter = JacksonUtils.mapper.readValue(parameter, JsonParameter::class.java)
         }.onFailure {

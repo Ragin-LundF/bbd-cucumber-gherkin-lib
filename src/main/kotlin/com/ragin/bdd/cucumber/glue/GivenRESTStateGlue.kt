@@ -181,7 +181,7 @@ class GivenRESTStateGlue(
 
     @Given("that the Bearer token is {string}")
     fun givenThatBearerTokenIsUsed(bearerToken: String) {
-        ScenarioStateContext.bearerToken = ScenarioStateContext.resolveEntry(bearerToken)
+        ScenarioStateContext.bearerToken = ScenarioStateContext.resolveEntry(key = bearerToken)
     }
 
     @Given("that a requests polls every {int} seconds")

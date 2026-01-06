@@ -13,11 +13,12 @@ import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.assertj.core.api.Assertions.assertThat
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpMethod
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 /**
  * This class contains common `When` execution of REST related steps.
@@ -546,11 +547,14 @@ class WhenRESTExecutionGlue(
         expectedBody: String? = null,
         authorized: Boolean
     ) {
-        assertThat(ScenarioStateContext.polling.numberOfPolls).isNotEqualTo(-1)
-            .describedAs("Please configure max number of polls!")
+        assertNotEquals(
+            actual = ScenarioStateContext.polling.numberOfPolls,
+            illegal = -1,
+            message = "Please configure max number of polls!"
+        )
 
         var repeatLoop = 0
-        for (i in 1..ScenarioStateContext.polling.numberOfPolls) {
+        loop@ for (i in 1..ScenarioStateContext.polling.numberOfPolls) {
             executeRequest(
                 httpMethod = httpMethod,
                 authorized = authorized,
@@ -559,16 +563,26 @@ class WhenRESTExecutionGlue(
 
             runCatching {
                 evaluateBody(expectedBody = expectedBody)
-                assertThat(ScenarioStateContext.latestResponse!!.statusCode.value()).isEqualTo(expectedStatusCode)
+                assertEquals(
+                    expected = expectedStatusCode,
+                    actual = ScenarioStateContext.latestResponse!!.statusCode.value(),
+                    message = "Expected status code $expectedStatusCode but was " +
+                        "${ScenarioStateContext.latestResponse!!.statusCode.value()}"
+                )
                 repeatLoop = i
-                break
+                break@loop
             }.onFailure {
                 TimeUnit.SECONDS.sleep(ScenarioStateContext.polling.pollEverySeconds)
             }
         }
 
         evaluateBody(expectedBody = expectedBody)
-        assertThat(ScenarioStateContext.latestResponse!!.statusCode.value()).isEqualTo(expectedStatusCode)
+        assertEquals(
+            expected = expectedStatusCode,
+            actual = ScenarioStateContext.latestResponse!!.statusCode.value(),
+            message = "Expected status code $expectedStatusCode but was " +
+                "${ScenarioStateContext.latestResponse!!.statusCode.value()}"
+        )
         log.info { "Polling finished after $repeatLoop repeats" }
     }
 
