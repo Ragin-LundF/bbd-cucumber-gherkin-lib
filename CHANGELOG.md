@@ -1,3 +1,17 @@
+# Release 3.0.0
+
+This major release update is a breaking change release in matter of the minimum requirements.
+
+## Breaking Changes
+
+This release requires at least the following versions:
+- 
+- Spring Boot to 4.0.1
+- Kotlin 2.3.0
+- JDK 25
+- jUnit 6.0.1
+
+
 # Release 2.32.0
 
 Version bumps in build/dependency configs

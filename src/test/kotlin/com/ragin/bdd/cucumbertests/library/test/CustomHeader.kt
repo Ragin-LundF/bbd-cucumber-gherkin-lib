@@ -35,7 +35,8 @@ class CustomHeader {
 
     private fun createHeadersResponse(headers: HttpHeaders): String {
         val bodyMap = mutableMapOf<String, String>()
-        for ((key, value) in headers) {
+        val headerSet = headers.headerSet()
+        for ((key, value) in headerSet) {
             bodyMap[key] = value.joinToString(";")
         }
         return JacksonUtils.mapper.writeValueAsString(bodyMap)

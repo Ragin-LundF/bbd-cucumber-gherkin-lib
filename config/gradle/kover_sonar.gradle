@@ -14,6 +14,8 @@ kover {
 sonar {
     properties {
         property "sonar.coverage.jacoco.xmlReportPaths", "${rootProject.layout.buildDirectory.get().toString()}/reports/kover/report.xml"
+        property "sonar.projectKey", "Ragin-LundF_bbd-cucumber-gherkin-lib"
+        property "sonar.organization", "ragin-lundf-github"
     }
 }
 

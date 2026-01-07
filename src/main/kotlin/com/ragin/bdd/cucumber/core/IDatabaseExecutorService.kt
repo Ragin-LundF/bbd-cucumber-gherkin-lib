@@ -26,5 +26,5 @@ interface IDatabaseExecutorService {
      * @param sql   SQL statements that should be executed
      * @return      List with a map per row which contains the result
      */
-    fun executeQuerySQL(sql: String): List<Map<String, Any>>
+    fun executeQuerySQL(sql: String): List<Map<String, Any?>>
 }

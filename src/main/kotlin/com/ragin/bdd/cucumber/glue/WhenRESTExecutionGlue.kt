@@ -13,7 +13,7 @@ import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.http.HttpMethod
 import java.io.IOException
 import java.util.concurrent.TimeUnit
