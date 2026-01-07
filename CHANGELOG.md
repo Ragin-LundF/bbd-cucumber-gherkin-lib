@@ -8,7 +8,8 @@ This release requires at least the following versions:
 - 
 - Spring Boot to 4.0.1
 - Kotlin 2.3.0
-- JDK 25 
+- JDK 25
+- jUnit 6.0.1
 
 
 # Release 2.32.0
