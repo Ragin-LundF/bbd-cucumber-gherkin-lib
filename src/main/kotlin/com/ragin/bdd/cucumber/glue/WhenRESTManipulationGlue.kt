@@ -7,7 +7,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.resolveEntry
 import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.java.en.When
 import org.apache.commons.lang3.StringUtils
-import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.resttestclient.TestRestTemplate
 import java.util.*
 
 class WhenRESTManipulationGlue(

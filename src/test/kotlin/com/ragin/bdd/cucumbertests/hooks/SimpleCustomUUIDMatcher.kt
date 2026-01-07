@@ -15,8 +15,7 @@ class SimpleCustomUUIDMatcher : BaseMatcher<String>(), BddCucumberJsonMatcher {
 
     override fun matches(actual: Any): Boolean {
         if (actual is String) {
-            val actualString = actual.toString()
-            return actualString
+            return actual
                 .matches("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}".toRegex())
         }
         return false

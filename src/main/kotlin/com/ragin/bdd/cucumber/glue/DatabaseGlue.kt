@@ -1,7 +1,5 @@
 package com.ragin.bdd.cucumber.glue
 
-import com.fasterxml.jackson.dataformat.csv.CsvMapper
-import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.IDatabaseExecutorService
@@ -11,6 +9,8 @@ import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import org.apache.commons.lang3.StringUtils
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.dataformat.csv.CsvMapper
+import tools.jackson.dataformat.csv.CsvSchema
 import java.io.IOException
 
 /**

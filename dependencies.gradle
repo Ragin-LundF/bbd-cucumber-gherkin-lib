@@ -34,16 +34,21 @@ dependencies {
     implementation "org.springframework:spring-tx"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "org.springframework.boot:spring-boot-test"
+    implementation "org.springframework.boot:spring-boot-resttestclient"
+    implementation "org.springframework.boot:spring-boot-starter-restclient"
+    implementation "org.springframework.boot:spring-boot-starter-restclient-test"
+
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     implementation "com.jayway.jsonpath:json-path:2.10.0"
 
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.20"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$version_jackson"
-    implementation "com.fasterxml.jackson.module:jackson-module-blackbird:$version_jackson"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:$version_jackson"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$version_jackson"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$version_jackson"
+
+    implementation "tools.jackson.module:jackson-module-jaxb-annotations"
+    implementation "tools.jackson.module:jackson-module-kotlin:$version_jackson"
+    implementation "tools.jackson.module:jackson-module-blackbird:$version_jackson"
+    implementation "tools.jackson.dataformat:jackson-dataformat-csv:$version_jackson"
+    implementation "tools.jackson.dataformat:jackson-dataformat-yaml:$version_jackson"
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -51,8 +56,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-test-junit5"
 
     testImplementation "org.postgresql:postgresql:42.7.8"
-    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "org.springframework.boot:spring-boot-starter-web"
+    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    testImplementation "org.springframework.boot:spring-boot-starter-liquibase"
 
     testImplementation "org.slf4j:slf4j-simple:2.0.17"
     testImplementation "org.testcontainers:testcontainers:$version_testcontainers"

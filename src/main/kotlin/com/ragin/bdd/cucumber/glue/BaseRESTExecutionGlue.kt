@@ -25,9 +25,9 @@ import org.apache.hc.client5.http.ssl.TlsSocketStrategy
 import org.apache.hc.client5.http.ssl.TrustAllStrategy
 import org.apache.hc.core5.http.HttpHost
 import org.apache.hc.core5.ssl.SSLContexts
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.test.web.client.exchange
-import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.boot.resttestclient.TestRestTemplate
+import org.springframework.boot.resttestclient.exchange
+import org.springframework.boot.resttestclient.postForEntity
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpEntity
@@ -186,7 +186,7 @@ abstract class BaseRESTExecutionGlue(
         // create HttpEntity
         val body: String? = editableBody
 
-        var httpEntity = HttpEntity<String?>(headers)
+        var httpEntity = HttpEntity<String>(headers)
         if (httpMethod != HttpMethod.GET && !body.isNullOrEmpty()) {
             // there was a body...replace with new entity with body
             httpEntity = HttpEntity(body, headers)
@@ -244,7 +244,7 @@ abstract class BaseRESTExecutionGlue(
                 if (byteArray != null) {
                     formDataMap.add(entry.key, object : ByteArrayResource(byteArray) {
                         override fun getFilename(): String {
-                            return scenarioContextMapValue ?: entryItem!!
+                            return scenarioContextMapValue ?: entryItem
                         }
                     })
                 } else {

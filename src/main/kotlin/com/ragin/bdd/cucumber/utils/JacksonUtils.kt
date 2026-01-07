@@ -1,22 +1,21 @@
 package com.ragin.bdd.cucumber.utils
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.blackbird.BlackbirdModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.cfg.DateTimeFeature
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.blackbird.BlackbirdModule
+import tools.jackson.module.kotlin.KotlinModule
 
 object JacksonUtils {
-    val mapper: ObjectMapper = Jackson2ObjectMapperBuilder()
-        .modules(JavaTimeModule(), BlackbirdModule(), KotlinModule.Builder().build())
-        .featuresToDisable(
-            DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-            SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
-            SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS
-        )
-        .serializationInclusion(JsonInclude.Include.NON_NULL)
-        .build()
+    val mapper: ObjectMapper = JsonMapper.builder()
+        .addModule(BlackbirdModule())
+        .addModule(KotlinModule.Builder().build())
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .disable(DateTimeFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
+        .changeDefaultPropertyInclusion { incl ->
+            incl.withValueInclusion(JsonInclude.Include.NON_EMPTY)
+        }.build()
 }

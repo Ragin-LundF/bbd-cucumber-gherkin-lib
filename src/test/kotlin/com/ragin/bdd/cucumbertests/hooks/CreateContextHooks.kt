@@ -6,6 +6,7 @@ import com.ragin.bdd.cucumber.utils.JsonUtils
 import io.cucumber.java.Before
 import io.cucumber.spring.CucumberContextConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate
 import org.springframework.boot.test.context.SpringBootContextLoader
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -36,6 +37,7 @@ import kotlin.test.Test
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = ["spring.main.allow-bean-definition-overriding=true"]
 )
+@AutoConfigureTestRestTemplate
 class CreateContextHooks {
     private val postgresImage = "postgres:latest"
     private val dockerNetworkName = "bdd_cucumber_pg"

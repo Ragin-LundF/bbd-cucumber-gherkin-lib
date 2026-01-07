@@ -1,37 +1,40 @@
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+// import dev.detekt.gradle.Detekt
+// import dev.detekt.gradle.DetektCreateBaselineTask
+// import dev.detekt.gradle.plugin.DetektPluginKt
 
 plugins {
     id "java"
     id "signing"
     id "java-library"
     id "maven-publish"
-    id "org.jreleaser" version "1.19.0"
+    id "org.jreleaser" version "1.22.0"
     id "org.sonarqube" version "7.2.2.6593"
-    id "io.gitlab.arturbosch.detekt" version "1.23.8"
-    id "org.springframework.boot" version "3.5.9"
+    //id "dev.detekt" version "2.0.0-alpha.1"
+    id "org.springframework.boot" version "4.0.1"
     id "io.spring.dependency-management" version "1.1.7"
     id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
     id "org.jetbrains.kotlinx.kover" version "0.9.4"
 }
 
-// export classes for config gradles
-ext.Detekt = Detekt
-ext.DetektCreateBaselineTask = DetektCreateBaselineTask
+// export classes for config gradle files
+// ext.Detekt = Detekt
+// ext.DetektCreateBaselineTask = DetektCreateBaselineTask
 
 // apply externalized configs
 apply from: "${rootDir}/dependencies.gradle"
-apply from: "${rootDir}/config/gradle/detekt.gradle"
+//apply from: "${rootDir}/config/gradle/detekt.gradle"
 apply from: "${rootDir}/config/gradle/kover_sonar.gradle"
 apply from: "${rootDir}/config/gradle/java.gradle"
 apply from: "${rootDir}/config/gradle/publishing.gradle"
 apply from: "${rootDir}/config/gradle/tests.gradle"
 apply from: "${rootDir}/config/gradle/wrapper.gradle"
 
+/*
 configurations.matching { it.name == "detekt" }.configureEach {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if (details.requested.group == "org.jetbrains.kotlin") {
-            details.useVersion(io.gitlab.arturbosch.detekt.DetektPluginKt.getSupportedKotlinVersion())
+            details.useVersion(DetektPluginKt.getSupportedKotlinVersion())
         }
     }
 }
+*/
