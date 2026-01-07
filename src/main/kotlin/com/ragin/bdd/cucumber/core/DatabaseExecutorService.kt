@@ -60,7 +60,7 @@ class DatabaseExecutorService(
      * @param sql   SQL statements that should be executed
      * @return      List with a map per row which contains the result
      */
-    override fun executeQuerySQL(sql: String): List<Map<String, Any>> {
+    override fun executeQuerySQL(sql: String): List<Map<String, Any?>> {
         return jdbcTemplate.queryForList(sql)
     }
 }

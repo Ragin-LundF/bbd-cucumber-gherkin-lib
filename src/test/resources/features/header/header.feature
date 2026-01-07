@@ -23,13 +23,13 @@ Feature: Header manipulation
     And I ensure that the body of the response is equal to
     """
     {
-      "accept": "application/json",
-      "accept-encoding": "gzip, x-gzip, deflate",
-      "authorization": "${json-unit.ignore}",
-      "connection": "keep-alive",
-      "content-type": "application/json",
-      "host": "${json-unit.ignore}",
-      "user-agent": "${json-unit.ignore}"
+      "Accept": "application/json",
+      "Authorization": "${json-unit.ignore}",
+      "Content-Type": "application/json",
+      "Accept-Encoding": "gzip, x-gzip, deflate",
+      "Host": "${json-unit.ignore}",
+      "Connection": "keep-alive",
+      "User-Agent": "${json-unit.ignore}"
     }
     """
 
@@ -40,14 +40,14 @@ Feature: Header manipulation
     And I ensure that the body of the response is equal to
     """
     {
-      "authorization": "${json-unit.ignore}",
-      "accept-language": "de_DE",
-      "host": "${json-unit.ignore}",
-      "content-type": "application/json",
-      "connection": "keep-alive",
-      "accept-encoding": "gzip, x-gzip, deflate",
-      "accept": "application/json",
-      "user-agent": "${json-unit.ignore}"
+      "Accept": "application/json",
+      "Authorization": "${json-unit.ignore}",
+      "Content-Type": "application/json",
+      "Accept-Encoding": "gzip, x-gzip, deflate",
+      "Accept-Language":"de_DE",
+      "Host": "${json-unit.ignore}",
+      "Connection": "keep-alive",
+      "User-Agent": "${json-unit.ignore}"
     }
     """
 

@@ -20,7 +20,7 @@ open class BaseCucumberCore(
      *
      * @param defaultBearerToken default Bearer token
      */
-    fun setDefaultBearerToken(defaultBearerToken: String?) {
+    open fun setDefaultBearerToken(defaultBearerToken: String?) {
         if (bddProperties.authorization?.bearerToken?.default.isNullOrEmpty().not()) {
             ScenarioStateContext.defaultBearerToken = bddProperties.authorization.bearerToken.default
         }
@@ -31,7 +31,7 @@ open class BaseCucumberCore(
         }
     }
 
-    fun getFilePath(path: String): String {
+    open fun getFilePath(path: String): String {
         return if (path.startsWith(prefix = KEYWORD_ABSOLUTE_PATH)) {
             var prefixLength = KEYWORD_ABSOLUTE_PATH.length
             if (path.startsWith(prefix = "$KEYWORD_ABSOLUTE_PATH/")) {
