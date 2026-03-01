@@ -15,7 +15,7 @@ See [Changelog](CHANGELOG.md) for release information.
 
 The library tests with itself and with a dummy application in the test sources to have a lot of examples for the usage.
 There you can also find custom-matcher for JSON-Assert.
-See [src/test](src/test) folder for examples.
+See [src/test](bdd-cucumber-gherkin-lib/src/test) folder for examples.
 
 ## How to integrate
 

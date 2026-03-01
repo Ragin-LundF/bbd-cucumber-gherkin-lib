@@ -1,0 +1,106 @@
+[versions]
+kotlin = "2.3.0"
+springBoot = "4.0.3"
+cucumber = "7.34.2"
+jackson = "3.1.0"
+testcontainers = "2.0.3"
+
+[libraries]
+# --- Classpath Kotlin Gradle Plugin
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+# --- Common Libs and Utils
+logging-logger = { module = "io.github.oshai:kotlin-logging-jvm", version = "8.0.01" }
+logging-slf4j = { module = "org.slf4j:slf4j-simple", version = "2.0.17" }
+
+commons-io = { module = "commons-io:commons-io", version = "2.21.0" }
+commons-text = { module = "org.apache.commons:commons-text", version = "1.15.0" }
+commons-lang = { module = "org.apache.commons:commons-lang3", version = "3.20.0" }
+
+jakarta-validation = { module = "jakarta.validation:jakarta.validation-api", version = "3.1.1" }
+
+# --- Spring Dependencies
+spring-jdbc = { module = "org.springframework:spring-jdbc" }
+spring-web = { module = "org.springframework:spring-web" }
+spring-boot = { module = "org.springframework.boot:spring-boot", version.ref = "springBoot" }
+spring-boot-test = { module = "org.springframework.boot:spring-boot-test", version.ref = "springBoot" }
+spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "springBoot" }
+
+spring-boot-restclient = { module = "org.springframework.boot:spring-boot-restclient", version.ref = "springBoot" }
+spring-boot-restclient-test = { module = "org.springframework.boot:spring-boot-restclient-test", version.ref = "springBoot" }
+spring-boot-resttestclient = { module = "org.springframework.boot:spring-boot-resttestclient", version.ref = "springBoot" }
+
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springBoot" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "springBoot" }
+spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "springBoot" }
+
+# --- JSON
+json-path = { module = "com.jayway.jsonpath:json-path", version = "3.0.0" }
+json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.0" }
+
+# --- Cucumber
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
+cucumber-spring = { module = "io.cucumber:cucumber-spring", version.ref = "cucumber" }
+cucumber-junit-platform = { module = "io.cucumber:cucumber-junit-platform-engine", version.ref = "cucumber" }
+
+# --- jUnit / Testing
+testing-junit-platform-suite = { module = "org.junit.platform:junit-platform-suite" }
+testing-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
+testing-konsist = { module = "com.lemonappdev:konsist", version = "0.17.3" }
+
+# --- Jackson
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version = "2.20" }
+jackson-jaxb = { module = "tools.jackson.module:jackson-module-jaxb-annotations" }
+jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jackson-module-blackbird = { module = "tools.jackson.module:jackson-module-blackbird", version.ref = "jackson" }
+jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat-csv", version.ref = "jackson" }
+jackson-dataformmat-yaml = { module = "tools.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
+
+# --- HTTP Client
+httpclient = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.5.2" }
+
+# --- Database
+database-liquibase = { module = "org.liquibase:liquibase-core", version = "4.33.0" }
+database-postgres = { module = "org.postgresql:postgresql", version = "42.7.10" }
+
+# --- Testcontainers
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-jdbc = { module = "org.testcontainers:testcontainers-jdbc", version.ref = "testcontainers" }
+testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgres = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
+
+[bundles]
+jackson = [
+    "jackson-annotations",
+    "jackson-jaxb",
+    "jackson-module-kotlin",
+    "jackson-module-blackbird",
+    "jackson-dataformmat-yaml"
+]
+cucumber = [
+    "cucumber-java",
+    "cucumber-spring",
+    "cucumber-junit-platform"
+]
+spring-boot-restTestTemplate = [
+    "spring-boot-restclient",
+    "spring-boot-restclient-test",
+    "spring-boot-resttestclient"
+]
+testcontainers = [
+    "testcontainers",
+    "testcontainers-jdbc",
+    "testcontainers-junit",
+    "testcontainers-postgres"
+]
+
+[plugins]
+jreleaser = { id = "org.jreleaser", version = "1.22.0" }
+sonarqube = { id = "org.sonarqube", version = "7.2.2.6593" }
+springboot = { id = "org.springframework.boot", version.ref = "springBoot" }
+springBootDependencyManagement = { id = "io.spring.dependency-management", version = "1.1.7" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlinAllOpen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
+detekt = { id = "dev.detekt", version = "2.0.0-alpha.2" }

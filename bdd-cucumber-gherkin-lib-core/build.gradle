@@ -1,0 +1,21 @@
+dependencies {
+    // --- Spring
+    implementation(libs.spring.boot)
+    implementation(libs.spring.web)
+    implementation(libs.spring.boot.test)
+
+    // --- Commons
+    implementation(libs.commons.io)
+
+    // --- Logging
+    implementation(libs.logging.logger)
+
+    // --- Jackson
+    implementation(libs.bundles.jackson)
+
+    // Testing
+    api(libs.bundles.cucumber)
+    implementation(libs.json.path)
+    implementation(libs.json.unit)
+    implementation(libs.testing.kotlin.test)
+}

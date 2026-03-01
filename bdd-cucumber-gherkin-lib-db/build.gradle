@@ -1,0 +1,21 @@
+dependencies {
+    api project(':bdd-cucumber-gherkin-lib-core')
+
+    // --- Spring
+    implementation(libs.spring.jdbc)
+    implementation(libs.spring.boot)
+    implementation(libs.spring.boot.autoconfigure)
+
+    // --- Database
+    implementation(libs.database.liquibase)
+
+    // --- Cucumber
+    implementation(libs.cucumber.java)
+
+    // --- Jackson
+    implementation(libs.bundles.jackson)
+    implementation(libs.jackson.dataformat.csv)
+
+    // --- Logging
+    implementation(libs.logging.logger)
+}

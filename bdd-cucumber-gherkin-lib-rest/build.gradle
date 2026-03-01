@@ -1,0 +1,22 @@
+dependencies {
+    api project(':bdd-cucumber-gherkin-lib-core')
+
+    // --- Spring
+    implementation(libs.spring.boot.test)
+    implementation(libs.bundles.spring.boot.restTestTemplate)
+
+    // --- JSON
+    implementation(libs.json.path)
+
+    // --- Testing
+    implementation(libs.testing.kotlin.test)
+
+    // --- HTTP Client
+    implementation(libs.httpclient)
+
+    // --- Commons
+    implementation(libs.commons.text)
+
+    // --- Logging
+    implementation(libs.logging.logger)
+}
