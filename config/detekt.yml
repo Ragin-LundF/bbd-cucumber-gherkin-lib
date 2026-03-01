@@ -13,9 +13,9 @@ style:
 complexity:
   TooManyFunctions:
     excludes: ['**/extension/**', '**/test/**', '**/functionalTest/**']
-    thresholdInFiles: 30
-    thresholdInClasses: 30
-    thresholdInInterfaces: 30
+    allowedFunctionsPerFile: 30
+    allowedFunctionsPerClass: 30
+    allowedFunctionsPerInterface: 30
 
 performance:
   # disabled since Kotlin compiler optimizations since 1.1.60

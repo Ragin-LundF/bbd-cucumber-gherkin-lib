@@ -8,7 +8,7 @@ import io.cucumber.java.Before
 import io.cucumber.java.Scenario
 import io.github.oshai.kotlinlogging.KotlinLogging
 
-open class ResetHooks() {
+open class ResetHooks {
     /**
      * Reset state of BaseCucumberCore
      * @param scenario  Current Cucumber Scenario
