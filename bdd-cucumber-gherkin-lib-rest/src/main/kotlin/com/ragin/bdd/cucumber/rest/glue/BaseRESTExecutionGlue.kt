@@ -211,7 +211,12 @@ abstract class BaseRESTExecutionGlue(
         val httpEntity = HttpEntity(map, headers)
         runCatching {
             val targetUrl = UrlUtils.fullURLFor(path = path)
-            RequestLoggerUtils.logRequest(httpMethod = HttpMethod.POST, url = targetUrl, encodedDataMap = map, scenario = scenario)
+            RequestLoggerUtils.logRequest(
+                httpMethod = HttpMethod.POST,
+                url = targetUrl,
+                encodedDataMap = map,
+                scenario = scenario
+            )
 
             setLatestResponse(
                 latestResponse = restTemplate.exchange<String>(
