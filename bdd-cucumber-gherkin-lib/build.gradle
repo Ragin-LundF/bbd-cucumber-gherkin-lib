@@ -35,7 +35,7 @@ dependencies {
     testImplementation(libs.spring.boot.starter.web)
     testImplementation(libs.spring.boot.starter.data.jpa)
     testImplementation(libs.spring.boot.starter.liquibase)
-    testImplementation(libs.spring.boot.resttestclient)
+    testImplementation(libs.spring.boot.rest.test.client)
 
     testImplementation(libs.database.postgres)
     testImplementation(libs.bundles.testcontainers)

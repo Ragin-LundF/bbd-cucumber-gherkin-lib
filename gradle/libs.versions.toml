@@ -1,13 +1,13 @@
 [versions]
-kotlin = "2.3.0"
-springBoot = "4.0.3"
-cucumber = "7.34.2"
+kotlin = "2.3.20"
+springBoot = "4.0.4"
+cucumber = "7.34.3"
 jackson = "3.1.0"
-testcontainers = "2.0.3"
+testcontainers = "2.0.4"
 
 [libraries]
 # --- Classpath Kotlin Gradle Plugin
-kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 # --- Common Libs and Utils
 logging-logger = { module = "io.github.oshai:kotlin-logging-jvm", version = "8.0.01" }
@@ -26,9 +26,9 @@ spring-boot = { module = "org.springframework.boot:spring-boot", version.ref = "
 spring-boot-test = { module = "org.springframework.boot:spring-boot-test", version.ref = "springBoot" }
 spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "springBoot" }
 
-spring-boot-restclient = { module = "org.springframework.boot:spring-boot-restclient", version.ref = "springBoot" }
-spring-boot-restclient-test = { module = "org.springframework.boot:spring-boot-restclient-test", version.ref = "springBoot" }
-spring-boot-resttestclient = { module = "org.springframework.boot:spring-boot-resttestclient", version.ref = "springBoot" }
+spring-boot-rest-client = { module = "org.springframework.boot:spring-boot-restclient", version.ref = "springBoot" }
+spring-boot-rest-client-test = { module = "org.springframework.boot:spring-boot-restclient-test", version.ref = "springBoot" }
+spring-boot-rest-test-client = { module = "org.springframework.boot:spring-boot-resttestclient", version.ref = "springBoot" }
 
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springBoot" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "springBoot" }
@@ -36,7 +36,7 @@ spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot
 
 # --- JSON
 json-path = { module = "com.jayway.jsonpath:json-path", version = "3.0.0" }
-json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.0" }
+json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.1" }
 
 # --- Cucumber
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
@@ -49,15 +49,15 @@ testing-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
 testing-konsist = { module = "com.lemonappdev:konsist", version = "0.17.3" }
 
 # --- Jackson
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version = "2.20" }
-jackson-jaxb = { module = "tools.jackson.module:jackson-module-jaxb-annotations" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version = "2.21" }
+jackson-jaxb = { module = "tools.jackson.module:jackson-module-jaxb-annotations", version.ref = "jackson" }
 jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 jackson-module-blackbird = { module = "tools.jackson.module:jackson-module-blackbird", version.ref = "jackson" }
-jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat-csv", version.ref = "jackson" }
 jackson-dataformmat-yaml = { module = "tools.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
+jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat-csv", version.ref = "jackson" }
 
 # --- HTTP Client
-httpclient = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.5.2" }
+httpclient = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.6" }
 
 # --- Database
 database-liquibase = { module = "org.liquibase:liquibase-core", version = "4.33.0" }
@@ -71,8 +71,8 @@ testcontainers-postgres = { module = "org.testcontainers:testcontainers-postgres
 
 [bundles]
 jackson = [
-    "jackson-annotations",
     "jackson-jaxb",
+    "jackson-annotations",
     "jackson-module-kotlin",
     "jackson-module-blackbird",
     "jackson-dataformmat-yaml"
@@ -83,9 +83,9 @@ cucumber = [
     "cucumber-junit-platform"
 ]
 spring-boot-restTestTemplate = [
-    "spring-boot-restclient",
-    "spring-boot-restclient-test",
-    "spring-boot-resttestclient"
+    "spring-boot-rest-client",
+    "spring-boot-rest-client-test",
+    "spring-boot-rest-test-client"
 ]
 testcontainers = [
     "testcontainers",
@@ -97,9 +97,9 @@ testcontainers = [
 [plugins]
 jreleaser = { id = "org.jreleaser", version = "1.22.0" }
 sonarqube = { id = "org.sonarqube", version = "7.2.2.6593" }
-springboot = { id = "org.springframework.boot", version.ref = "springBoot" }
-springBootDependencyManagement = { id = "io.spring.dependency-management", version = "1.1.7" }
-kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-boot-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
 detekt = { id = "dev.detekt", version = "2.0.0-alpha.2" }

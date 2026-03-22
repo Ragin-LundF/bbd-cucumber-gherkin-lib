@@ -4,7 +4,7 @@ import dev.detekt.gradle.plugin.DetektPluginKt
 
 buildscript {
     dependencies {
-        classpath(libs.kotlinGradlePlugin)
+        classpath(libs.kotlin.gradle.plugin)
     }
 }
 
@@ -15,10 +15,10 @@ plugins {
     id "maven-publish"
     alias(libs.plugins.jreleaser) apply(false)
     alias(libs.plugins.sonarqube) apply(false)
-    alias(libs.plugins.springboot) apply(false)
-    alias(libs.plugins.springBootDependencyManagement)
-    alias(libs.plugins.kotlinJvm) apply(false)
-    alias(libs.plugins.kotlinSpring) apply(false)
+    alias(libs.plugins.spring.boot) apply(false)
+    alias(libs.plugins.spring.boot.dependency.management)
+    alias(libs.plugins.kotlin.jvm) apply(false)
+    alias(libs.plugins.kotlin.spring) apply(false)
     alias(libs.plugins.kover)
     alias(libs.plugins.detekt) apply(false)
 }

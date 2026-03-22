@@ -4,6 +4,7 @@ import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
+import com.ragin.bdd.cucumber.rest.httpclient.ClientHttpRequestFactory
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.Before
@@ -47,7 +48,9 @@ class WhenRESTExecutionGlue(
 
         ScenarioStateContext.dynamicProxyHost = finalHost
         ScenarioStateContext.dynamicProxyPort = finalPort
-        restTemplate.restTemplate.requestFactory = createRequestFactory()
+        restTemplate.restTemplate.requestFactory = ClientHttpRequestFactory(
+            bddProperties = bddProperties
+        ).createRequestFactory()
     }
 
     /**
