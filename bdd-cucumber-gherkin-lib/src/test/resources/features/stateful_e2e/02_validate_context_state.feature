@@ -1,3 +1,4 @@
+@stateful_e2e
 Feature: E2E Stateful 02 - Second feature for stateful e2e test, which validates data from previous executed feature
 
   Scenario: Call body endpoint to validate that the data from previous static feature context is present

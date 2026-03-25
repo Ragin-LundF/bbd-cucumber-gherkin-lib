@@ -1,3 +1,4 @@
+@global_configuration
 Feature: Global configuration
 
   Scenario: Manipulate the body with values from global config

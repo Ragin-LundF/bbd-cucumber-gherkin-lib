@@ -1,3 +1,4 @@
+@flexible_json_global
 # ignore new array elements for the feature by annotation
 @bdd_lib_json_ignore_new_array_elements
 Feature: Flexible JSON assert configuration

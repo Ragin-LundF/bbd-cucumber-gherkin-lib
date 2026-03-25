@@ -1,3 +1,4 @@
+@stateful_e2e
 Feature: E2E Stateful 01 - Execute calls against an API and store it to the context for later usage
 
   Scenario: Call the dynamic path endpoints and remember value in context for other features

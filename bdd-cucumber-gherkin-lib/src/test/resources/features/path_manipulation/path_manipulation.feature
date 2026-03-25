@@ -1,3 +1,4 @@
+@path_manipulation
 Feature: Multiple resources
 
   Background: 

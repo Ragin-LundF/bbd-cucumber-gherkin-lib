@@ -1,3 +1,4 @@
+@flexible_json_local
 Feature: Flexible JSON assert configuration
 
   Rule: It must be possible to have different sorted arrays while comparing

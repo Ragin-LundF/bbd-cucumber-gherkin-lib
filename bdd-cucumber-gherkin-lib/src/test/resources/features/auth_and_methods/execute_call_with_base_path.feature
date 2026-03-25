@@ -1,3 +1,4 @@
+@base_path
 Feature: Define the base path with Given
   Background:
     Given that all URLs are relative to "/api"

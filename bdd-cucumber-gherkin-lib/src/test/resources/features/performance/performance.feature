@@ -1,3 +1,4 @@
+@performance
 Feature: Performance measurement
 
   Scenario: Bad Performance

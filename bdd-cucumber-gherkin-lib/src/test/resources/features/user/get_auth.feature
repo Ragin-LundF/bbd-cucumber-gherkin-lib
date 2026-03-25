@@ -1,3 +1,4 @@
+@user_get_auth
 Feature: User features
   Background:
     Given that the following users and tokens are existing

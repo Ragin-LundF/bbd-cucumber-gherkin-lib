@@ -24,6 +24,6 @@ import org.junit.platform.suite.api.Suite
             "junit:build/reports/cucumber/cucumber.xml"
 )
 @ConfigurationParameter(key = Constants.PLUGIN_PUBLISH_ENABLED_PROPERTY_NAME, value = "true")
-// @ConfigurationParameter(key = Constants.FILTER_TAGS_PROPERTY_NAME, value = "not @ignore")
+//@IncludeTags("custom_matcher")
 @ExcludeTags("ignore")
 class CucumberRunner

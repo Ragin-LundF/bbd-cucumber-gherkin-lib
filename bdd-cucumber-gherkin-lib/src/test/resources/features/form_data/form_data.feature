@@ -1,3 +1,4 @@
+@form_data
 Feature: Form Data
   Background:
     Given that all file paths are relative to "features/form_data/"

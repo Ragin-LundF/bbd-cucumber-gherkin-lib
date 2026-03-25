@@ -1,3 +1,4 @@
+@errors
 Feature: Testing handling of error codes
 
   Scenario Outline: Application returns a <ErrorCode> error to check that application errors are handled by REST template

@@ -1,3 +1,4 @@
+@post_auth
 Feature: Authorization with POST tests
   Background:
     Given that all file paths are relative to "features/auth_and_methods/"

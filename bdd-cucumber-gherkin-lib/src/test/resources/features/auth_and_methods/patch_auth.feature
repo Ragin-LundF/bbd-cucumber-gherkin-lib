@@ -1,3 +1,4 @@
+@patch_auth
 Feature: Authorization with PATCH tests
   Background:
     Given that all file paths are relative to "features/auth_and_methods/"

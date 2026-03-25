@@ -1,3 +1,4 @@
+@date_operation
 Feature: Date operations
   Rule: Scenarios with date in the past
     Scenario: Set date 3 days in the past to context and compare

@@ -1,3 +1,4 @@
+@custom_matcher
 Feature: Custom matcher tests
   Scenario: Using a simple and parameterized matcher
     Given that the context contains the following 'key' and 'value' pairs

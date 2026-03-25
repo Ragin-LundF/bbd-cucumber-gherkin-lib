@@ -1,3 +1,4 @@
+@body_manipulation
 Feature: Manipulation of the body
   Background:
     Given that all file paths are relative to "features/body_manipulation/"

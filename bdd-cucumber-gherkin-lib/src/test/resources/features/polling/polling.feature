@@ -1,3 +1,4 @@
+@polling
 Feature: Polling test
   Background:
     Given that all file paths are relative to "features/polling/responses/"

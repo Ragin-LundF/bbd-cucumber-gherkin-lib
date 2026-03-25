@@ -1,3 +1,4 @@
+@user_get_auth_global
 Feature: User features in global context
   Background:
     Given that the following users and tokens are existing

@@ -1,3 +1,4 @@
+@delete_auth
 Feature: Authorization with DELETE tests
   Background:
     Given that all file paths are relative to "features/auth_and_methods/"

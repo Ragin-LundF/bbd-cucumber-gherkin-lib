@@ -1,3 +1,4 @@
+@put_auth
 Feature: Authorization with PUT tests
   Background:
     Given that all file paths are relative to "features/auth_and_methods/"

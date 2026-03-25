@@ -1,3 +1,4 @@
+@body_validation
 Feature: Field validation instead of full JSON comparison
   Rule: Matcher are working for fields
     Scenario: Using the IBAN matcher

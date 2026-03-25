@@ -1,3 +1,4 @@
+@database
 Feature: Database examples
 
   Background: 
