@@ -2,8 +2,8 @@ package com.ragin.bdd.cucumber.utils
 
 import com.jayway.jsonpath.JsonPath
 import com.ragin.bdd.cucumber.BddLibConstants
+import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.getJsonPathOptions
-import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
 import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
 import com.ragin.bdd.cucumber.matcher.IBANMatcher
@@ -175,10 +175,7 @@ class BddJsonUtils(
         }
 
         // try to resolve value from context. If nothing was found, reset to original
-        var expectedValueToCompare = scenarioContextMap[expectedValue]
-        if (expectedValueToCompare == null) {
-            expectedValueToCompare = expectedValue
-        }
+        val expectedValueToCompare = ScenarioStateContext.resolveEntry(key = expectedValue)
 
         // read document
         val documentContext = JsonPath.parse(originalJson)
