@@ -28,6 +28,7 @@ subprojects {
     ext.DetektCreateBaselineTask = DetektCreateBaselineTask
 
     apply plugin: "idea"
+    apply plugin: "org.sonarqube"
     apply plugin: "maven-publish"
     apply plugin: "org.jreleaser"
     apply from: "${rootDir}/config/gradle/publishing.gradle"

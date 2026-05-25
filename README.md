@@ -32,9 +32,28 @@ The library is available on Maven Central.
 ```
 
 ### Gradle
+
+For all modules (REST + DB):
+
 ```groovy
 dependencies {
     testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
+For REST only modules:
+
+```groovy
+dependencies {
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-rest:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
+For DB modules:
+
+```groovy
+dependencies {
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-db:${version.bdd-cucumber-gherkin-lib}"
 }
 ```
 
