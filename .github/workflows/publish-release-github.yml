@@ -39,3 +39,13 @@ jobs:
           echo "New version: ${NEW_VERSION}"
           ./gradlew -Pversion=${NEW_VERSION} publish
           ./gradlew -Pversion=${NEW_VERSION} jreleaserDeploy
+
+      - name: JReleaser release output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jreleaser-release
+          path: |
+            build/jreleaser/trace.log
+            build/jreleaser/output.properties
+            build/reports/problems/problems-report.html
