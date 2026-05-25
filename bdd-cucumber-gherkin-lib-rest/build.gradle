@@ -1,3 +1,8 @@
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib-rest"
+    publishDescription = "REST API based sentences for bdd-cucumber-gherkin-lib"
+}
+
 dependencies {
     api project(':bdd-cucumber-gherkin-lib-core')
 

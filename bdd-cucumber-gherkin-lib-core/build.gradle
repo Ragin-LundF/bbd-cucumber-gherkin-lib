@@ -1,3 +1,8 @@
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib-core"
+    publishDescription = "Core module for bdd-cucumber-gherkin-lib"
+}
+
 dependencies {
     // --- Spring
     implementation(libs.spring.boot)

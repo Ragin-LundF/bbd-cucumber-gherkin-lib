@@ -1,10 +1,10 @@
-plugins {
-    id "java-platform"
-    id "maven-publish"
-}
-
 javaPlatform {
     allowDependencies()
+}
+
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib-bom"
+    publishDescription = "Bill of Material for bdd-cucumber-gherkin-lib"
 }
 
 dependencies {
@@ -14,39 +14,5 @@ dependencies {
         api project(":bdd-cucumber-gherkin-lib-core")
         api project(":bdd-cucumber-gherkin-lib-db")
         api project(":bdd-cucumber-gherkin-lib-rest")
-    }
-}
-
-// for development: PublishToMavenLocal
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.javaPlatform
-            artifactId = "bdd-cucumber-gherkin-lib"
-            version = "${version}"
-            pom {
-                name = "bdd-cucumber-gherkin-lib"
-                description = "Cucumber BDD library for simpler e2e tests with predefined sentences for API and basic database access"
-                url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
-                scm {
-                    connection = "scm:git:git@github.com:Ragin-LundF/bbd-cucumber-gherkin-lib.git"
-                    developerConnection = "scm:git:ssh://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib.git"
-                    url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
-                }
-                licenses {
-                    license {
-                        name = "MIT"
-                        url = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/blob/main/LICENSE"
-                    }
-                }
-                developers {
-                    developer {
-                        id = "Ragin-LundF"
-                        name = "Ragin-LundF"
-                        organizationUrl = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
-                    }
-                }
-            }
-        }
     }
 }
