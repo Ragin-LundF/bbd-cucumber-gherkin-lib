@@ -15,12 +15,4 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-
-tasks.withType(Detekt).configureEach {
-    jvmTarget = JavaLanguageVersion.of(jdk_version)
-}
-tasks.withType(DetektCreateBaselineTask).configureEach {
-    jvmTarget = JavaLanguageVersion.of(jdk_version)
-}
-
 tasks.assemble.finalizedBy(tasks.detekt)

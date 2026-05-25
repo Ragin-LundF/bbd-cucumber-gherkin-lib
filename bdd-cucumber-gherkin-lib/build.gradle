@@ -1,0 +1,47 @@
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib"
+    publishDescription = "REST API and Database bundle of sentences for bdd-cucumber-gherkin-lib (compatibility mode)"
+}
+
+dependencies {
+    api project(":bdd-cucumber-gherkin-lib-core")
+    api project(":bdd-cucumber-gherkin-lib-db")
+    api project(":bdd-cucumber-gherkin-lib-rest")
+
+    // --- Spring
+    implementation(libs.spring.boot)
+    implementation(libs.spring.web)
+    implementation(libs.spring.boot.autoconfigure)
+    implementation(libs.spring.boot.test)
+
+    // --- Commons
+    implementation(libs.commons.io)
+
+    // --- Logging
+    implementation(libs.logging.logger)
+
+    // --- Jackson
+    implementation(libs.bundles.jackson)
+
+    // Testing-Libraries
+    api(libs.bundles.cucumber)
+    implementation(libs.json.path)
+    implementation(libs.json.unit)
+    implementation(libs.testing.kotlin.test)
+
+    // Tests
+    testImplementation(libs.logging.slf4j)
+    testImplementation(libs.testing.konsist)
+
+    testImplementation(libs.commons.lang)
+    testImplementation(libs.testing.junit.platform.suite)
+
+    testImplementation(libs.jakarta.validation)
+    testImplementation(libs.spring.boot.starter.web)
+    testImplementation(libs.spring.boot.starter.data.jpa)
+    testImplementation(libs.spring.boot.starter.liquibase)
+    testImplementation(libs.spring.boot.rest.test.client)
+
+    testImplementation(libs.database.postgres)
+    testImplementation(libs.bundles.testcontainers)
+}

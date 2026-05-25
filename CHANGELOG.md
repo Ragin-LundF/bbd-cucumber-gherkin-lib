@@ -1,3 +1,23 @@
+# Release 3.1.0
+
+## Update Libraries
+- Spring Boot to 4.0.6
+- Kotlin to 2.3.21
+- Postgres to 42.7.11
+- Liquibase to 5.0.3
+
+## Architecture Changes
+Split the project into multiple modules for better maintainability and scalability.
+
+| Module                        | Description                                                                        |
+|-------------------------------|------------------------------------------------------------------------------------|
+| bdd-cucumber-gherkin-lib      | Meta-Package which bundles all modules (compatibility mode)                        |
+| bdd-cucumber-gherkin-lib-bom  | Bills of Material for the modules.                                                 |
+| bdd-cucumber-gherkin-lib-core | Main code like utils, matcher, ScenarioContext.                                    |
+| bdd-cucumber-gherkin-lib-db   | Database related sentences. This module automatically depends on core.             |
+| bdd-cucumber-gherkin-lib-rest | REST sentences. If no database sentences are required, this module should be used. |
+
+
 # Release 3.0.0
 
 This major release update is a breaking change release in matter of the minimum requirements.
@@ -5,7 +25,7 @@ This major release update is a breaking change release in matter of the minimum 
 ## Breaking Changes
 
 This release requires at least the following versions:
-- 
+
 - Spring Boot to 4.0.1
 - Kotlin 2.3.0
 - JDK 25
@@ -416,7 +436,7 @@ And I ensure that the body of the response is equal to
     """
 ```
 
-See [src/test/resources/features/body_validation/field_compare.feature](src/test/resources/features/body_validation/field_compare.feature)
+See [src/test/resources/features/body_validation/field_compare.feature](bdd-cucumber-gherkin-lib/src/test/resources/features/body_validation/field_compare.feature)
 
 # Release 2.11.0
 
@@ -639,7 +659,7 @@ When executing an authorized form-data POST call to "/your/api" with the fields
 
 The fields are written as key/value datamap.
 
-Examples can be found at [src/test/resources/features/form_data/](src/test/resources/features/form_data/).
+Examples can be found at [src/test/resources/features/form_data/](bdd-cucumber-gherkin-lib/src/test/resources/features/form_data/).
 
 # Release 1.45.0
 
@@ -689,7 +709,7 @@ And that the API path is "/api/v1/pollingAuth"
 When executing an authorized GET poll request until the response code is 200
 ```
 
-Examples can be found at [src/test/resources/features/polling/](src/test/resources/features/polling/).
+Examples can be found at [src/test/resources/features/polling/](bdd-cucumber-gherkin-lib/src/test/resources/features/polling/).
 
 ## Extended Header Manipulation
 
@@ -703,7 +723,7 @@ Given I set the header "X-My-Custom-Header" to "ABC_DEF" prefixed by "PRE_"
 This sets the header `X-My-Custom-Header` to the value of `ABC_DEF` with the prefix `PRE_`.
 The prefix and the value can be also a variable name from the context.
 
-Please have a look to the examples at: [src/test/resources/features/header/](src/test/resources/features/header/)
+Please have a look to the examples at: [src/test/resources/features/header/](bdd-cucumber-gherkin-lib/src/test/resources/features/header/)
 
 # Release 1.40.0
 
@@ -743,7 +763,7 @@ And I ensure, that the header "X-TEST-HEADER" is equal to "present"
 
 This might be used to check if XSS headers are set for example.
 
-See [src/test/resources/features/header/header.feature](src/test/resources/features/header/header.feature)
+See [src/test/resources/features/header/header.feature](bdd-cucumber-gherkin-lib/src/test/resources/features/header/header.feature)
 
 # Release 1.37.0
 
@@ -784,7 +804,7 @@ Then I wait for 1000 ms
 ```
 
 Examples at:
-[src/test/resources/features/performance/performance.feature](src/test/resources/features/performance/performance.feature)
+[src/test/resources/features/performance/performance.feature](bdd-cucumber-gherkin-lib/src/test/resources/features/performance/performance.feature)
 
 # Release 1.35.0
 
@@ -797,7 +817,7 @@ Read more at:
 [docs/date_operations.md](docs/date_operations.md).
 
 Examples at:
-[src/test/resources/features/date_operations/date_operations.feature](src/test/resources/features/date_operations/date_operations.feature)
+[src/test/resources/features/date_operations/date_operations.feature](bdd-cucumber-gherkin-lib/src/test/resources/features/date_operations/date_operations.feature)
 
 # Release 1.34.1
 
@@ -879,8 +899,8 @@ By defining it in the `application` file, it can be defined once and used everyw
 
 For an example, please have a look at:
 
-- Configuration: [application.yml](src/test/resources/application.yml)
-- Test: [global_config/global_config.feature](src/test/resources/features/global_config/global_config.feature)
+- Configuration: [application.yml](bdd-cucumber-gherkin-lib/src/test/resources/application.yml)
+- Test: [global_config/global_config.feature](bdd-cucumber-gherkin-lib/src/test/resources/features/global_config/global_config.feature)
 
 # Release 1.31.0
 
@@ -977,7 +997,7 @@ When executing a GET poll request until the response code is 200 and the body is
     """
 ```
 
-Examples can be found at [src/test/resources/features/polling/](src/test/resources/features/polling/).
+Examples can be found at [src/test/resources/features/polling/](bdd-cucumber-gherkin-lib/src/test/resources/features/polling/).
 
 # Release 1.29.1
 
@@ -1103,7 +1123,7 @@ This should make the code more robust and better maintainable.
 ## Enhanced tests
 
 Tests for the database features were added
-under [src/test/resources/features/database/](src/test/resources/features/database/).
+under [src/test/resources/features/database/](bdd-cucumber-gherkin-lib/src/test/resources/features/database/).
 
 # Release 1.26.0
 
@@ -1123,7 +1143,7 @@ Then I ensure that the execution time is less than {long} ms
 Validates, that the execution of the Scenario has taken less than [n] ms.
 
 Please have a look to the examples
-at: [src/test/resources/features/performance/](src/test/resources/features/performance/).
+at: [src/test/resources/features/performance/](bdd-cucumber-gherkin-lib/src/test/resources/features/performance/).
 
 # Release 1.23.0
 
@@ -1145,7 +1165,7 @@ Feature: Bearer Token
 This sentence is primary looking into the context map, if there is a key with the given value.
 If this is not the case, it uses the given string directly as the token.
 
-Please have a look to the examples at: [src/test/resources/features/header/](src/test/resources/features/header/)
+Please have a look to the examples at: [src/test/resources/features/header/](bdd-cucumber-gherkin-lib/src/test/resources/features/header/)
 
 # Release 1.22.0
 
@@ -1168,8 +1188,8 @@ To register this custom class it is necessary to add it `@ContextConfiguration` 
 
 Example:
 
-- [Configuration context](src/test/kotlin/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.kt)
-- [Test feature](src/test/resources/features/body_validation/field_compare.feature)
+- [Configuration context](bdd-cucumber-gherkin-lib/src/test/kotlin/com/ragin/bdd/cucumbertests/hooks/CreateContextHooks.kt)
+- [Test feature](bdd-cucumber-gherkin-lib/src/test/resources/features/body_validation/field_compare.feature)
 
 # Release 1.20.7
 
@@ -1246,7 +1266,7 @@ Now it is possible to use static values or (if the value matches to the context)
 
 Example:
 
-[src/test/resources/features/header/](src/test/resources/features/header/)
+[src/test/resources/features/header/](bdd-cucumber-gherkin-lib/src/test/resources/features/header/)
 
 # Release 1.20.1
 
@@ -1290,7 +1310,7 @@ Feature: User features in global context
     And that the user is "john_doe"
 ```
 
-Please have a look to the examples at: [src/test/resources/features/user/](src/test/resources/features/user/)
+Please have a look to the examples at: [src/test/resources/features/user/](bdd-cucumber-gherkin-lib/src/test/resources/features/user/)
 
 # Release 1.19.0
 
@@ -1360,7 +1380,7 @@ These are written with the notation `${json-unit.matches:isUUID}` (as an example
 **_ATTENTION: Only unparameterized custom matchers or bdd lib-matchers can be used for field validation!_**
 
 Find examples for this feature
-under: [src/test/resources/features/body_validation/](src/test/resources/features/body_validation/).
+under: [src/test/resources/features/body_validation/](bdd-cucumber-gherkin-lib/src/test/resources/features/body_validation/).
 
 ## Reset the scenario context
 
@@ -1384,7 +1404,7 @@ _It is also possible to use the `@bdd_lib_json_ignore_new_array_elements` annota
 
 With this sentence or annotation, the JSON comparison will ignore new array elements.
 
-See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
+See [src/test/resources/features/flexible_json/](bdd-cucumber-gherkin-lib/src/test/resources/features/flexible_json/) for examples.
 
 ## Configure the JSON compare to ignore the order of arrays
 
@@ -1397,7 +1417,7 @@ _It is also possible to use the `@bdd_lib_json_ignore_array_order` annotation on
 
 With this sentence or annotation, the JSON comparison will ignore the order of arrays.
 
-See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
+See [src/test/resources/features/flexible_json/](bdd-cucumber-gherkin-lib/src/test/resources/features/flexible_json/) for examples.
 
 ## Configure the JSON compare to ignore extra fields
 
@@ -1410,7 +1430,7 @@ _It is also possible to use the `@bdd_lib_json_ignore_extra_fields` annotation o
 
 With this sentence or annotation, the JSON comparison will ignore new/not defined fields in the response.
 
-See [src/test/resources/features/flexible_json/](src/test/resources/features/flexible_json/) for examples.
+See [src/test/resources/features/flexible_json/](bdd-cucumber-gherkin-lib/src/test/resources/features/flexible_json/) for examples.
 
 # Release 1.17.0
 
