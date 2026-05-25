@@ -1,3 +1,23 @@
+# Release 3.1.0
+
+## Update Libraries
+- Spring Boot to 4.0.6
+- Kotlin to 2.3.21
+- Postgres to 42.7.11
+- Liquibase to 5.0.3
+
+## Architecture Changes
+Split the project into multiple modules for better maintainability and scalability.
+
+| Module                        | Description                                                                        |
+|-------------------------------|------------------------------------------------------------------------------------|
+| bdd-cucumber-gherkin-lib      | Meta-Package which bundles all modules (compatibility mode)                        |
+| bdd-cucumber-gherkin-lib-bom  | Bills of Material for the modules.                                                 |
+| bdd-cucumber-gherkin-lib-core | Main code like utils, matcher, ScenarioContext.                                    |
+| bdd-cucumber-gherkin-lib-db   | Database related sentences. This module automatically depends on core.             |
+| bdd-cucumber-gherkin-lib-rest | REST sentences. If no database sentences are required, this module should be used. |
+
+
 # Release 3.0.0
 
 This major release update is a breaking change release in matter of the minimum requirements.
@@ -5,7 +25,7 @@ This major release update is a breaking change release in matter of the minimum 
 ## Breaking Changes
 
 This release requires at least the following versions:
-- 
+
 - Spring Boot to 4.0.1
 - Kotlin 2.3.0
 - JDK 25
