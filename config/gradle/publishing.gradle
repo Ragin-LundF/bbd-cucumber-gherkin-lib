@@ -64,8 +64,8 @@ jreleaser {
         verify = false
         armored = true
         mode = 'FILE'
-        publicKey = 'ragin_public.pgp'
-        secretKey = 'ragin_secret.pgp'
+        publicKey = "${rootDir}/ragin_public.pgp"
+        secretKey = "${rootDir}/ragin_secret.pgp"
     }
     deploy {
         maven {
@@ -73,7 +73,7 @@ jreleaser {
                 sonatype {
                     active = 'ALWAYS'
                     url = 'https://central.sonatype.com/api/v1/publisher'
-                    stagingRepository('build/staging-deploy')
+                    stagingRepository('target/staging-deploy')
                 }
             }
         }
