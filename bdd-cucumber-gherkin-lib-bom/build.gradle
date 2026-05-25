@@ -1,0 +1,18 @@
+javaPlatform {
+    allowDependencies()
+}
+
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib-bom"
+    publishDescription = "Bill of Material for bdd-cucumber-gherkin-lib"
+}
+
+dependencies {
+    //api(platform("software.amazon.awssdk:bom:${versionAwssdk}"))
+
+    constraints {
+        api project(":bdd-cucumber-gherkin-lib-core")
+        api project(":bdd-cucumber-gherkin-lib-db")
+        api project(":bdd-cucumber-gherkin-lib-rest")
+    }
+}

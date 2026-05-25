@@ -15,7 +15,7 @@ See [Changelog](CHANGELOG.md) for release information.
 
 The library tests with itself and with a dummy application in the test sources to have a lot of examples for the usage.
 There you can also find custom-matcher for JSON-Assert.
-See [src/test](src/test) folder for examples.
+See [src/test](bdd-cucumber-gherkin-lib/src/test) folder for examples.
 
 ## How to integrate
 
@@ -32,9 +32,28 @@ The library is available on Maven Central.
 ```
 
 ### Gradle
+
+For all modules (REST + DB):
+
 ```groovy
 dependencies {
     testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
+For REST only modules:
+
+```groovy
+dependencies {
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-rest:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
+For DB modules:
+
+```groovy
+dependencies {
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-db:${version.bdd-cucumber-gherkin-lib}"
 }
 ```
 

@@ -13,3 +13,8 @@ dependencyResolutionManagement {
 
 rootProject.name = 'bdd-cucumber-gherkin-lib'
 
+include 'bdd-cucumber-gherkin-lib'
+include 'bdd-cucumber-gherkin-lib-bom'
+include 'bdd-cucumber-gherkin-lib-core'
+include 'bdd-cucumber-gherkin-lib-db'
+include 'bdd-cucumber-gherkin-lib-rest'
