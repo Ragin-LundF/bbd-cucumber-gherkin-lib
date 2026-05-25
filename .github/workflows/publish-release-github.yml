@@ -38,7 +38,11 @@ jobs:
           NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3 | sed s/v//)
           echo "New version: ${NEW_VERSION}"
           ./gradlew -Pversion=${NEW_VERSION} publish
-          ./gradlew -Pversion=${NEW_VERSION} jreleaserDeploy
+          ./gradlew -Pversion=${NEW_VERSION} jreleaserDeploy --stacktrace --info || {
+              echo "=== jReleaser trace.log ==="
+              find . -path "*/build/jreleaser/trace.log" -print -exec cat {} \;
+              exit 1
+          }
 
       - name: JReleaser release output
         if: always()
@@ -47,6 +51,6 @@ jobs:
           name: jreleaser-release
           if-no-files-found: ignore
           path: |
-            ${{ github.workspace }}/**/build/jreleaser/trace.log
-            ${{ github.workspace }}/**/build/jreleaser/output.properties
-            ${{ github.workspace }}/**/build/reports/problems/problems-report.html
+            **/build/jreleaser/trace.log
+            **/build/jreleaser/output.properties
+            **/build/reports/problems/problems-report.html
