@@ -1,4 +1,4 @@
-# Release 3.1.1
+# Release 3.2.0
 
 ## Bugfix
 Fixes the issue, that if a server was configured in the `application.yaml` (`cucumberTest.server.*`), that it was not taken into consideration.
