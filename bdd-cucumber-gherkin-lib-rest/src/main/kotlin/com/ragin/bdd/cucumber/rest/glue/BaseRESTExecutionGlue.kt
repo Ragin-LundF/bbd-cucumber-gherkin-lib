@@ -119,7 +119,12 @@ abstract class BaseRESTExecutionGlue(
             httpEntity = HttpEntity(body, headers)
         }
         runCatching {
-            val targetUrl = UrlUtils.fullURLFor(path = path)
+            val targetUrl = UrlUtils.fullURLFor(
+                path = path,
+                protocol = bddProperties.server?.protocol,
+                host = bddProperties.server?.host,
+                port = bddProperties.server?.port
+            )
             RequestLoggerUtils.logRequest(httpMethod = httpMethod, url = targetUrl, scenario = scenario)
 
             setLatestResponse(
@@ -168,7 +173,12 @@ abstract class BaseRESTExecutionGlue(
 
         val request = HttpEntity(formDataMap, headers)
         runCatching {
-            val targetUrl = UrlUtils.fullURLFor(path = path)
+            val targetUrl = UrlUtils.fullURLFor(
+                path = path,
+                protocol = bddProperties.server?.protocol,
+                host = bddProperties.server?.host,
+                port = bddProperties.server?.port
+            )
             log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
                 latestResponse = restTemplate.postForEntity<String>(
@@ -210,7 +220,12 @@ abstract class BaseRESTExecutionGlue(
         // create HttpEntity
         val httpEntity = HttpEntity(map, headers)
         runCatching {
-            val targetUrl = UrlUtils.fullURLFor(path = path)
+            val targetUrl = UrlUtils.fullURLFor(
+                path = path,
+                protocol = bddProperties.server?.protocol,
+                host = bddProperties.server?.host,
+                port = bddProperties.server?.port
+            )
             RequestLoggerUtils.logRequest(
                 httpMethod = HttpMethod.POST,
                 url = targetUrl,
