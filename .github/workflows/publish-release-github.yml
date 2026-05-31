@@ -43,7 +43,7 @@ jobs:
 #              echo "=== jReleaser trace.log ==="
 #              find . -path "*/build/jreleaser/trace.log" -print -exec cat {} \;
 #              exit 1
-          }
+#          }
 
 #      - name: JReleaser release output
 #        if: always()
