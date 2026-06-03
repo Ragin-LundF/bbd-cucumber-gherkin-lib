@@ -36,7 +36,7 @@ spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot
 
 # --- JSON
 json-path = { module = "com.jayway.jsonpath:json-path", version = "3.0.0" }
-json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.1" }
+json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.2" }
 
 # --- Cucumber
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
