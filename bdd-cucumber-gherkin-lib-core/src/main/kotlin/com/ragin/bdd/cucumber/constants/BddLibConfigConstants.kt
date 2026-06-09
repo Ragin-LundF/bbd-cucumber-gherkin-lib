@@ -34,7 +34,7 @@ object BddLibConfigConstants {
 
     const val GLUE_PROPERTY_VALUES_REST_DATABASE = Core.GLUE_PROPERTY_VALUES_HOOKS_CORE +
             COMMA +
-            Rest.GLUE_PROPERTY_VALUES_GLUE_REST+
+            Rest.GLUE_PROPERTY_VALUES_GLUE_REST +
             COMMA +
             Database.GLUE_PROPERTY_VALUES_HOOKS_DATABASE +
             COMMA +
