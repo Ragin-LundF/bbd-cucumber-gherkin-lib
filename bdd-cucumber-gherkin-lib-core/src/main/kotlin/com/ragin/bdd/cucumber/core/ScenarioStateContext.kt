@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.core
 
-import org.springframework.http.ResponseEntity
 import net.javacrumbs.jsonunit.core.Option
+import org.springframework.http.ResponseEntity
 
 object ScenarioStateContext {
     var latestResponse: ResponseEntity<String>? = null
@@ -51,11 +51,11 @@ object ScenarioStateContext {
         fileBasePath = ""
         urlBasePath = ""
         editableBody = ""
-        headerValues = hashMapOf()
-        jsonPathOptions = mutableListOf()
+        headerValues.clear()
+        jsonPathOptions.clear()
         bearerToken = defaultBearerToken
-        polling = Polling()
-        scenarioContextFileMap = hashMapOf()
+        polling.clear()
+        scenarioContextFileMap.clear()
     }
 
     fun resolveEntry(key: String): String {
@@ -85,5 +85,10 @@ object ScenarioStateContext {
     class Polling {
         var pollEverySeconds: Long = 0
         var numberOfPolls: Int = -1
+
+        fun clear() {
+            pollEverySeconds = 0
+            numberOfPolls = -1
+        }
     }
 }
