@@ -1,3 +1,11 @@
+# Release 3.3.0
+## Main Library Updates
+- Spring Boot to 4.0.7
+
+## Fixes
+- Fixed that `json-unit` and `json-path` was not used as transitive dependency. 
+
+
 # Release 3.2.0
 
 ## Bugfix

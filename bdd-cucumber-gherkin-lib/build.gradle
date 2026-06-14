@@ -25,8 +25,8 @@ dependencies {
 
     // Testing-Libraries
     api(libs.bundles.cucumber)
-    implementation(libs.json.path)
-    implementation(libs.json.unit)
+    api(libs.json.path)
+    api(libs.json.unit)
     implementation(libs.testing.kotlin.test)
 
     // Tests
