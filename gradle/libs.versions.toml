@@ -1,8 +1,7 @@
 [versions]
 kotlin = "2.3.21"
-springBoot = "4.0.6"
+springBoot = "4.0.7"
 cucumber = "7.34.3"
-jackson = "3.1.3"
 testcontainers = "2.0.5"
 
 [libraries]
@@ -10,7 +9,7 @@ testcontainers = "2.0.5"
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 # --- Common Libs and Utils
-logging-logger = { module = "io.github.oshai:kotlin-logging-jvm", version = "8.0.03" }
+logging-logger = { module = "io.github.oshai:kotlin-logging-jvm", version = "8.0.4" }
 logging-slf4j = { module = "org.slf4j:slf4j-simple", version = "2.0.18" }
 
 commons-io = { module = "commons-io:commons-io", version = "2.22.0" }
@@ -36,7 +35,7 @@ spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot
 
 # --- JSON
 json-path = { module = "com.jayway.jsonpath:json-path", version = "3.0.0" }
-json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.1" }
+json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.2" }
 
 # --- Cucumber
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
@@ -49,12 +48,12 @@ testing-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
 testing-konsist = { module = "com.lemonappdev:konsist", version = "0.17.3" }
 
 # --- Jackson
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version = "2.21" }
-jackson-jaxb = { module = "tools.jackson.module:jackson-module-jaxb-annotations", version.ref = "jackson" }
-jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
-jackson-module-blackbird = { module = "tools.jackson.module:jackson-module-blackbird", version.ref = "jackson" }
-jackson-dataformmat-yaml = { module = "tools.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
-jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat-csv", version.ref = "jackson" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
+jackson-jaxb = { module = "tools.jackson.module:jackson-module-jaxb-annotations" }
+jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
+jackson-module-blackbird = { module = "tools.jackson.module:jackson-module-blackbird" }
+jackson-dataformmat-yaml = { module = "tools.jackson.dataformat:jackson-dataformat-yaml" }
+jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat-csv" }
 
 # --- HTTP Client
 httpclient = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.6.1" }
@@ -98,8 +97,7 @@ testcontainers = [
 jreleaser = { id = "org.jreleaser", version = "1.24.0" }
 sonarqube = { id = "org.sonarqube", version = "7.3.0.8198" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
-spring-boot-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.8" }
-detekt = { id = "dev.detekt", version = "2.0.0-alpha.3" }
+detekt = { id = "dev.detekt", version = "2.0.0-alpha.4" }
