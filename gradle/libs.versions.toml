@@ -95,7 +95,7 @@ testcontainers = [
 
 [plugins]
 jreleaser = { id = "org.jreleaser", version = "1.24.0" }
-sonarqube = { id = "org.sonarqube", version = "7.3.0.8198" }
+sonarqube = { id = "org.sonarqube", version = "7.3.1.8318" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
