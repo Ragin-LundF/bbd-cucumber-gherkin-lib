@@ -85,20 +85,20 @@ dependencies {
 
 Full documentation lives in the **[Wiki](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki)**.
 
-| Topic | Wiki page |
-|---|---|
-| First test from scratch | [Getting Started](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Getting-Started) |
-| Maven / Gradle / BOM setup | [Installation](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Installation) |
-| Spring context, auth, proxy, SSL, DB config | [Configuration](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Configuration) |
+| Topic                                           | Wiki page |
+|-------------------------------------------------|---|
+| First test from scratch                         | [Getting Started](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Getting-Started) |
+| Maven / Gradle / BOM setup                      | [Installation](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Installation) |
+| Spring context, auth, proxy, SSL, DB config     | [Configuration](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Configuration) |
 | ScenarioContext, file paths, URL base, keywords | [Concepts](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Concepts) |
-| All step signatures at a glance | [All Steps — Quick Reference](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/All-Steps-Quick-Reference) |
-| Authentication steps | [Given — Authentication](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Given-Authentication) |
-| Request setup steps | [Given — Request Setup](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Given-Request-Setup) |
-| HTTP call steps | [When — REST Calls](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/When-REST-Calls) |
-| Polling steps | [When — Polling](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/When-Polling) |
-| Status code / body / header assertions | [Then — Validation](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Then-Validation) |
-| Storing response values for later steps | [Then — Context](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Then-Context) |
-| Async wait and timing assertions | [Then — Timing](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Then-Timing) |
-| Dynamic date generation | [Common — Dates](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Common-Dates) |
-| Liquibase, SQL, CSV comparison | [Common — Database](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Common-Database) |
-| Built-in and custom JSON matchers | [JSON-Unit](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/JSON-Unit) |
+| All step signatures at a glance                 | [All Steps — Quick Reference](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Reference) |
+| Authentication steps                            | [Given — Authentication](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Given-Authentication) |
+| Request setup steps                             | [Given — Request Setup](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Given) |
+| HTTP call steps                                 | [When — REST Calls](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-When) |
+| Polling steps                                   | [When — Polling](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-When-Polling) |
+| Status code / body / header assertions          | [Then — Validation](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Then-Validation) |
+| Storing response values for later steps         | [Then — Context](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Then-Context) |
+| Async wait and timing assertions                | [Then — Timing](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Then-Time) |
+| Dynamic date handling                           | [Common — Dates](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Common-Dates) |
+| Liquibase, SQL, CSV comparison                  | [Common — Database](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Common-Database) |
+| Built-in and custom JSON matchers               | [JSON-Unit](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/JSON-Unit) |
