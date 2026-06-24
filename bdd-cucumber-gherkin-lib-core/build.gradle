@@ -9,9 +9,6 @@ dependencies {
     implementation(libs.spring.web)
     implementation(libs.spring.boot.test)
 
-    // --- Commons
-    implementation(libs.commons.io)
-
     // --- Logging
     implementation(libs.logging.logger)
 
