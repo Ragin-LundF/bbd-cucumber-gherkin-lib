@@ -49,7 +49,9 @@ internal class TestKonsistTests {
                 names = listOf(
                     "Test",
                     "ParameterizedTest",
-                    "RepeatedTest"
+                    "RepeatedTest",
+                    "BeforeTest",
+                    "AfterTest"
                 )
             ).filterIsInstance<KoVisibilityModifierProvider>()
             .assertTrue { it.hasPrivateModifier }
