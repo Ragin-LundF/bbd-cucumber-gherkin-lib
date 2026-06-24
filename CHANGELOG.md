@@ -1,3 +1,8 @@
+# Release 3.4.0
+- Added AI instructions that AI can help with testing or optimization. This means not, that it becomes an AI sloppish library, but for suggestions and findings or testing it is good. Everything is still reviewed manually and in most cases also written manually. But it makes live easier if AI can analyze or suggest something and it is in a proper shape.
+- Moved `com.ragin.bdd.BddLibConstants` to `com.ragin.bdd.constants.BddLibConstants` to have a more consistent package usage.
+- Added some tests for internal functions to make it more stable.
+
 # Release 3.3.0
 ## Main Library Updates
 - Spring Boot to 4.0.7
