@@ -8,39 +8,39 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class UUIDMatcherTest {
+internal class UUIDMatcherTests {
 
     private val uuidMatcher = UUIDMatcher()
 
     @Test
-    fun `valid UUID matches`() {
+    internal fun `valid UUID matches`() {
         assertTrue(actual = uuidMatcher.matches(item = Uuid.random().toString()))
     }
 
     @Test
-    fun `nil UUID matches`() {
+    internal fun `nil UUID matches`() {
         assertTrue(actual = uuidMatcher.matches(item = Uuid.NIL))
     }
 
     @Test
-    fun `non-UUID string does not match`() {
+    internal fun `non-UUID string does not match`() {
         assertFalse(actual = uuidMatcher.matches(item = "not-a-uuid"))
     }
 
     @Test
-    fun `empty string does not match`() {
+    internal fun `empty string does not match`() {
         assertFalse(actual = uuidMatcher.matches(item = ""))
     }
 
     @Test
-    fun `UUID without hyphens does not match`() {
+    internal fun `UUID without hyphens does not match`() {
         assertFalse(actual = uuidMatcher.matches(
             item = Uuid.random().toString().replace(oldValue = "-", newValue = ""))
         )
     }
 
     @Test
-    fun `matcherName returns isValidUUID`() {
+    internal fun `matcherName returns isValidUUID`() {
         assertEquals(expected = "isValidUUID", actual = uuidMatcher.matcherName())
     }
 }

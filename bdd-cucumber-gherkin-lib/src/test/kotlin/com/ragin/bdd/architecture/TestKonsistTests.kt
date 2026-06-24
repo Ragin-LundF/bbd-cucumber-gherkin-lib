@@ -58,7 +58,8 @@ internal class TestKonsistTests {
     private fun konsistDirectoryScope(): KoScope {
         return Konsist.scopeFromDirectories(
             paths = listOf(
-                "src/test/kotlin/com/ragin/bdd/cucumber"
+                "bdd-cucumber-gherkin-lib/src/test/kotlin/com/ragin/bdd/cucumber",
+                "bdd-cucumber-gherkin-lib-core/src/test/kotlin/com/ragin/bdd/cucumber"
             )
         )
     }

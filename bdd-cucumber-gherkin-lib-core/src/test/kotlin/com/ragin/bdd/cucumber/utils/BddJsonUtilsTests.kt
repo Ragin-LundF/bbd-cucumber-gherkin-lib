@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
-class BddJsonUtilsTest {
+internal class BddJsonUtilsTests {
 
     private val utils = BddJsonUtils(
         jsonMatcher = null,
@@ -17,13 +17,13 @@ class BddJsonUtilsTest {
     private val sampleJson = """{"name":"Alice","age":30}"""
 
     @BeforeTest
-    fun setUp() {
+    private fun setUp() {
         ScenarioStateContext.defaultBearerToken = ""
         ScenarioStateContext.reset()
     }
 
     @Test
-    fun `editJsonField with dollar-dot prefix sets field value`() {
+    internal fun `editJsonField with dollar-dot prefix sets field value`() {
         val result = utils.editJsonField(
             originalJson = sampleJson,
             fieldPath = "$.name",
@@ -34,7 +34,7 @@ class BddJsonUtilsTest {
     }
 
     @Test
-    fun `editJsonField without dollar-dot prefix auto-adds prefix`() {
+    internal fun `editJsonField without dollar-dot prefix auto-adds prefix`() {
         val result = utils.editJsonField(
             originalJson = sampleJson,
             fieldPath = "name",
@@ -45,7 +45,7 @@ class BddJsonUtilsTest {
     }
 
     @Test
-    fun `removeJsonField sets field value to null`() {
+    internal fun `removeJsonField sets field value to null`() {
         val result = utils.removeJsonField(
             originalJson = sampleJson,
             fieldPath = "$.name"
@@ -55,7 +55,7 @@ class BddJsonUtilsTest {
     }
 
     @Test
-    fun `assertJsonEquals does not throw for equal JSON objects`() {
+    internal fun `assertJsonEquals does not throw for equal JSON objects`() {
         utils.assertJsonEquals(
             expectedJSON = """{"name":"Alice","age":30}""",
             actualJSON = """{"name":"Alice","age":30}"""
@@ -63,7 +63,7 @@ class BddJsonUtilsTest {
     }
 
     @Test
-    fun `assertJsonEquals does not throw for equal JSON with different key order`() {
+    internal fun `assertJsonEquals does not throw for equal JSON with different key order`() {
         utils.assertJsonEquals(
             expectedJSON = """{"age":30,"name":"Alice"}""",
             actualJSON = """{"name":"Alice","age":30}"""
@@ -71,7 +71,7 @@ class BddJsonUtilsTest {
     }
 
     @Test
-    fun `assertJsonEquals throws AssertionError for different JSON values`() {
+    internal fun `assertJsonEquals throws AssertionError for different JSON values`() {
         assertFailsWith<AssertionError> {
             utils.assertJsonEquals(
                 expectedJSON = """{"name":"Alice"}""",

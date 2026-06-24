@@ -13,12 +13,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class BddDateUtilsTest {
+internal class BddDateUtilsTests {
 
     private val noFormats: Collection<BddCucumberDateTimeFormat> = emptyList()
 
     @Test
-    fun `ISO date string is parsed to LocalDateTime at midnight`() {
+    internal fun `ISO date string is parsed to LocalDateTime at midnight`() {
         val result = BddDateUtils.transformToLocalDateTime(
             dateObject = "2024-03-15",
             bddDateTimeFormats = noFormats
@@ -30,7 +30,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `ISO datetime string date portion is extracted and time is normalized to midnight`() {
+    internal fun `ISO datetime string date portion is extracted and time is normalized to midnight`() {
         // parseDate with ISO_DATE_TIME extracts LocalDate from the full string; time is discarded to LocalTime.MIN
         val result = BddDateUtils.transformToLocalDateTime(
             dateObject = "2024-03-15T10:30:00",
@@ -43,7 +43,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `space-separated datetime string date portion is extracted and time is normalized to midnight`() {
+    internal fun `space-separated datetime string date portion is extracted and time is normalized to midnight`() {
         // parseDate with the custom space formatter extracts LocalDate; time is discarded to LocalTime.MIN
         val result = BddDateUtils.transformToLocalDateTime(
             dateObject = "2024-03-15 10:30:00",
@@ -56,7 +56,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `null string returns null`() {
+    internal fun `null string returns null`() {
         val result = BddDateUtils.transformToLocalDateTime(
             dateObject = "null",
             bddDateTimeFormats = noFormats
@@ -65,7 +65,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `NULL string is case-insensitively treated as null and returns null`() {
+    internal fun `NULL string is case-insensitively treated as null and returns null`() {
         val result = BddDateUtils.transformToLocalDateTime(
             dateObject = "NULL",
             bddDateTimeFormats = noFormats
@@ -74,7 +74,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `unparseable string throws DateTimeParseException`() {
+    internal fun `unparseable string throws DateTimeParseException`() {
         assertFailsWith<DateTimeParseException> {
             BddDateUtils.transformToLocalDateTime(
                 dateObject = "2025-20-20",
@@ -84,7 +84,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `Long epoch zero is converted to 1970-01-01 in Europe-Berlin timezone`() {
+    internal fun `Long epoch zero is converted to 1970-01-01 in Europe-Berlin timezone`() {
         val result = BddDateUtils.transformToLocalDateTime(
             dateObject = 0L,
             bddDateTimeFormats = noFormats
@@ -96,7 +96,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `BigDecimal epoch zero is converted to 1970-01-01 in Europe-Berlin timezone`() {
+    internal fun `BigDecimal epoch zero is converted to 1970-01-01 in Europe-Berlin timezone`() {
         val result = BddDateUtils.transformToLocalDateTime(
             dateObject = BigDecimal.ZERO,
             bddDateTimeFormats = noFormats
@@ -108,7 +108,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `isValidMandatoryDate returns true for valid ISO date string`() {
+    internal fun `isValidMandatoryDate returns true for valid ISO date string`() {
         assertTrue(
             actual = BddDateUtils.isValidMandatoryDate(
                 dateObject = "2024-03-15",
@@ -118,7 +118,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `isValidMandatoryDate returns false for null string`() {
+    internal fun `isValidMandatoryDate returns false for null string`() {
         assertFalse(
             actual = BddDateUtils.isValidMandatoryDate(
                 dateObject = "null",
@@ -128,7 +128,7 @@ class BddDateUtilsTest {
     }
 
     @Test
-    fun `isValidMandatoryDate returns true for valid Long timestamp`() {
+    internal fun `isValidMandatoryDate returns true for valid Long timestamp`() {
         assertTrue(
             actual = BddDateUtils.isValidMandatoryDate(
                 dateObject = 0L,
