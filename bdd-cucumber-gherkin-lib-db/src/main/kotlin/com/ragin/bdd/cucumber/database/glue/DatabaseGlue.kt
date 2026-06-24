@@ -7,7 +7,6 @@ import com.ragin.bdd.cucumber.utils.BddJacksonUtils
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
-import org.apache.commons.lang3.StringUtils
 import org.springframework.transaction.annotation.Transactional
 import tools.jackson.dataformat.csv.CsvMapper
 import tools.jackson.dataformat.csv.CsvSchema
@@ -118,7 +117,7 @@ open class DatabaseGlue(
             row.asSequence()
                 .filter { entry: Map.Entry<String, Any?> -> entry.value != null }
                 .filter { entry: Map.Entry<String, Any?> ->
-                    entry.value !is String || StringUtils.isNotEmpty(entry.value as String?)
+                    entry.value !is String || (entry.value is String && (entry.value as String).isNotEmpty())
                 }.associate { (columnName, columnValue) ->
                     generifyDatabaseColumnName(
                         columnName = columnName

@@ -2,7 +2,6 @@ package com.ragin.bdd.cucumber.core
 
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
-import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Component
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -54,7 +53,7 @@ open class BaseCucumberCore(
         val name = getFilePath(path = path)
         val resourceAsStream = javaClass.classLoader.getResourceAsStream(name)
             ?: throw FileNotFoundException("Could not find the file $name in the class path.")
-        return IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8)
+        return resourceAsStream.readBytes().toString(charset = StandardCharsets.UTF_8)
     }
 
     /**
