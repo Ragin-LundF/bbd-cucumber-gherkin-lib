@@ -6,7 +6,7 @@ import io.cucumber.java.Scenario
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
-open class DatabaseResetHook(
+open class DatabaseResetHooks(
     private val databaseExecutorService: IDatabaseExecutorService
 ) {
 

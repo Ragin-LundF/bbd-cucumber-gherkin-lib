@@ -1,4 +1,4 @@
-package com.ragin.bdd.cucumber
+package com.ragin.bdd.cucumber.constants
 
 import java.util.regex.Pattern
 
