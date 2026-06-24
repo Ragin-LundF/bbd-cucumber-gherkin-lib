@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.utils
 
-import com.ragin.bdd.cucumber.BddLibConstants.BDD_URI_ELEMENTS
-import com.ragin.bdd.cucumber.BddLibConstants.BDD_URI_VALUES
+import com.ragin.bdd.cucumber.constants.BddLibConstants.BDD_URI_ELEMENTS
+import com.ragin.bdd.cucumber.constants.BddLibConstants.BDD_URI_VALUES
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.bearerToken
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.headerValues
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap

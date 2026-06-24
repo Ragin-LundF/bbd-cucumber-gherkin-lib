@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.utils
 
 import com.jayway.jsonpath.JsonPath
-import com.ragin.bdd.cucumber.BddLibConstants
+import com.ragin.bdd.cucumber.constants.BddLibConstants
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.getJsonPathOptions
 import com.ragin.bdd.cucumber.datetimeformat.BddCucumberDateTimeFormat
