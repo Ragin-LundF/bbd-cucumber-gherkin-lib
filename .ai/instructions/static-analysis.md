@@ -34,11 +34,6 @@ If suppression is needed, it must use `@Suppress(<detekt reason>)`. For example:
 
 ## Expected verification commands
 
-Use the commands that exist in the host repository. Typical options:
-
-```bash
-./gradlew test detekt
-./gradlew cucumber
-```
+- Verification commands run (e.g. `./gradlew test detekt`, `./gradlew cucumber`).
 
 If commands cannot be run, state exactly which commands were not run and why.

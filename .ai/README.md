@@ -63,3 +63,4 @@ Preserve behavior unless the task explicitly asks for behavior changes. Refactor
 ## Token-saving rule
 
 Do not load every file in `.ai/` by default. Start with this index, then load only the files named above that match the current task.
+When a task spans three or more domains, load all instruction files.

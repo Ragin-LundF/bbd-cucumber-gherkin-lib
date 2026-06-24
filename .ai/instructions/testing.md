@@ -51,7 +51,7 @@ Never do the following:
 
 Use behavior-focused names. Good examples:
 
-- `URI should return corret path without double slashes`
+- `URI should return correct path without double slashes`
 - `Placeholder resourceId was replaced with correct value`
 
 Avoid names that only repeat method names.
