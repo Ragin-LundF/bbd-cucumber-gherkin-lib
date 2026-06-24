@@ -15,6 +15,8 @@ Use this file when adding, modifying, or reviewing tests.
 ## Unit tests
 
 - Use `kotlin.test` annotations and assertions when possible.
+- Tests and the test class should always be `internal`.
+- Helper functions which are no tests should be `private`. The only exception are `@BeforeTest` and `@AfterTest` functions.
 - Use named arguments for assertions, for example `assertEquals(expected = expectedValue, actual = actualValue)`.
 - Unit-test functions and parameter behavior directly.
 - Cover positive paths, negative paths, edge cases, boundary values, nullability where valid, and error paths.
