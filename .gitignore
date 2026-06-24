@@ -115,6 +115,7 @@ Desktop.ini
 */build
 /bin/
 /deploy/
+.kotlin
 
 ######################
 # Logs

@@ -8,7 +8,7 @@ import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import io.cucumber.java.en.When
 import org.apache.commons.lang3.StringUtils
 import org.springframework.boot.resttestclient.TestRestTemplate
-import java.util.*
+import java.util.UUID
 
 class WhenRESTManipulationGlue(
     jsonUtils: BddJsonUtils,
