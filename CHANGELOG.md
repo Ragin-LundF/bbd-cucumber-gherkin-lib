@@ -1,3 +1,28 @@
+# Release 3.5.0
+## Important Update Libraries
+- Spring Boot from 4.0.7 to 4.1.0
+
+## New features
+
+### Validator `json-unit.matches:string-contains` and `json-unit.matches:string-contains-not`
+This can compare if a value of a JSON string contains a string or a context value:
+```gherkin
+Scenario: JSON contains a string
+  When executing a GET call to "/api/v1/mydata"
+  Then I ensure that the status code of the response is 200
+  And I ensure that the body of the response is equal to
+  """
+  {
+    "myfixvalue": "${json-unit.matches:string-contains}mustbethere",
+    "myvaluefromcontext": "${json-unit.matches:string-contains}CONTEXT_PARAM"
+  }
+  """
+```
+In this test, the string of the element `myfixvalue` must contain the value "mustbethere".
+The string of the element `myvaluefromcontext` must contain the value from the scenario context parameter `CONTEXT_PARAM`.
+The same can be used with `json-unit.matches:string-contains-not` to ensure a string does not contain a specific value.
+
+
 # Release 3.4.0
 - Added AI instructions that AI can help with testing or optimization. This means not, that it becomes an AI sloppish library, but for suggestions and findings or testing it is good. Everything is still reviewed manually and in most cases also written manually. But it makes live easier if AI can analyze or suggest something and it is in a proper shape.
 - Moved `com.ragin.bdd.BddLibConstants` to `com.ragin.bdd.constants.BddLibConstants` to have a more consistent package usage.

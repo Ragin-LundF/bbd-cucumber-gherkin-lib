@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.3.21"
-springBoot = "4.0.7"
-cucumber = "7.34.3"
+springBoot = "4.1.0"
+cucumber = "7.34.4"
 testcontainers = "2.0.5"
 
 [libraries]
@@ -35,7 +35,7 @@ spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot
 
 # --- JSON
 json-path = { module = "com.jayway.jsonpath:json-path", version = "3.0.0" }
-json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "5.1.2" }
+json-unit = { module = "net.javacrumbs.json-unit:json-unit", version = "6.0.1" }
 
 # --- Cucumber
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
@@ -56,11 +56,11 @@ jackson-dataformmat-yaml = { module = "tools.jackson.dataformat:jackson-dataform
 jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat-csv" }
 
 # --- HTTP Client
-httpclient = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.6.1" }
+httpclient = { module = "org.apache.httpcomponents.client5:httpclient5", version = "5.6.2" }
 
 # --- Database
 database-liquibase = { module = "org.liquibase:liquibase-core", version = "5.0.3" }
-database-postgres = { module = "org.postgresql:postgresql", version = "42.7.11" }
+database-postgres = { module = "org.postgresql:postgresql", version = "42.7.13" }
 
 # --- Testcontainers
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
@@ -94,10 +94,10 @@ testcontainers = [
 ]
 
 [plugins]
-jreleaser = { id = "org.jreleaser", version = "1.24.0" }
+jreleaser = { id = "org.jreleaser", version = "1.25.0" }
 sonarqube = { id = "org.sonarqube", version = "7.3.1.8318" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.8" }
-detekt = { id = "dev.detekt", version = "2.0.0-alpha.4" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.9" }
+detekt = { id = "dev.detekt", version = "2.0.0-alpha.5" }

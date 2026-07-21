@@ -27,7 +27,7 @@ Feature: Header manipulation
       "Accept": "application/json",
       "Authorization": "${json-unit.ignore}",
       "Content-Type": "application/json",
-      "Accept-Encoding": "gzip, x-gzip, deflate",
+      "Accept-Encoding": "${json-unit.ignore}",
       "Host": "${json-unit.ignore}",
       "Connection": "keep-alive",
       "User-Agent": "${json-unit.ignore}"
@@ -44,7 +44,7 @@ Feature: Header manipulation
       "Accept": "application/json",
       "Authorization": "${json-unit.ignore}",
       "Content-Type": "application/json",
-      "Accept-Encoding": "gzip, x-gzip, deflate",
+      "Accept-Encoding": "${json-unit.ignore}",
       "Accept-Language":"de_DE",
       "Host": "${json-unit.ignore}",
       "Connection": "keep-alive",
