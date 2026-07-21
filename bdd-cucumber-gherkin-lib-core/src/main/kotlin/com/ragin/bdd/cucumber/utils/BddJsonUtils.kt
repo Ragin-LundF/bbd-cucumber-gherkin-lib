@@ -10,6 +10,8 @@ import com.ragin.bdd.cucumber.matcher.IBANMatcher
 import com.ragin.bdd.cucumber.matcher.NeStringMatcher
 import com.ragin.bdd.cucumber.matcher.ScenarioStateEqContextMatcher
 import com.ragin.bdd.cucumber.matcher.ScenarioStateNeContextMatcher
+import com.ragin.bdd.cucumber.matcher.StringContainsMatcher
+import com.ragin.bdd.cucumber.matcher.StringContainsNotMatcher
 import com.ragin.bdd.cucumber.matcher.UUIDMatcher
 import com.ragin.bdd.cucumber.matcher.ValidDateContextMatcher
 import com.ragin.bdd.cucumber.matcher.ValidDateMatcher
@@ -89,6 +91,8 @@ class BddJsonUtils(
             .withMatcher(neStringMatcher.matcherName(), neStringMatcher)
             .withMatcher(scenarioStateEqContextMatcher.matcherName(), scenarioStateEqContextMatcher)
             .withMatcher(scenarioStateNeContextMatcher.matcherName(), scenarioStateNeContextMatcher)
+            .withMatcher(stringContainsMatcher.matcherName(), stringContainsMatcher)
+            .withMatcher(stringContainsNotMatcher.matcherName(), stringContainsNotMatcher)
 
         // add additional options
         for (jsonOption in getJsonPathOptions()) {
@@ -280,5 +284,7 @@ class BddJsonUtils(
         private val neStringMatcher = NeStringMatcher()
         private val scenarioStateEqContextMatcher = ScenarioStateEqContextMatcher()
         private val scenarioStateNeContextMatcher = ScenarioStateNeContextMatcher()
+        private val stringContainsMatcher = StringContainsMatcher()
+        private val stringContainsNotMatcher = StringContainsNotMatcher()
     }
 }

@@ -135,3 +135,34 @@ Feature: Field validation instead of full JSON comparison
       "validDate": "${json-unit.matches:isValidDate}"
       }
       """
+
+  Rule: String Contains Matcher are working for fields
+    Scenario: IBANs are containing their country code
+      When executing a GET call to "/api/v1/iban"
+      Then I ensure that the status code of the response is 200
+      And I ensure that the body of the response is equal to
+      """
+      {
+        "AT": "${json-unit.matches:string-contains}AT",
+        "CH": "${json-unit.matches:string-contains}CH",
+        "DE": "${json-unit.matches:string-contains}DE",
+        "EE": "${json-unit.matches:string-contains}EE",
+        "FO": "${json-unit.matches:string-contains}FO",
+        "NL": "${json-unit.matches:string-contains}NL"
+      }
+      """
+
+    Scenario: IBANs are not containing other country code
+      When executing a GET call to "/api/v1/iban"
+      Then I ensure that the status code of the response is 200
+      And I ensure that the body of the response is equal to
+      """
+      {
+        "AT": "${json-unit.matches:string-contains-not}DE",
+        "CH": "${json-unit.matches:string-contains-not}DE",
+        "DE": "${json-unit.matches:string-contains-not}CH",
+        "EE": "${json-unit.matches:string-contains-not}DE",
+        "FO": "${json-unit.matches:string-contains-not}DE",
+        "NL": "${json-unit.matches:string-contains-not}DE"
+      }
+      """
