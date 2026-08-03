@@ -1,3 +1,6 @@
+# Release 3.6.0
+- Some dependency updates
+
 # Release 3.5.0
 ## Important Update Libraries
 - Spring Boot from 4.0.7 to 4.1.0
