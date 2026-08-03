@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.3.21"
 springBoot = "4.1.0"
-cucumber = "7.34.4"
+cucumber = "7.34.6"
 testcontainers = "2.0.5"
 
 [libraries]
@@ -60,7 +60,7 @@ httpclient = { module = "org.apache.httpcomponents.client5:httpclient5", version
 
 # --- Database
 database-liquibase = { module = "org.liquibase:liquibase-core", version = "5.0.3" }
-database-postgres = { module = "org.postgresql:postgresql", version = "42.7.13" }
+    database-postgres = { module = "org.postgresql:postgresql", version = "42.7.13" }
 
 # --- Testcontainers
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
