@@ -1,0 +1,8 @@
+def unstableVersionKeywords = ['-beta', 'dev', '-rc', '-m', '-SNAPSHOT', '-ALPHA']
+versionCatalogUpdate {
+    sortByKey = false
+
+    versionSelector { moduleVersionCandidate ->
+        !(unstableVersionKeywords.any { unstableVersionKeyword -> moduleVersionCandidate.candidate.version.containsIgnoreCase(unstableVersionKeyword) })
+    }
+}

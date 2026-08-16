@@ -18,10 +18,12 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply(false)
     alias(libs.plugins.kotlin.spring) apply(false)
     alias(libs.plugins.kover)
+    alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.detekt) apply(false)
 }
 
 apply from: "${rootDir}/config/gradle/wrapper.gradle"
+apply from: "${rootDir}/config/gradle/dependency_updates.gradle"
 
 subprojects {
     // export of classes for subscripts

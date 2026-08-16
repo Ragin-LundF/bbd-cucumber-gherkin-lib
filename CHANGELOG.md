@@ -1,3 +1,9 @@
+
+# Release 3.7.0
+- Some dependency updates
+- Added `BDD_CUCUMBER_SKILL.md` to support development with AI agents
+- Added `BDD_CUCUMBER_AGENT_INSTRUCTIONS.md` with more detailed instructions for development with AI agents
+
 # Release 3.6.0
 - Some dependency updates
 
