@@ -14,9 +14,9 @@ state container and a set of [JSON-Unit](https://github.com/lukas-krecan/JsonUni
 dynamic values. This skill is self-contained: everything needed to write a working feature file is
 below.
 
-Optional extras, if the repository provides them:
+Optional extras, if more information is needed:
 
-- `BDD_CUCUMBER_AGENT_INSTRUCTIONS.md` — the long-form reference with the full sentence catalogue.
+- [BDD_CUCUMBER_AGENT_INSTRUCTIONS.md](https://raw.githubusercontent.com/Ragin-LundF/bbd-cucumber-gherkin-lib/refs/heads/main/BDD_CUCUMBER_AGENT_INSTRUCTIONS.md) — the long-form reference with the full sentence catalogue.
 
 ## Non-negotiable rules
 
