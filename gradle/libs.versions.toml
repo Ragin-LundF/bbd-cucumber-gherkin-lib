@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.21"
-springBoot = "4.1.0"
+springBoot = "4.1.1"
 cucumber = "7.34.6"
 testcontainers = "2.0.5"
 
