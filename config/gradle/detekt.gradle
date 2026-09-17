@@ -1,10 +1,5 @@
 apply plugin: "dev.detekt"
 
-dependencies {
-    // enables the ktlint-backed formatting rules that .editorconfig configures
-    detektPlugins(rootProject.libs.detekt.ktlint.wrapper)
-}
-
 tasks.withType(Detekt).configureEach {
     exclude("**/gen/**")
     reports {

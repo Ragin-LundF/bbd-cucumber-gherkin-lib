@@ -10,11 +10,13 @@ import liquibase.resource.ClassLoaderResourceAccessor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.JdbcTemplate
 
-class DatabaseExecutorService(private val datasource: DataSource, private val jdbcTemplate: JdbcTemplate) :
-    IDatabaseExecutorService {
+class DatabaseExecutorService(
+    private val datasource: DataSource,
+    private val jdbcTemplate: JdbcTemplate
+) : IDatabaseExecutorService {
     @Deprecated(
         message = "The Liquibase connection is now always closed once the script finished, " +
-            "so this flag no longer has any effect. It will be removed in the next major release."
+                "so this flag no longer has any effect. It will be removed in the next major release."
     )
     @Value($$"${cucumberTest.liquibase.closeConnection:false}")
     val closeConnection = false

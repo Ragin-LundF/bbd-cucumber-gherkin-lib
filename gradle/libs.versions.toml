@@ -11,7 +11,6 @@ testcontainers = "2.0.5"
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 #
 # --- Common Libs and Utils
-detekt-ktlint-wrapper = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
 logging-logger = "io.github.oshai:kotlin-logging-jvm:8.0.4"
 logging-slf4j = "org.slf4j:slf4j-simple:2.0.19"
 #
