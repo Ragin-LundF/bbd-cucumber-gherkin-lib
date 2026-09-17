@@ -16,6 +16,8 @@ It ships pre-built step definitions so tests can be written in plain Gherkin wit
 - Call an app that listens on **several ports** (e.g. the actuator/management port) with plain
   paths — every web server is detected automatically, so no protocol, host or port in the tests
 - Validate **HTTP status codes**, **response headers**, and **response bodies** against inline JSON or JSON files
+- **Readable output**: one summary line per call on the console, and a report where bodies,
+  headers and query results are collapsed, titled and formatted — with credentials obfuscated
 
 ### JSON validation
 - Exact matching and **[JSON-Unit](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/JSON-Unit)** flexible matchers (e.g. `${json-unit.matches:isValidUUID}`)

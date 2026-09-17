@@ -23,7 +23,7 @@ open class DatabaseResetHooks(private val databaseExecutorService: IDatabaseExec
             log.debug { "No reset database file ($RESET_DATABASE_FILE) found." }
         } else {
             // Execute the liquibase script to reset the DB
-            log.info { "Reset database for scenario ${scenario.name}" }
+            log.debug { "Reset database for scenario ${scenario.name}" }
             databaseExecutorService.executeLiquibaseScript(liquibaseScript = RESET_DATABASE_FILE)
         }
     }

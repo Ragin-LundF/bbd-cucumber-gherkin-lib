@@ -45,6 +45,91 @@ Scenario: Read a mocked endpoint
 
 An unknown name fails immediately and lists the names that are available.
 
+### Logging and reporting you can actually read
+Two things were wrong: the console said nothing while tests ran, and the report put every detail of
+a call into flat, always-expanded blocks.
+
+**On the console**, one short line per call now appears with no setup at all:
+
+```
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+```
+
+Turn it down with `logging.level.com.ragin.bdd.cucumber: WARN`. A failed scenario is logged with its
+name and feature location, so a failure is never anonymous. Everything that only the framework cares
+about — state resets, per-field matcher traces — moved to `debug`.
+
+For the scenario and step tree, append the new plugin constant to the plugins the project already
+configures. Cucumber has no way to register a plugin by itself, so this stays explicit:
+
+```kotlin
+@ConfigurationParameter(
+    key = Constants.PLUGIN_PROPERTY_NAME,
+    value = "html:build/reports/cucumber/cucumber.html, " +
+        BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT
+)
+```
+
+```
+Scenario: Unauthorized DELETE call ...              # delete_auth.feature:7
+  ✔ Given that the body of the request is
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+  ✔ When executing a DELETE call to "/api/v1/unauthorized" with previously given body
+  ✔ Then I ensure that the status code of the response is 401
+```
+
+With Gradle this needs `testLogging { showStandardStreams = true; exceptionFormat = 'full' }`,
+otherwise nothing is printed and a failure is reduced to an exception type and a line number.
+
+**In the report**, a call used to produce eight expanded blocks:
+
+```
+Request:
+========
+HTTP Method: DELETE
+HTTP URL   : /api/v1/unauthorized
+Response:
+========
+Status Code: 401 UNAUTHORIZED
+Body       : {"error":"unauthorized","error_description":"Full authentication is required"}
+```
+
+It now produces two visible lines and the payloads as collapsed, titled blocks that the report
+indents for you:
+
+```
+→ DELETE /api/v1/unauthorized
+← 401 UNAUTHORIZED  (12 ms)
+
+▸ Request body
+▸ Response body
+```
+
+Across the library's own suite that is 1416 flat log lines down to 404, and 0 up to 256 collapsed
+attachments. Steps that were silent now report too: the multipart form-data call, the `Then`
+validations (with expected-vs-actual attached on a mismatch), the database steps (Liquibase file,
+SQL file, row count, query result versus CSV) and each polling attempt.
+
+New switches, all optional:
+
+```yaml
+cucumberTest:
+  logging:
+    request-body: true        # attach the request body
+    response-body: true       # attach the response body
+    headers: false            # attach headers, credentials obfuscated
+    sql: false                # attach the executed SQL
+    pretty-json: true         # indent JSON before attaching it
+    max-body-length: 8192     # truncate an attached payload beyond this
+```
+
+**Credentials are obfuscated** before anything is attached. The middle third of a `Bearer`, `Basic`
+or `Digest` credential is replaced with `*` so it stays recognisable but not usable, and this applies
+wherever it appears — including inside a response body that an API echoed back. Sensitive headers
+are obfuscated by name as well.
+
 ## Compatibility
 - Every existing feature file and `application.yml` resolves to the same URL as before. Without
   `cucumberTest.services` and without a second port nothing is routed anywhere new, because the
@@ -53,6 +138,18 @@ An unknown name fails immediately and lists the names that are available.
   answers `/actuator/...` calls from that port instead of returning 404 from the application port.
   Set `cucumberTest.services.management.path-prefixes: []` to keep the old behaviour.
 - `BddProperties` gained a constructor parameter and `UrlUtils.fullURLFor` an optional parameter.
+- The console and report output changed on purpose. Anything that scraped CI logs for
+  `Executing call to [GET][...]` has to look for `→ GET ...` instead.
+- `RequestLoggerUtils` is now a class that takes the logging options, and its `log` field is no
+  longer public. It was only public by omission.
+- `ScenarioLoggingHooks` takes `BddProperties` and is no longer final. It is created from the Spring
+  context, where `BddProperties` is already a bean, so no project configuration changes.
+- Removed, because nothing uses them any more now that the running scenario comes from the scenario
+  state: the `scenario` parameter of `executeRequest` and `executeUrlEncodedRequest` in
+  `BaseRESTExecutionGlue`, the `scenarioState` field and `injectScenario` hook of
+  `WhenRESTExecutionGlue`, the `NotLoggableSubtype` enum (superseded by
+  `BddReportConstants.NOT_LOGGABLE_SUBTYPES`), and the `EMPTY_JSON`, `NEW_LINE`, `CARRIAGE_RETURN`,
+  `JSON_SPACING` and `JSON_COMPACT` constants of `BddJsonUtils`.
 
 ## Internal changes
 - Some housekeeping under the hood: a handful of small glitches that had crept in over time are gone, so a few things now behave the way they always should have.

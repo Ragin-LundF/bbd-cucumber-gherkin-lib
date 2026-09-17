@@ -1,15 +1,15 @@
 package com.ragin.bdd.cucumber.rest.glue
 
 import com.ragin.bdd.cucumber.config.BddProperties
+import com.ragin.bdd.cucumber.constants.BddReportConstants.Markers
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.editableBody
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import com.ragin.bdd.cucumber.rest.httpclient.ClientHttpRequestFactory
+import com.ragin.bdd.cucumber.rest.utils.RequestLoggerUtils
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import io.cucumber.datatable.DataTable
-import io.cucumber.java.Before
 import io.cucumber.java.ParameterType
-import io.cucumber.java.Scenario
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
@@ -31,12 +31,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         bddProperties = bddProperties,
         restTemplate = restTemplate
     ) {
-    lateinit var scenarioState: Scenario
-
-    @Before
-    fun injectScenario(scenario: Scenario) {
-        scenarioState = scenario
-    }
+    private val pollLogger = RequestLoggerUtils(options = bddProperties.logging)
 
     @Given("that a proxy with host {string} and port {string} is configured")
     fun givenProxy(host: String, port: String) {
@@ -59,8 +54,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
     fun whenExecutingCallWithPreviouslyGivenUriAndBody(httpMethod: HttpMethod) {
         executeRequest(
             httpMethod = httpMethod,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -73,8 +67,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
     fun whenExecutingAuthorizedCallWithPreviouslyGivenUriAndBody(httpMethod: HttpMethod) {
         executeRequest(
             httpMethod = httpMethod,
-            authorized = true,
-            scenario = scenarioState
+            authorized = true
         )
     }
 
@@ -89,8 +82,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         uriPath = uri
         executeRequest(
             httpMethod = httpMethod,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -121,8 +113,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         editableBody = body
         executeRequest(
             httpMethod = httpMethod,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -142,8 +133,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         editableBody = body
         executeRequest(
             httpMethod = httpMethod,
-            authorized = true,
-            scenario = scenarioState
+            authorized = true
         )
     }
 
@@ -185,8 +175,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         executeRequest(
             dataTable = dataTable,
             httpMethod = httpMethod,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -227,8 +216,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         executeRequest(
             dataTable = dataTable,
             httpMethod = httpMethod,
-            authorized = true,
-            scenario = scenarioState
+            authorized = true
         )
     }
 
@@ -241,8 +229,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
     fun whenExecutingCall(httpMethod: HttpMethod) {
         executeRequest(
             httpMethod = httpMethod,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -255,8 +242,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
     fun whenExecutingAuthorizedCall(httpMethod: HttpMethod) {
         executeRequest(
             httpMethod = httpMethod,
-            authorized = true,
-            scenario = scenarioState
+            authorized = true
         )
     }
 
@@ -271,8 +257,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         uriPath = uri
         executeRequest(
             httpMethod = httpMethod,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -287,8 +272,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         uriPath = uri
         executeRequest(
             httpMethod = httpMethod,
-            authorized = true,
-            scenario = scenarioState
+            authorized = true
         )
     }
 
@@ -329,8 +313,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         executeRequest(
             dataTable = dataTable,
             httpMethod = httpMethod,
-            authorized = true,
-            scenario = scenarioState
+            authorized = true
         )
     }
 
@@ -371,8 +354,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         executeRequest(
             dataTable = dataTable,
             httpMethod = httpMethod,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -534,8 +516,7 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
         uriPath = uri
         executeUrlEncodedRequest(
             dataTable = dataTable,
-            authorized = false,
-            scenario = scenarioState
+            authorized = false
         )
     }
 
@@ -565,13 +546,14 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
             message = "Please configure max number of polls!"
         )
 
+        val maximumPolls = ScenarioStateContext.polling.numberOfPolls
         var repeatLoop = 0
         loop@ for (i in 1..ScenarioStateContext.polling.numberOfPolls) {
             executeRequest(
                 httpMethod = httpMethod,
-                authorized = authorized,
-                scenario = scenarioState
+                authorized = authorized
             )
+            pollLogger.logPollAttempt(attempt = i, maximumAttempts = ScenarioStateContext.polling.numberOfPolls)
 
             runCatching {
                 evaluateBody(expectedBody = expectedBody)
@@ -588,6 +570,8 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
             }
         }
 
+        reporter.summary(line = "${Markers.POLL} polling finished after $repeatLoop of $maximumPolls attempts")
+
         evaluateBody(expectedBody = expectedBody)
         assertEquals(
             expected = expectedStatusCode,
@@ -595,7 +579,6 @@ class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddPropertie
             message = "Expected status code $expectedStatusCode but was " +
                 "${ScenarioStateContext.latestResponse!!.statusCode.value()}"
         )
-        log.info { "Polling finished after $repeatLoop repeats" }
     }
 
     /**

@@ -153,8 +153,26 @@ cucumberTest:
       path-prefixes: ["/actuator"]
   proxy: { host: localhost, port: -1 }
   ssl: { disableCheck: false }
+  logging:                    # what is reported about a call
+    request-body: true
+    response-body: true
+    headers: false            # credentials are obfuscated when switched on
+    sql: false
+    pretty-json: true
+    max-body-length: 8192
   databaseless: false         # true = DB steps become no-ops
 ```
+
+### Output while a test runs
+
+The console gets one line per call with no setup (`→ GET /api/v1/users`, `← 200 OK (23 ms)`);
+silence it with `logging.level.com.ragin.bdd.cucumber: WARN`. Append
+`BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT` to the runner's plugin list for the
+scenario and step tree, and set Gradle's `testLogging { showStandardStreams = true }`.
+
+The report gets the same lines plus collapsed, titled blocks for request/response bodies, headers,
+SQL, query results and expected-vs-actual. Credentials are obfuscated everywhere, including inside
+a body an API echoed back.
 
 ## Cheat sheet
 

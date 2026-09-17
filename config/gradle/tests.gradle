@@ -1,7 +1,19 @@
+// Without this the standard streams are swallowed and a failure is reported as the exception type
+// plus a line number, which says nothing about what actually went wrong.
+def readableTestOutput = {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+        showStackTraces = true
+        events 'failed'
+    }
+}
+
 // exclude CucumberRunner tests from default test task
 test {
     exclude '**/*CucumberRunner*'
     useJUnitPlatform()
+    configure readableTestOutput
 }
 
 configurations {
@@ -17,6 +29,8 @@ tasks.register('cucumber', Test) {
     include '**/*CucumberRunner*'
     testClassesDirs = testing.suites.test.sources.output.classesDirs
     classpath = testing.suites.test.sources.runtimeClasspath
+
+    configure readableTestOutput
 
     minHeapSize = "512m"
     maxHeapSize = "1024m"

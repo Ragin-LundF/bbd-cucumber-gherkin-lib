@@ -21,7 +21,8 @@ import org.junit.platform.suite.api.Suite
     key = Constants.PLUGIN_PROPERTY_NAME,
     value = "json:build/reports/cucumber/cucumber.json, " +
         "html:build/reports/cucumber/cucumber.html, " +
-        "junit:build/reports/cucumber/cucumber.xml"
+        "junit:build/reports/cucumber/cucumber.xml, " +
+        BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT
 )
 @ConfigurationParameter(key = Constants.PLUGIN_PUBLISH_ENABLED_PROPERTY_NAME, value = "true")
 // @IncludeTags("custom_matcher")

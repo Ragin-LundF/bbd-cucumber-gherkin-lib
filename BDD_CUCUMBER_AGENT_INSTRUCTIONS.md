@@ -148,6 +148,13 @@ cucumberTest:
     port: -1
   ssl:
     disableCheck: false
+  logging:                          # what the library reports about a call
+    request-body: true              # attach the request body to the report
+    response-body: true             # attach the response body to the report
+    headers: false                  # attach headers, with credentials obfuscated
+    sql: false                      # attach the executed SQL
+    pretty-json: true               # indent JSON before attaching it
+    max-body-length: 8192           # truncate an attached payload beyond this
   databaseless: false               # true = DB steps become no-ops (DB module)
 ```
 
@@ -165,6 +172,51 @@ cucumberTest:
   needs the **exact camelCase key** `cucumberTest.authorization.bearerToken.noscope`. The kebab-case
   `bearer-token` form only feeds the *default* token. Without the exact key the step yields the
   literal string `none`.
+
+### 2.4.1 What you see while a test runs
+
+Two channels, on purpose.
+
+**The console** gets one short line per call, through SLF4J, with no setup at all:
+
+```
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+```
+
+Silence it with `logging.level.com.ragin.bdd.cucumber: WARN`. A failed scenario is logged at
+`ERROR` with its name and feature location, so a failure is never anonymous.
+
+Add the scenario and step tree by appending the library's report plugins to the ones the project
+already configures — Cucumber cannot register a plugin by itself:
+
+```kotlin
+@ConfigurationParameter(
+    key = Constants.PLUGIN_PROPERTY_NAME,
+    value = "html:build/reports/cucumber/cucumber.html, " +
+        BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT
+)
+```
+
+```
+Scenario: Unauthorized DELETE call ...              # delete_auth.feature:7
+  ✔ Given that the body of the request is
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+  ✔ When executing a DELETE call to "/api/v1/unauthorized" with previously given body
+  ✔ Then I ensure that the status code of the response is 401
+```
+
+With Gradle, add `testLogging { showStandardStreams = true; exceptionFormat = 'full' }` or none of
+it is printed, and a failure is reduced to an exception type and a line number.
+
+**The report** gets the same summary lines plus the payloads as *collapsed, titled* blocks —
+request and response body, headers, SQL, query results, and expected-vs-actual on a failed
+comparison. JSON is indented by the report itself. Payloads are never echoed to the console.
+
+Credentials are obfuscated before anything is attached: the middle third of a `Bearer`, `Basic` or
+`Digest` credential is replaced with `*`, wherever it appears, including inside a response body that
+an API echoed back. Sensitive headers are obfuscated by name too.
 
 ### 2.5 Layout convention
 

@@ -188,7 +188,9 @@ class ThenRESTValidationGlue(
         }
         val documentContext = JsonPath.parse(latestResponse!!.body)
         val field = documentContext.read(jsonPath, Any::class.java)
-        scenarioContextMap[replaceTrailingAndLeadingQuotes(value = contextName)] = field.toString()
+        val contextKey = replaceTrailingAndLeadingQuotes(value = contextName)
+        scenarioContextMap[contextKey] = field.toString()
+        reporter.summary(line = "$contextKey = $field  (from $jsonPath)")
     }
 
     /**
@@ -199,6 +201,7 @@ class ThenRESTValidationGlue(
     @Then("I ensure that the execution time is less than {long} ms")
     fun ensureThatExecutionTimeIsLessThan(expectedExecutionTime: Long) {
         val executionTime = System.currentTimeMillis() - executionTime
+        reporter.summary(line = "execution time $executionTime ms (limit $expectedExecutionTime ms)")
         val executionTimeValid = executionTime <= expectedExecutionTime
         assertTrue(
             actual = executionTimeValid,
@@ -213,10 +216,15 @@ class ThenRESTValidationGlue(
      */
     @Then("I wait for {long} ms")
     fun waitForSeconds(milliseconds: Long) {
+        reporter.summary(line = "waiting for $milliseconds ms")
         runCatching {
             Thread.sleep(milliseconds)
         }.onFailure { error ->
-            log.error(throwable = error) { "Wait has detected a problem" }
+            // Restore the flag so that the surrounding test runner still sees the interruption.
+            if (error is InterruptedException) {
+                Thread.currentThread().interrupt()
+            }
+            log.warn(throwable = error) { "Wait of $milliseconds ms was interrupted" }
         }
     }
 

@@ -16,7 +16,6 @@ import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.createHTTPHeader
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWithDataTable
 import io.cucumber.datatable.DataTable
-import io.cucumber.java.Scenario
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.TestRestTemplate
@@ -52,6 +51,8 @@ abstract class BaseRESTExecutionGlue(
     @Autowired(required = false)
     protected var environment: Environment? = null
     protected val clientHttpRequestFactory = ClientHttpRequestFactory(bddProperties = bddProperties)
+
+    private val requestLogger = RequestLoggerUtils(options = bddProperties.logging)
 
     private val serviceUrlResolver: ServiceUrlResolver? by lazy {
         environment?.let { resolvedEnvironment ->
@@ -89,14 +90,12 @@ abstract class BaseRESTExecutionGlue(
      *
      * @param httpMethod    HttpMethod of the request
      * @param authorized    should the request execute authorized or unauthorized (true = authorized)
-     * @param scenario      Cucumber scenario
      */
-    protected fun executeRequest(httpMethod: HttpMethod, authorized: Boolean, scenario: Scenario) {
+    protected fun executeRequest(httpMethod: HttpMethod, authorized: Boolean) {
         executeRequest(
             dataTable = DataTable.emptyDataTable(),
             httpMethod = httpMethod,
-            authorized = authorized,
-            scenario = scenario
+            authorized = authorized
         )
     }
 
@@ -110,8 +109,7 @@ abstract class BaseRESTExecutionGlue(
     protected fun executeRequest(
         dataTable: DataTable,
         httpMethod: HttpMethod,
-        authorized: Boolean,
-        scenario: Scenario
+        authorized: Boolean
     ) {
         // Prepare a path with dynamic URLs from datatable
         val path = preparePath(dataTable = dataTable)
@@ -130,9 +128,10 @@ abstract class BaseRESTExecutionGlue(
         // Resolved outside of runCatching so that a configuration error surfaces as itself instead
         // of being turned into a missing response by handleRestError.
         val targetUrl = targetUrlFor(path = path)
-        runCatching {
-            RequestLoggerUtils.logRequest(httpMethod = httpMethod, url = targetUrl, scenario = scenario)
+        requestLogger.logRequest(httpMethod = httpMethod, url = targetUrl, body = body, headers = headers)
 
+        val startedAt = System.currentTimeMillis()
+        runCatching {
             setLatestResponse(
                 latestResponse = restTemplate.exchange<String>(
                     url = targetUrl,
@@ -143,7 +142,7 @@ abstract class BaseRESTExecutionGlue(
         }.onFailure { error ->
             handleRestError(error = error)
         }
-        RequestLoggerUtils.logResponse(scenario = scenario)
+        requestLogger.logResponse(durationMillis = System.currentTimeMillis() - startedAt)
     }
 
     /**
@@ -184,8 +183,10 @@ abstract class BaseRESTExecutionGlue(
         // Resolved outside of runCatching so that a configuration error surfaces as itself instead
         // of being turned into a missing response by handleRestError.
         val targetUrl = targetUrlFor(path = path)
+        requestLogger.logRequest(httpMethod = HttpMethod.POST, url = targetUrl, headers = headers)
+
+        val startedAt = System.currentTimeMillis()
         runCatching {
-            log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
                 latestResponse = restTemplate.postForEntity<String>(
                     url = targetUrl,
@@ -195,6 +196,7 @@ abstract class BaseRESTExecutionGlue(
         }.onFailure { error ->
             handleRestError(error = error)
         }
+        requestLogger.logResponse(durationMillis = System.currentTimeMillis() - startedAt)
     }
 
     /**
@@ -203,7 +205,7 @@ abstract class BaseRESTExecutionGlue(
      * @param dataTable     DataTable which contains the form-urlencoded data
      * @param authorized    should the request execute authorized or unauthorized (true = authorized)
      */
-    protected fun executeUrlEncodedRequest(dataTable: DataTable, authorized: Boolean, scenario: Scenario) {
+    protected fun executeUrlEncodedRequest(dataTable: DataTable, authorized: Boolean) {
         // Prepare a path with dynamic URLs from datatable
         val path = preparePath(dataTable = dataTable)
 
@@ -228,14 +230,15 @@ abstract class BaseRESTExecutionGlue(
         // Resolved outside of runCatching so that a configuration error surfaces as itself instead
         // of being turned into a missing response by handleRestError.
         val targetUrl = targetUrlFor(path = path)
-        runCatching {
-            RequestLoggerUtils.logRequest(
-                httpMethod = HttpMethod.POST,
-                url = targetUrl,
-                encodedDataMap = map,
-                scenario = scenario
-            )
+        requestLogger.logRequest(
+            httpMethod = HttpMethod.POST,
+            url = targetUrl,
+            headers = headers,
+            encodedDataMap = map
+        )
 
+        val startedAt = System.currentTimeMillis()
+        runCatching {
             setLatestResponse(
                 latestResponse = restTemplate.exchange<String>(
                     url = targetUrl,
@@ -246,7 +249,7 @@ abstract class BaseRESTExecutionGlue(
         }.onFailure { error ->
             handleRestError(error = error)
         }
-        RequestLoggerUtils.logResponse(scenario = scenario)
+        requestLogger.logResponse(durationMillis = System.currentTimeMillis() - startedAt)
     }
 
     /**

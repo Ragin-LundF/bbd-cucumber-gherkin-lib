@@ -29,7 +29,7 @@ class ValidDateContextMatcher(
             bddDateTimeFormats = dateTimeFormatCollection
         )
 
-        log.info { "Compare actual '$actual' with parameter '$parameter' as '$parameterFromContext'" }
+        log.debug { "Compare actual '$actual' with parameter '$parameter' as '$parameterFromContext'" }
         if (jsonDate != null) {
             return jsonDate.toLocalDate()
                 .format(DateTimeFormatter.ISO_LOCAL_DATE) == parameterFromContext

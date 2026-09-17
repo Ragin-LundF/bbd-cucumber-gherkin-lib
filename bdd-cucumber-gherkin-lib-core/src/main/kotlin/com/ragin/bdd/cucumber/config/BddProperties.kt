@@ -9,7 +9,8 @@ data class BddProperties(
     val server: Server?,
     val ssl: SSL?,
     val scenarioContext: Map<String, String> = hashMapOf(),
-    val services: Map<String, Service> = emptyMap()
+    val services: Map<String, Service> = emptyMap(),
+    val logging: Logging = Logging()
 ) {
     data class Authorization(val bearerToken: AuthorizationBearer) {
         /**
@@ -32,6 +33,26 @@ data class BddProperties(
      * SSL
      */
     data class SSL(val disableCheck: Boolean = false)
+
+    /**
+     * Controls what the library reports about a request while a scenario runs.
+     *
+     * The summary lines (method, URL, status code, duration) are always reported. These switches only
+     * decide how much detail is added next to them. Bodies and headers are attached to the Cucumber
+     * report, where they are collapsed, so a large payload does not get in the way.
+     */
+    data class Logging(
+        val requestBody: Boolean = true,
+        val responseBody: Boolean = true,
+        val headers: Boolean = false,
+        val sql: Boolean = false,
+        val prettyJson: Boolean = true,
+        val maxBodyLength: Int = DEFAULT_MAX_BODY_LENGTH
+    ) {
+        companion object {
+            const val DEFAULT_MAX_BODY_LENGTH = 8192
+        }
+    }
 
     /**
      * An additional web server of the application under test, addressable by a logical name.

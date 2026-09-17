@@ -1,10 +1,23 @@
 package com.ragin.bdd.cucumber.core
 
+import io.cucumber.java.Scenario
 import net.javacrumbs.jsonunit.core.Option
 import org.springframework.http.ResponseEntity
 
 object ScenarioStateContext {
     var latestResponse: ResponseEntity<String>? = null
+
+    /**
+     * The running Cucumber scenario, so that every glue class can report into the Cucumber report.
+     *
+     * Set by the logging hook at order 1 and therefore available to every step. `null` outside of a
+     * Cucumber run, which makes reporting a no-op instead of a failure.
+     *
+     * Deliberately **not** cleared by [reset]: that runs at order 3, which is after the hook that
+     * sets this, so clearing it here would throw away the scenario before the first step and every
+     * report would come out empty. Every scenario overwrites it, so no state leaks between them.
+     */
+    var scenario: Scenario? = null
     var fileBasePath: String = ""
     var urlBasePath: String = ""
 
