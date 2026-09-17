@@ -25,15 +25,12 @@ import kotlin.test.assertNotEquals
  * This class contains common `When` execution of REST related steps.
  */
 @Suppress("TooManyFunctions")
-class WhenRESTExecutionGlue(
-    jsonUtils: BddJsonUtils,
-    bddProperties: BddProperties,
-    restTemplate: TestRestTemplate
-) : BaseRESTExecutionGlue(
-    jsonUtils = jsonUtils,
-    bddProperties = bddProperties,
-    restTemplate = restTemplate
-) {
+class WhenRESTExecutionGlue(jsonUtils: BddJsonUtils, bddProperties: BddProperties, restTemplate: TestRestTemplate) :
+    BaseRESTExecutionGlue(
+        jsonUtils = jsonUtils,
+        bddProperties = bddProperties,
+        restTemplate = restTemplate
+    ) {
     lateinit var scenarioState: Scenario
 
     @Before
@@ -180,8 +177,10 @@ class WhenRESTExecutionGlue(
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing a {httpMethod} call with previously given API path, " +
-            "body and these dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When(
+        "executing a {httpMethod} call with previously given API path, " +
+            "body and these dynamic 'URI Elements' replaced with the 'URI Values'"
+    )
     fun whenExecutingCallToUriWithBodyAndDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -220,8 +219,10 @@ class WhenRESTExecutionGlue(
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing an authorized {httpMethod} call with previously given API path," +
-            " body and these dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When(
+        "executing an authorized {httpMethod} call with previously given API path," +
+            " body and these dynamic 'URI Elements' replaced with the 'URI Values'"
+    )
     fun whenExecutingAuthorizedCallToUriWithBodyAndDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -320,8 +321,10 @@ class WhenRESTExecutionGlue(
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing an authorized {httpMethod} call with previously given API path and " +
-            "these dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When(
+        "executing an authorized {httpMethod} call with previously given API path and " +
+            "these dynamic 'URI Elements' replaced with the 'URI Values'"
+    )
     fun whenExecutingAuthorizedCallToUriWithDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -360,8 +363,10 @@ class WhenRESTExecutionGlue(
      * @param httpMethod HTTP Method
      * @param dataTable DataTable which contains the mapping of dynamic elements and values
      */
-    @When("executing a {httpMethod} call with previously given API path and the " +
-            "dynamic 'URI Elements' replaced with the 'URI Values'")
+    @When(
+        "executing a {httpMethod} call with previously given API path and the " +
+            "dynamic 'URI Elements' replaced with the 'URI Values'"
+    )
     fun whenExecutingCallToUriWithDynamicURLElement(httpMethod: HttpMethod, dataTable: DataTable) {
         executeRequest(
             dataTable = dataTable,
@@ -379,8 +384,10 @@ class WhenRESTExecutionGlue(
      * @param expectedStatusCode the expected HTTP status code
      * @param pathToFile describes the path to the expected JSON response file
      */
-    @Then("executing an authorized {httpMethod} poll request until the response code is" +
-            " {int} and the body is equal to file {string}")
+    @Then(
+        "executing an authorized {httpMethod} poll request until the response code is" +
+            " {int} and the body is equal to file {string}"
+    )
     @Throws(IOException::class)
     fun whenExecutingAuthorizedPollingUntilResponseIsEqualToFile(
         httpMethod: HttpMethod,
@@ -404,8 +411,10 @@ class WhenRESTExecutionGlue(
      * @param expectedStatusCode the expected HTTP status code
      * @param pathToFile describes the path to the expected JSON response file
      */
-    @Then("executing a {httpMethod} poll request until the response code is" +
-            " {int} and the body is equal to file {string}")
+    @Then(
+        "executing a {httpMethod} poll request until the response code is" +
+            " {int} and the body is equal to file {string}"
+    )
     @Throws(IOException::class)
     fun whenExecutingPollingUntilResponseIsEqualToFile(
         httpMethod: HttpMethod,
@@ -432,7 +441,7 @@ class WhenRESTExecutionGlue(
      */
     @Then("executing an authorized {httpMethod} poll request until the response code is {int}")
     @Throws(IOException::class)
-    fun whenExecutingAuthorizedPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod,  expectedStatusCode: Int) {
+    fun whenExecutingAuthorizedPollingUntilResponseCodeIsEqual(httpMethod: HttpMethod, expectedStatusCode: Int) {
         executePollRequestUntilResponseIsEqual(
             httpMethod = httpMethod,
             expectedStatusCode = expectedStatusCode,
@@ -607,7 +616,7 @@ class WhenRESTExecutionGlue(
      * Definition of {httpMethod} to offer concrete but dynamic parameter type
      *
      * @param httpMethod  String value of HttpMethod
-     * @return            HttpMethod enum
+     * @return HttpMethod enum
      */
     @ParameterType("GET|POST|PUT|PATCH|DELETE")
     fun httpMethod(httpMethod: String): HttpMethod {

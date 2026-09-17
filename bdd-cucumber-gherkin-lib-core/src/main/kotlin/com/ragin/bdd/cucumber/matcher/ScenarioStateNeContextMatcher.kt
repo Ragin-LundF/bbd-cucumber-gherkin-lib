@@ -4,9 +4,8 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
-import org.junit.jupiter.api.assertNotNull
 import org.springframework.stereotype.Component
-import kotlin.collections.get
+import kotlin.test.assertNotNull
 
 /**
  * Is not equal to scenario context.
@@ -14,7 +13,10 @@ import kotlin.collections.get
  * ${json-unit.matches:isNotEqualToScenarioContext}MY_CONTEXT_VALUE
  */
 @Component
-class ScenarioStateNeContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJsonMatcher {
+class ScenarioStateNeContextMatcher :
+    BaseMatcher<Any>(),
+    ParametrizedMatcher,
+    BddCucumberJsonMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {

@@ -1,3 +1,7 @@
+# Release 3.8.0
+- Some housekeeping under the hood: a handful of small glitches that had crept in over time are gone, so a few things now behave the way they always should have.
+- Tightened up the build itself. Tests, coverage and code formatting are checked automatically again instead of being quietly skipped.
+- Two leftovers that nobody was using are now marked as deprecated. They still work, but they will disappear with the next major release.
 
 # Release 3.7.0
 - Some dependency updates

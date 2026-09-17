@@ -6,7 +6,6 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Given
-import org.springframework.beans.factory.annotation.Value
 import java.io.File
 import java.io.IOException
 import java.time.LocalDate
@@ -15,16 +14,11 @@ import java.time.format.DateTimeFormatter
 /**
  * This class contains steps to edit the test state.
  */
-class GivenRESTStateGlue(
-    jsonUtils: BddJsonUtils,
-    bddProperties: BddProperties
-) : BaseCucumberCore(
-    jsonUtils = jsonUtils,
-    bddProperties = bddProperties
-) {
-    @Value("\${cucumberTest.authorization.bearerToken.noscope:none}")
-    private val noScopeBearerToken: String? = null
-
+class GivenRESTStateGlue(jsonUtils: BddJsonUtils, bddProperties: BddProperties) :
+    BaseCucumberCore(
+        jsonUtils = jsonUtils,
+        bddProperties = bddProperties
+    ) {
     /**
      * Defines the base path to which other paths are relative
      *
@@ -76,7 +70,7 @@ class GivenRESTStateGlue(
      */
     @Given("that a bearer token without scopes is used")
     fun givenThatBearerTokenWithoutScopesIsUsed() {
-        ScenarioStateContext.bearerToken = noScopeBearerToken
+        ScenarioStateContext.bearerToken = bddProperties.authorization?.bearerToken?.noscope
     }
 
     /**
@@ -132,7 +126,7 @@ class GivenRESTStateGlue(
      * | key | value |
      * | resourceId    | abc-def-gh |
      * | subResourceId | zyx-wvu-ts |
-    </pre> *
+     </pre> *
      *
      * @param dataTable  DataTable with the key "key" and value "value"
      */
@@ -202,42 +196,42 @@ class GivenRESTStateGlue(
 
     @Given("that a date {int} days in the past is stored as {string}")
     fun givenDateDaysInPastStoredInContext(daysInPast: Long, contextKey: String) {
-        val now = LocalDate.now();
+        val now = LocalDate.now()
         ScenarioStateContext.scenarioContextMap[contextKey] = now.minusDays(daysInPast)
             .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} months in the past is stored as {string}")
     fun givenDateMonthsInPastStoredInContext(daysInPast: Long, contextKey: String) {
-        val now = LocalDate.now();
+        val now = LocalDate.now()
         ScenarioStateContext.scenarioContextMap[contextKey] = now.minusMonths(daysInPast)
             .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} years in the past is stored as {string}")
     fun givenDateYearsInPastStoredInContext(daysInPast: Long, contextKey: String) {
-        val now = LocalDate.now();
+        val now = LocalDate.now()
         ScenarioStateContext.scenarioContextMap[contextKey] = now.minusYears(daysInPast)
             .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} days in the future is stored as {string}")
     fun givenDateDaysInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
-        val now = LocalDate.now();
+        val now = LocalDate.now()
         ScenarioStateContext.scenarioContextMap[contextKey] = now.plusDays(daysInFuture)
             .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} months in the future is stored as {string}")
     fun givenDateMonthsInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
-        val now = LocalDate.now();
+        val now = LocalDate.now()
         ScenarioStateContext.scenarioContextMap[contextKey] = now.plusMonths(daysInFuture)
             .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
     @Given("that a date {int} years in the future is stored as {string}")
     fun givenDateYearsInFutureStoredInContext(daysInFuture: Long, contextKey: String) {
-        val now = LocalDate.now();
+        val now = LocalDate.now()
         ScenarioStateContext.scenarioContextMap[contextKey] = now.plusYears(daysInFuture)
             .format(DateTimeFormatter.ISO_LOCAL_DATE)
     }

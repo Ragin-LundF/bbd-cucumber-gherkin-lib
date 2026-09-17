@@ -159,6 +159,19 @@ internal class UrlUtilsTests {
     }
 
     @Test
+    internal fun `fullURLFor omits port when port is the none placeholder`() {
+        assertEquals(
+            expected = "http://localhost/api",
+            actual = UrlUtils.fullURLFor(
+                path = "/api",
+                protocol = "http",
+                host = "localhost",
+                port = "none"
+            )
+        )
+    }
+
+    @Test
     internal fun `fullURLFor builds URL without protocol prefix when protocol and host are null`() {
         assertEquals(
             expected = "/api/v1",

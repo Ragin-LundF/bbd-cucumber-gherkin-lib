@@ -8,10 +8,7 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 @Component
-open class BaseCucumberCore(
-    protected val jsonUtils: BddJsonUtils,
-    protected val bddProperties: BddProperties
-) {
+open class BaseCucumberCore(protected val jsonUtils: BddJsonUtils, protected val bddProperties: BddProperties) {
     /**
      * Handle BearerToken
      *
@@ -45,7 +42,7 @@ open class BaseCucumberCore(
      * If the path contains the reserved word "absolutePath:" it tries to resolve the file from the classpath root.
      *
      * @param path              Path to file
-     * @return                  Content of file as String
+     * @return Content of file as String
      * @throws java.io.IOException      Error while reading file
      */
     @Throws(IOException::class)
@@ -61,7 +58,7 @@ open class BaseCucumberCore(
      * If the path contains the reserved word "absolutePath:" it tries to resolve the file from the classpath root.
      *
      * @param path              Path to file
-     * @return                  Content of file as ByteArray
+     * @return Content of file as ByteArray
      * @throws IOException      Error while reading file
      */
     @Throws(IOException::class)

@@ -21,12 +21,7 @@ object UrlUtils {
      * @param port The port number as a string. Optional, can be null.
      * @return A string representing the full URL composed of the provided components and the specified path.
      */
-    fun fullURLFor(
-        path: String,
-        protocol: String? = null,
-        host: String? = null,
-        port: String? = null,
-    ): String {
+    fun fullURLFor(path: String, protocol: String? = null, host: String? = null, port: String? = null,): String {
         if (path.startsWith(prefix = HTTP_PROTOCOL_W_SEPARATOR) ||
             path.startsWith(prefix = HTTPS_PROTOCOL_W_SEPARATOR)
         ) {
@@ -38,9 +33,7 @@ object UrlUtils {
             basePath.append(protocol)
             basePath.append(PROTOCOL_SEPARATOR)
             basePath.append(host)
-            if (PLACEHOLDER_PORT_NONE == port) {
-                basePath.append(":").append(port)
-            } else if (port != null && port.trim { it <= ' ' } != "") {
+            if (PLACEHOLDER_PORT_NONE != port && !port.isNullOrBlank()) {
                 basePath.append(":").append(port)
             }
         }

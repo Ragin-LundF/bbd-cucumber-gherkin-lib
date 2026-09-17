@@ -29,7 +29,7 @@ object RequestLoggerUtils {
         scenario.log("========")
         scenario.log("HTTP Method: ${httpMethod.name()}")
         scenario.log("HTTP URL   : $url")
-        if (! encodedDataMap.isNullOrEmpty()) {
+        if (!encodedDataMap.isNullOrEmpty()) {
             scenario.log("URL Encoded Data:")
             encodedDataMap.entries.forEach { pair ->
                 scenario.log("  ${pair.key}=${pair.value}")

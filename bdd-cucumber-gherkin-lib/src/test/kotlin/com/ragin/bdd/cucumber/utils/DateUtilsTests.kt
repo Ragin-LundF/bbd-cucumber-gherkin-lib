@@ -40,7 +40,8 @@ internal class DateUtilsTests {
                 actual = isValidMandatoryDate(
                     dateObject = sample,
                     bddDateTimeFormats = listOf(CustomDateTimeFormatter())
-                )
+                ),
+                message = "expected '$sample' to be accepted as a valid mandatory date"
             )
         }
     }

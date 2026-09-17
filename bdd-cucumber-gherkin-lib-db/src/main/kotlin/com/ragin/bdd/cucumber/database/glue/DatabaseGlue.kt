@@ -155,7 +155,7 @@ open class DatabaseGlue(
      * @param columnValue the columnValue to be processed
      * @param <V> any object
      * @return the columnName processed to be database independent
-    </V> */
+     </V> */
     private fun <V> generifyDatabaseColumnValue(columnValue: V): Any {
         if (columnValue is Boolean) {
             return if (columnValue) 1 else 0

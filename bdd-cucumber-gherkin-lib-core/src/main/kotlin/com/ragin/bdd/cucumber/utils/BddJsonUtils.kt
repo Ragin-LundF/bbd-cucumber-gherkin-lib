@@ -20,12 +20,12 @@ import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
 import org.hamcrest.Matcher
-import org.junit.jupiter.api.assertNull
 import org.springframework.stereotype.Component
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -54,14 +54,14 @@ class BddJsonUtils(
             val minimizedExpected = minimizeJSON(json = expectedJSON)
             val minimizedActual = minimizeJSON(json = actualJSON)
             log.error {
-            """
+                """
             JSON comparison failed.
             Expected:
                 $minimizedExpected
 
             Actual:
                 $minimizedActual
-            """.trimIndent()
+                """.trimIndent()
             }
             throw error
         }
@@ -113,17 +113,22 @@ class BddJsonUtils(
      *
      * @param configuration Configuration
      * @param matcher       Class implementation of BddCucumberJsonMatcher interface
-     * @return              Configuration with added matcher
+     * @return Configuration with added matcher
      */
     private fun addMatcherConfiguration(configuration: Configuration, matcher: BddCucumberJsonMatcher): Configuration {
+        val hamcrestMatcher = matcher as? Matcher<*>
+        if (hamcrestMatcher != null) {
+            return configuration.withMatcher(matcher.matcherName(), hamcrestMatcher)
+        }
+
         var configurationVar = configuration
         runCatching {
             configurationVar = configurationVar.withMatcher(
                 matcher.matcherName(),
                 matcher.matcherClass().getDeclaredConstructor().newInstance()
             )
-        }.onFailure {
-            log.error { "Unable to instantiate the matcher [${matcher.matcherName()}]" }
+        }.onFailure { error ->
+            log.error(throwable = error) { "Unable to instantiate the matcher [${matcher.matcherName()}]" }
         }
         return configurationVar
     }
@@ -235,7 +240,7 @@ class BddJsonUtils(
      * Find custom matcher
      *
      * @param possibleMatcherName   string which possibly contains a matcher name
-     * @return  if matcher name was found the matcher name
+     * @return if matcher name was found the matcher name
      */
     @Suppress("MagicNumber")
     private fun findMatcherName(possibleMatcherName: String): Optional<String> {

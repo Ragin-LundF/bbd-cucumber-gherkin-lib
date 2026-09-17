@@ -21,3 +21,15 @@ performance:
   # disabled since Kotlin compiler optimizations since 1.1.60
   SpreadOperator:
     active: false
+
+ktlint:
+  # Contradicts .ai/instructions/coding-guidelines.md:15 -- "Implement functions with
+  # block bodies. Do not use expression-body functions."
+  FunctionExpressionBody:
+    active: false
+  # This codebase deliberately does not use trailing commas; the ktlint defaults would
+  # rewrite ~73 call/declaration sites purely to adopt a style never chosen here.
+  TrailingCommaOnCallSite:
+    active: false
+  TrailingCommaOnDeclarationSite:
+    active: false

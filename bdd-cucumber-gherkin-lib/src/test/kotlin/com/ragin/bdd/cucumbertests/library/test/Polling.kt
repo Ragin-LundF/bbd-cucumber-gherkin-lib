@@ -66,9 +66,7 @@ class Polling {
         return mapOf("message" to message).toJsonString()
     }
 
-    data class PollingRequest(
-        var postExample: String? = null
-    )
+    data class PollingRequest(var postExample: String? = null)
 
     companion object {
         private val RUN_COUNTER_POLLING = AtomicInteger(0)

@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class BodyManipulation {
     @PostMapping("/api/v1/body/manipulate")
-    fun stubBodyManipulation(
-        @RequestBody body: StubBody
-    ): ResponseEntity<String> {
+    fun stubBodyManipulation(@RequestBody body: StubBody): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.CREATED).body(createManipulatedBodyResponse(body))
     }
 
@@ -23,8 +21,5 @@ class BodyManipulation {
         ).toJsonString()
     }
 
-    data class StubBody(
-        val name: String? = null,
-        val ids: List<String>
-    )
+    data class StubBody(val name: String? = null, val ids: List<String>)
 }

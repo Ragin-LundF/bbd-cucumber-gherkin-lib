@@ -6,9 +6,7 @@ import io.cucumber.java.Scenario
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
-open class DatabaseResetHooks(
-    private val databaseExecutorService: IDatabaseExecutorService
-) {
+open class DatabaseResetHooks(private val databaseExecutorService: IDatabaseExecutorService) {
 
     /**
      * Execute the [.RESET_DATABASE_FILE] liquibase script to reset the database.

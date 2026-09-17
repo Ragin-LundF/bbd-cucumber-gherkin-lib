@@ -4,45 +4,31 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "cucumbertest")
 data class BddProperties(
-    val authorization : Authorization?,
-    val proxy : Proxy?,
+    val authorization: Authorization?,
+    val proxy: Proxy?,
     val server: Server?,
-    val ssl : SSL?,
-    val scenarioContext : Map<String, String> = hashMapOf()
+    val ssl: SSL?,
+    val scenarioContext: Map<String, String> = hashMapOf()
 ) {
-    data class Authorization(
-        val bearerToken: AuthorizationBearer
-    ) {
+    data class Authorization(val bearerToken: AuthorizationBearer) {
         /**
          * Authorization
          */
-        data class AuthorizationBearer(
-            val default : String? = null,
-            val noscope: String? = null,
-        )
+        data class AuthorizationBearer(val default: String? = null, val noscope: String? = null,)
     }
 
     /**
      * Proxy
      */
-    data class Proxy(
-        val host : String = "http",
-        val port : Int?
-    )
+    data class Proxy(val host: String = "http", val port: Int?)
 
     /**
      * Server
      */
-    data class Server(
-        val protocol : String = "http",
-        val host : String?,
-        val port : String?
-    )
+    data class Server(val protocol: String = "http", val host: String?, val port: String?)
 
     /**
      * SSL
      */
-    data class SSL(
-        val disableCheck : Boolean = false
-    )
+    data class SSL(val disableCheck: Boolean = false)
 }

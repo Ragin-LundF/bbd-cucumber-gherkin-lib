@@ -78,11 +78,7 @@ abstract class BaseRESTExecutionGlue(
      * @param authorized    should the request execute authorized or unauthorized (true = authorized)
      * @param scenario      Cucumber scenario
      */
-    protected fun executeRequest(
-        httpMethod: HttpMethod,
-        authorized: Boolean,
-        scenario: Scenario
-    ) {
+    protected fun executeRequest(httpMethod: HttpMethod, authorized: Boolean, scenario: Scenario) {
         executeRequest(
             dataTable = DataTable.emptyDataTable(),
             httpMethod = httpMethod,
@@ -160,11 +156,14 @@ abstract class BaseRESTExecutionGlue(
                 val scenarioContextMapValue = scenarioContextMap[entryItem]
                 val byteArray = scenarioContextFileMap[entryItem]
                 if (byteArray != null) {
-                    formDataMap.add(entry.key, object : ByteArrayResource(byteArray) {
-                        override fun getFilename(): String {
-                            return scenarioContextMapValue ?: entryItem
+                    formDataMap.add(
+                        entry.key,
+                        object : ByteArrayResource(byteArray) {
+                            override fun getFilename(): String {
+                                return scenarioContextMapValue ?: entryItem
+                            }
                         }
-                    })
+                    )
                 } else {
                     formDataMap.add(entry.key, scenarioContextMapValue ?: entryItem)
                 }
@@ -270,6 +269,7 @@ abstract class BaseRESTExecutionGlue(
                         error.statusCode
                     )
                 )
+
             else -> log.error(throwable = error) { "Error during REST call execution" }
         }
     }

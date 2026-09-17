@@ -16,8 +16,5 @@ class GlobalExceptionControllerAdvice {
         )
     }
 
-    data class ErrorMessage(
-        var code: String? = null,
-        var message: String? = null
-    )
+    data class ErrorMessage(var code: String? = null, var message: String? = null)
 }

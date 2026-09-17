@@ -25,10 +25,7 @@ class PathManipulation {
         )
     }
 
-    private fun createDynamicPathResponse(
-        resourceId: String,
-        subResourceId: String
-    ): String {
+    private fun createDynamicPathResponse(resourceId: String, subResourceId: String): String {
         return mapOf(
             "resourceId" to resourceId,
             "subResourceId" to subResourceId,

@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.database.executor
 
+import javax.sql.DataSource
 import liquibase.Contexts
 import liquibase.LabelExpression
 import liquibase.Liquibase
@@ -8,14 +9,14 @@ import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jdbc.core.JdbcTemplate
-import javax.sql.DataSource
-import kotlin.use
 
-class DatabaseExecutorService(
-    private val datasource: DataSource,
-    private val jdbcTemplate: JdbcTemplate
-) : IDatabaseExecutorService {
-    @Value("\${cucumberTest.liquibase.closeConnection:false}")
+class DatabaseExecutorService(private val datasource: DataSource, private val jdbcTemplate: JdbcTemplate) :
+    IDatabaseExecutorService {
+    @Deprecated(
+        message = "The Liquibase connection is now always closed once the script finished, " +
+            "so this flag no longer has any effect. It will be removed in the next major release."
+    )
+    @Value($$"${cucumberTest.liquibase.closeConnection:false}")
     val closeConnection = false
 
     /**
@@ -27,21 +28,17 @@ class DatabaseExecutorService(
     @Throws(Exception::class)
     override fun executeLiquibaseScript(liquibaseScript: String) {
         val connection = JdbcConnection(datasource.connection)
-        runCatching {
+        connection.use { connection ->
             Liquibase(
-                    liquibaseScript,
-                    ClassLoaderResourceAccessor(),
-                    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection)
+                liquibaseScript,
+                ClassLoaderResourceAccessor(),
+                DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection)
             ).use { liquibase ->
                 liquibase.update(
-                        Contexts(""),
-                        LabelExpression(),
-                        false
+                    Contexts(""),
+                    LabelExpression(),
+                    false
                 )
-            }
-        }.also {
-            if (closeConnection) {
-                connection.close()
             }
         }
     }
@@ -59,7 +56,7 @@ class DatabaseExecutorService(
      * Execute an query of SQL statements
      *
      * @param sql   SQL statements that should be executed
-     * @return      List with a map per row which contains the result
+     * @return List with a map per row which contains the result
      */
     override fun executeQuerySQL(sql: String): List<Map<String, Any?>> {
         return jdbcTemplate.queryForList(sql)

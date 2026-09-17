@@ -9,7 +9,7 @@ object ScenarioStateContext {
     var urlBasePath: String = ""
     var bearerToken: String? = null
     var editableBody: String? = ""
-    var uriPath:String = ""
+    var uriPath: String = ""
     var defaultBearerToken: String = ""
     var headerValues: HashMap<String, String> = hashMapOf()
     var scenarioContextMap: HashMap<String, String> = hashMapOf()
@@ -64,15 +64,21 @@ object ScenarioStateContext {
 
     fun resolveFileEntry(key: String): ByteArray {
         val value = scenarioContextFileMap[key]
-        require(value != null) {"Entry $key not found in scenario file context"}
+        require(value != null) { "Entry $key not found in scenario file context" }
 
         return value
     }
 
     fun getJsonPathOptions(): List<Option> {
-        return jsonPathOptions
+        // Defensive copy: handing out the backing list lets callers mutate global state.
+        return jsonPathOptions.toList()
     }
 
+    @Deprecated(
+        message = "Replacing the option list wholesale bypasses reset() and has no callers. " +
+            "Use addJsonIgnoringExtraFields/addJsonIgnoringExtraArrayElements/" +
+            "addJsonIgnoringArrayOrder instead. Will be removed in the next major release."
+    )
     fun setJsonPathOptions(jsonPathOptions: MutableList<Option>) {
         this.jsonPathOptions = jsonPathOptions
     }

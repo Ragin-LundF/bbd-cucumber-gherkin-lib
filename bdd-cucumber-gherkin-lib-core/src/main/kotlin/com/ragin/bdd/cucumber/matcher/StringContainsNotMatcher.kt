@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component
  * ${json-unit.matches:string-contains-not}MY_CONTEXT_VALUE
  */
 @Component
-class StringContainsNotMatcher : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJsonMatcher {
+class StringContainsNotMatcher :
+    BaseMatcher<Any>(),
+    ParametrizedMatcher,
+    BddCucumberJsonMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {

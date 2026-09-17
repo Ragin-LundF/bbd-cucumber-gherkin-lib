@@ -22,9 +22,9 @@ class ThenRESTValidationGlue(
     jsonUtils: BddJsonUtils,
     bddProperties: BddProperties
 ) : BaseCucumberCore(
-    jsonUtils = jsonUtils,
-    bddProperties = bddProperties
-) {
+        jsonUtils = jsonUtils,
+        bddProperties = bddProperties
+    ) {
     /**
      * Ensure that the response code is valid
      * @param expectedStatusCode HTTP status code that is expected
@@ -35,7 +35,7 @@ class ThenRESTValidationGlue(
             expected = expectedStatusCode,
             actual = latestResponse?.statusCode?.value(),
             message = "Status code does not match! " +
-                    "Expected: $expectedStatusCode, actual: ${latestResponse?.statusCode?.value()}"
+                "Expected: $expectedStatusCode, actual: ${latestResponse?.statusCode?.value()}"
         )
     }
 
@@ -144,10 +144,7 @@ class ThenRESTValidationGlue(
      */
     @Then("I ensure that the response code is {int} and the body is equal to the file {string}")
     @Throws(IOException::class)
-    fun thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(
-        expectedStatusCode: Int,
-        pathToFile: String
-    ) {
+    fun thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(expectedStatusCode: Int, pathToFile: String) {
         val expectedBody = readFileAsString(path = pathToFile)
         assertEquals(
             expected = expectedStatusCode,
@@ -227,7 +224,7 @@ class ThenRESTValidationGlue(
      * Replace trailing and leading quotes
      *
      * @param value     String value
-     * @return          argument without trailing and leading quotes
+     * @return argument without trailing and leading quotes
      */
     private fun replaceTrailingAndLeadingQuotes(value: String): String {
         var result = value

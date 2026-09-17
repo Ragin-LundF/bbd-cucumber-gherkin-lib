@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component
  * ${json-unit.matches:isValidIBAN}
  */
 @Component
-class IBANMatcher : BaseMatcher<String?>(), BddCucumberJsonMatcher {
+class IBANMatcher :
+    BaseMatcher<String?>(),
+    BddCucumberJsonMatcher {
     override fun matcherName(): String {
         return "isValidIBAN"
     }
@@ -21,7 +23,6 @@ class IBANMatcher : BaseMatcher<String?>(), BddCucumberJsonMatcher {
 
     @Suppress("LongMethod")
     override fun matches(actual: Any): Boolean {
-
         if (actual is String) {
             return actual.matches(IBAN_REGEX)
         }
@@ -40,7 +41,8 @@ class IBANMatcher : BaseMatcher<String?>(), BddCucumberJsonMatcher {
     }
 
     companion object {
-        private val IBAN_REGEX = ("^AL\\d{10}[0-9A-Z]{16}$|" +
+        private val IBAN_REGEX = (
+            "^AL\\d{10}[0-9A-Z]{16}$|" +
                 "^AD\\d{10}[0-9A-Z]{12}$|" +
                 "^AT\\d{18}$|" +
                 "^BH\\d{2}[A-Z]{4}[0-9A-Z]{14}$|" +
@@ -66,8 +68,8 @@ class IBANMatcher : BaseMatcher<String?>(), BddCucumberJsonMatcher {
                 "^IE\\d{2}[A-Z]{4}\\d{14}$|" +
                 "^IL\\d{21}$|" +
                 "^IT\\d{2}[A-Z]\\d{10}[0-9A-Z]{12}$|" +
-                "^[A-Z]{2}\\d{5}[0-9A-Z]{13}$|" +
-                "^KW\\d{2}[A-Z]{4}22!$|" +
+                "^KZ\\d{5}[0-9A-Z]{13}$|" +
+                "^KW\\d{2}[A-Z]{4}[0-9A-Z]{22}$|" +
                 "^LV\\d{2}[A-Z]{4}[0-9A-Z]{13}$|" +
                 "^LB\\d{6}[0-9A-Z]{20}$|" +
                 "^LI\\d{7}[0-9A-Z]{12}$|" +
@@ -96,6 +98,6 @@ class IBANMatcher : BaseMatcher<String?>(), BddCucumberJsonMatcher {
                 "^TR\\d{7}[0-9A-Z]{17}$|" +
                 "^AE\\d{21}$|" +
                 "^GB\\d{2}[A-Z]{4}\\d{14}$"
-                ).toRegex()
+            ).toRegex()
     }
 }

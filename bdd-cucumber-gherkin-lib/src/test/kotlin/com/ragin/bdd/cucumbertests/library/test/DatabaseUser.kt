@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-class DatabaseUser(
-    private val userRepository: UserRepository
-) {
+class DatabaseUser(private val userRepository: UserRepository) {
     @GetMapping("/api/v1/user/db/{userId}")
     fun userDetails(@PathVariable userId: String): ResponseEntity<UserEntity> {
         val user = userRepository.findFirstByUserId(userId)

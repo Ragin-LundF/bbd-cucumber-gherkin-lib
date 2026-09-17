@@ -21,7 +21,7 @@ object RESTCommunicationUtils {
      * Create HTTP header
      *
      * @param addAuthorisation  true = add BearerToken | false = no Authorization header
-     * @return  default Headers
+     * @return default Headers
      */
     @JvmStatic
     fun createHTTPHeader(addAuthorisation: Boolean): HttpHeaders {
@@ -37,11 +37,11 @@ object RESTCommunicationUtils {
             }
         }
 
-        if (! headerValues.containsKey(CONTENT_TYPE)) {
+        if (!headerValues.containsKey(CONTENT_TYPE)) {
             headers.add(CONTENT_TYPE, APPLICATION_JSON_VALUE)
         }
 
-        if (! headerValues.containsKey(ACCEPT)) {
+        if (!headerValues.containsKey(ACCEPT)) {
             headers.add(ACCEPT, APPLICATION_JSON_VALUE)
         }
 
@@ -52,7 +52,7 @@ object RESTCommunicationUtils {
      * Prepare dynamic URL with data from datatable to exchange the dynamic values
      *
      * @param dataTable     DataTable from Cucumber file
-     * @return              path with replaced values
+     * @return path with replaced values
      */
     @JvmStatic
     fun prepareDynamicURLWithDataTable(dataTable: DataTable): String {
@@ -69,7 +69,7 @@ object RESTCommunicationUtils {
         val dataTableRowList = dataTable.asMaps(String::class.java, String::class.java)
         for (stringStringMap in dataTableRowList) {
             // Try to resolve value from context map
-            if (! stringStringMap[BDD_URI_VALUES].isNullOrEmpty()) {
+            if (!stringStringMap[BDD_URI_VALUES].isNullOrEmpty()) {
                 var uriValue = scenarioContextMap[stringStringMap[BDD_URI_VALUES]]
                 // If context map knows nothing about the value, use value directly
                 if (uriValue == null) {

@@ -37,6 +37,7 @@ class WhenRESTManipulationGlue(
                     fieldPath = propertyPath
                 )
             }
+
             newValue.matches(regex = BDD_LIB_NUMBERS) -> {
                 val numOfChars = newValue.split(" ").toTypedArray()[0].toInt()
                 newValue = StringUtils.rightPad("", numOfChars, "1234567890")
@@ -46,6 +47,7 @@ class WhenRESTManipulationGlue(
                     newValue = newValue
                 )
             }
+
             newValue.matches(regex = BDD_LIB_UUID) -> {
                 editableBody = jsonUtils.editJsonField(
                     originalJson = editableBody,
@@ -53,6 +55,7 @@ class WhenRESTManipulationGlue(
                     newValue = UUID.randomUUID().toString()
                 )
             }
+
             else -> {
                 editableBody = jsonUtils.editJsonField(
                     originalJson = editableBody,

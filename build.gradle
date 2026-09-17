@@ -24,6 +24,7 @@ plugins {
 
 apply from: "${rootDir}/config/gradle/wrapper.gradle"
 apply from: "${rootDir}/config/gradle/dependency_updates.gradle"
+apply from: "${rootDir}/config/gradle/kover_sonar.gradle"
 
 subprojects {
     // export of classes for subscripts
