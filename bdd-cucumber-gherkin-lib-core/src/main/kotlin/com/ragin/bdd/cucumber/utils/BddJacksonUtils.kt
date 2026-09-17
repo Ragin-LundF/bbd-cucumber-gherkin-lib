@@ -18,4 +18,19 @@ object BddJacksonUtils {
         .changeDefaultPropertyInclusion { incl ->
             incl.withValueInclusion(JsonInclude.Include.NON_EMPTY)
         }.build()
+
+    /**
+     * Formats a JSON string with indentation so it is readable in a log or a report.
+     *
+     * Anything that is not valid JSON is returned unchanged: this is used for reporting only, where
+     * a malformed payload is exactly what the reader needs to see.
+     *
+     * @param json  the JSON string to format
+     * @return the indented JSON, or the input unchanged when it cannot be parsed
+     */
+    fun prettyPrintOrRaw(json: String): String {
+        return runCatching {
+            mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readTree(json))
+        }.getOrDefault(defaultValue = json)
+    }
 }

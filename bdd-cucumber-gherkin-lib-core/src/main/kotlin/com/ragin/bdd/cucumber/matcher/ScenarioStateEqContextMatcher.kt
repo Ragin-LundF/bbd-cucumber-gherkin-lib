@@ -5,7 +5,6 @@ import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.springframework.stereotype.Component
-import kotlin.collections.get
 
 /**
  * Is equal to scenario context.
@@ -13,7 +12,10 @@ import kotlin.collections.get
  * ${json-unit.matches:isEqualToScenarioContext}newUserNameInContext
  */
 @Component
-class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJsonMatcher {
+class ScenarioStateEqContextMatcher :
+    BaseMatcher<Any>(),
+    ParametrizedMatcher,
+    BddCucumberJsonMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {
@@ -28,15 +30,15 @@ class ScenarioStateEqContextMatcher : BaseMatcher<Any>(), ParametrizedMatcher, B
 
     override fun describeMismatch(item: Any, description: Description) {
         description
-                .appendText("Parameter was [")
-                .appendValue(parameter)
-                .appendText("].")
-                .appendText("BDD Context value was [")
-                .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
-                .appendText("].")
-                .appendText(" JSON Value was [")
-                .appendValue(item)
-                .appendText("].")
+            .appendText("Parameter was [")
+            .appendValue(parameter)
+            .appendText("].")
+            .appendText("BDD Context value was [")
+            .appendValue(ScenarioStateContext.scenarioContextMap[parameter])
+            .appendText("].")
+            .appendText(" JSON Value was [")
+            .appendValue(item)
+            .appendText("].")
     }
 
     override fun setParameter(parameter: String?) {

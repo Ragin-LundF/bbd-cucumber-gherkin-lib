@@ -7,7 +7,10 @@ import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import kotlin.test.assertNotNull
 
-class ParameterizedCustomScenarioContextMatcher : BaseMatcher<Any>(), BddCucumberJsonMatcher, ParametrizedMatcher {
+class ParameterizedCustomScenarioContextMatcher :
+    BaseMatcher<Any>(),
+    BddCucumberJsonMatcher,
+    ParametrizedMatcher {
     private var jsonParameter: String? = null
 
     override fun matcherName(): String {

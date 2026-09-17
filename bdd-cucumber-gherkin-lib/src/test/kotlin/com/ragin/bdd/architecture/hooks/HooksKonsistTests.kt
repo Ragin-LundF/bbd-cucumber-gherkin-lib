@@ -16,11 +16,12 @@ internal class HooksKonsistTests {
     }
 
     private fun konsistDirectoryScope(): KoScope {
-        return Konsist.scopeFromDirectories(
-            paths = listOf(
-                "bdd-cucumber-gherkin-lib-core/src/main/kotlin/com/ragin/bdd/cucumber/hooks",
-                "bdd-cucumber-gherkin-lib-db/src/main/kotlin/com/ragin/bdd/cucumber/database/hooks"
-            )
+        return Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber.hooks",
+            sourceSetName = "main"
+        ) + Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber.database.hooks",
+            sourceSetName = "main"
         )
     }
 }

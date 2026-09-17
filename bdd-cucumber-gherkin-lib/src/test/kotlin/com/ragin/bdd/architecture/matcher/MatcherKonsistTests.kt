@@ -31,10 +31,9 @@ internal class MatcherKonsistTests {
     }
 
     private fun konsistDirectoryScope(): KoScope {
-        return Konsist.scopeFromDirectories(
-            paths = listOf(
-                "bdd-cucumber-gherkin-lib-core/src/main/kotlin/com/ragin/bdd/cucumber/matcher"
-            )
+        return Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber.matcher",
+            sourceSetName = "main"
         )
     }
 }

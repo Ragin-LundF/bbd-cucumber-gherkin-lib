@@ -1,3 +1,168 @@
+# Release 3.8.0
+
+## New features
+
+### Applications with more than one port
+Tests no longer need a protocol, host or port for an endpoint that runs on a second port.
+Every web server the Spring context starts is detected automatically under the name Spring uses
+for it, so an actuator on its own port is reachable with a plain path and no configuration at all:
+
+```gherkin
+Scenario: Read the health endpoint from the management port
+  When executing a GET call to "/actuator/health"
+  Then I ensure that the status code of the response is 200
+```
+
+Servers that Spring does not start itself — a mock, a side car, a second deployment — are declared
+once in the `application.yml` and then addressed the same way:
+
+```yaml
+cucumberTest:
+  services:
+    payment-mock:
+      host: localhost
+      port: "${wiremock.server.port}"
+      path-prefixes: ["/payments"]
+```
+
+`port`, `host` and `base-path` may contain `${...}` placeholders. They are resolved when the
+request runs and not when the properties are bound, so a random port is always the current one.
+
+`base-path` is prepended to the URL, while `path-prefixes` only decides which service a path is
+routed to. Use `path-prefixes` when the feature file already spells the prefix out
+(`"/actuator/health"`) and `base-path` when it does not (`"/health"`).
+
+### New sentence `that the service "..." is used`
+For the cases where a path prefix is not enough, a scenario can name the service explicitly.
+`server` is the application itself, so it also switches back to the default:
+
+```gherkin
+Scenario: Read a mocked endpoint
+  Given that the service "payment-mock" is used
+  When executing a GET call to "/v1/payments"
+  Then I ensure that the status code of the response is 200
+```
+
+An unknown name fails immediately and lists the names that are available.
+
+### Logging and reporting you can actually read
+Two things were wrong: the console said nothing while tests ran, and the report put every detail of
+a call into flat, always-expanded blocks.
+
+**On the console**, one short line per call now appears with no setup at all:
+
+```
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+```
+
+Turn it down with `logging.level.com.ragin.bdd.cucumber: WARN`. A failed scenario is logged with its
+name and feature location, so a failure is never anonymous. Everything that only the framework cares
+about — state resets, per-field matcher traces — moved to `debug`.
+
+For the scenario and step tree, append the new plugin constant to the plugins the project already
+configures. Cucumber has no way to register a plugin by itself, so this stays explicit:
+
+```kotlin
+@ConfigurationParameter(
+    key = Constants.PLUGIN_PROPERTY_NAME,
+    value = "html:build/reports/cucumber/cucumber.html, " +
+        BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT
+)
+```
+
+```
+Scenario: Unauthorized DELETE call ...              # delete_auth.feature:7
+  ✔ Given that the body of the request is
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+  ✔ When executing a DELETE call to "/api/v1/unauthorized" with previously given body
+  ✔ Then I ensure that the status code of the response is 401
+```
+
+With Gradle this needs `testLogging { showStandardStreams = true; exceptionFormat = 'full' }`,
+otherwise nothing is printed and a failure is reduced to an exception type and a line number.
+
+**In the report**, a call used to produce eight expanded blocks:
+
+```
+Request:
+========
+HTTP Method: DELETE
+HTTP URL   : /api/v1/unauthorized
+Response:
+========
+Status Code: 401 UNAUTHORIZED
+Body       : {"error":"unauthorized","error_description":"Full authentication is required"}
+```
+
+It now produces two visible lines and the payloads as collapsed, titled blocks that the report
+indents for you:
+
+```
+→ DELETE /api/v1/unauthorized
+← 401 UNAUTHORIZED  (12 ms)
+
+▸ Request body
+▸ Response body
+```
+
+Across the library's own suite that is 1416 flat log lines down to 404, and 0 up to 256 collapsed
+attachments. Steps that were silent now report too: the multipart form-data call, the `Then`
+validations (with expected-vs-actual attached on a mismatch), the database steps (Liquibase file,
+SQL file, row count, query result versus CSV) and each polling attempt.
+
+New switches, all optional:
+
+```yaml
+cucumberTest:
+  logging:
+    request-body: true        # attach the request body
+    response-body: true       # attach the response body
+    headers: false            # attach headers, credentials obfuscated
+    sql: false                # attach the executed SQL
+    pretty-json: true         # indent JSON before attaching it
+    max-body-length: 8192     # truncate an attached payload beyond this
+```
+
+**Credentials are obfuscated** before anything is attached. The middle third of a `Bearer`, `Basic`
+or `Digest` credential is replaced with `*` so it stays recognisable but not usable, and this applies
+wherever it appears — including inside a response body that an API echoed back. Sensitive headers
+are obfuscated by name as well.
+
+## Compatibility
+- Every existing feature file and `application.yml` resolves to the same URL as before. Without
+  `cucumberTest.services` and without a second port nothing is routed anywhere new, because the
+  `server` service intentionally claims no path prefix.
+- One behaviour change to be aware of: an application that already runs a management port now
+  answers `/actuator/...` calls from that port instead of returning 404 from the application port.
+  Set `cucumberTest.services.management.path-prefixes: []` to keep the old behaviour.
+- `BddProperties` gained a constructor parameter and `UrlUtils.fullURLFor` an optional parameter.
+- The console and report output changed on purpose. Anything that scraped CI logs for
+  `Executing call to [GET][...]` has to look for `→ GET ...` instead.
+- `RequestLoggerUtils` is now a class that takes the logging options, and its `log` field is no
+  longer public. It was only public by omission.
+- `ScenarioLoggingHooks` takes `BddProperties` and is no longer final. It is created from the Spring
+  context, where `BddProperties` is already a bean, so no project configuration changes.
+- Removed, because nothing uses them any more now that the running scenario comes from the scenario
+  state: the `scenario` parameter of `executeRequest` and `executeUrlEncodedRequest` in
+  `BaseRESTExecutionGlue`, the `scenarioState` field and `injectScenario` hook of
+  `WhenRESTExecutionGlue`, the `NotLoggableSubtype` enum (superseded by
+  `BddReportConstants.NOT_LOGGABLE_SUBTYPES`), and the `EMPTY_JSON`, `NEW_LINE`, `CARRIAGE_RETURN`,
+  `JSON_SPACING` and `JSON_COMPACT` constants of `BddJsonUtils`.
+
+## Internal changes
+- **Coverage was being measured wrong.** The integration test module has no `src/main`, so Kover
+  created no variant for it and silently discarded every binary report it produced.
+- The url-encoded POST sentence had no scenario. It has one now, together with the endpoint it
+  needs, so all three request paths are demonstrated in the feature files.
+- Added unit tests for the parts of the new reporting that a scenario cannot assert: the
+  `max-body-length` boundary and the header obfuscation decision.
+- The demo application switches `cucumberTest.logging.headers` and `.sql` on, so the library's own
+  report shows what those produce and the obfuscation is exercised end to end.
+- Some housekeeping under the hood: a handful of small glitches that had crept in over time are gone, so a few things now behave the way they always should have.
+- Tightened up the build itself. Tests, coverage and code formatting are checked automatically again instead of being quietly skipped.
+- Two leftovers that nobody was using are now marked as deprecated. They still work, but they will disappear with the next major release.
 
 # Release 3.7.0
 - Some dependency updates

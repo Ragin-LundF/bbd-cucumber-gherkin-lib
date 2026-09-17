@@ -29,8 +29,27 @@ cucumberTest:
     port: -1
   ssl:
     disableCheck: false
+  # Both are off by default. They are switched on here so the library's own report demonstrates
+  # them, and so the header obfuscation is exercised end to end by every authorized scenario.
+  logging:
+    headers: true
+    sql: true
+
+# Starts the actuator on its own random port, so the library's own tests run against an
+# application with two ports. server.port is 0 (RANDOM_PORT) and management.server.port is 0,
+# which Spring Boot treats as DIFFERENT and therefore creates a separate management context.
+management:
+  server:
+    port: 0
+  endpoints:
+    web:
+      exposure:
+        include: health
 
 spring:
+  main:
+    banner-mode: off
+
   datasource:
     url: jdbc:tc:postgresql:17:///cucumber
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
@@ -38,7 +57,9 @@ spring:
     password: cucumber
 
   jpa:
-    show-sql: true
+    # Hibernate writes this straight to System.out, which drowns the scenario output. The library
+    # reports the SQL it runs itself through cucumberTest.logging.sql.
+    show-sql: false
     hibernate:
       globally_quoted_identifiers: true
       ddl-auto: none
@@ -53,10 +74,14 @@ spring:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
+# Two logging systems are in play here:
+# * java.util.logging, used directly by Tomcat and Liquibase. Spring Boot configures it through
+#   logging.level below, because with logback excluded its JavaLoggingSystem is the one in use.
+# * SLF4J with slf4j-simple as the binding, used by Spring itself and by this library. Spring Boot
+#   cannot configure that one, so its levels live in simplelogger.properties.
 logging.level:
-  cucumberTest: info
-  root: error
+  root: warn
   org:
-    springframework: error
-  com:
-    ragin: error
+    apache: warn
+    springframework: warn
+  liquibase: warn

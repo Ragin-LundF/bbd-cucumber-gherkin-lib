@@ -16,6 +16,9 @@ dependencies {
     // --- Testing
     implementation(libs.testing.kotlin.test)
 
+    // SLF4J binding for the unit tests, otherwise SLF4J falls back to NOP and warns
+    testImplementation(libs.logging.slf4j)
+
     // --- HTTP Client
     implementation(libs.httpclient)
 

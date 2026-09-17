@@ -61,8 +61,29 @@ com.ragin.bdd.cucumber.rest
   extensions/   — Kotlin extension functions adapting Cucumber types for REST use
   glue/         — REST step definitions (Given/When/Then) and abstract HTTP execution base
   httpclient/   — HTTP client factory and configuration
-  utils/        — URL construction, path placeholder replacement, request logging
+  utils/        — URL construction, service/web-server resolution, path placeholder replacement,
+                  request logging
 ```
+
+#### Multi-port resolution (`rest`)
+
+`ServiceUrlResolver` enumerates every web server of the application under test by scanning the
+Spring `Environment` for the `local.<namespace>.port` properties that Spring Boot registers for
+each of them. The namespace is the service name (`server`, `management`, …). Discovered services
+are merged field by field with `cucumbertest.services.<name>`, configuration winning.
+
+`BaseRESTExecutionGlue.targetUrlFor` resolves the request URL in this order:
+
+1. path already absolute (`http://`, `https://`) — used as-is
+2. `ScenarioStateContext.serviceName` — fails fast when the name is unknown
+3. the service with the longest matching `pathPrefixes` entry
+4. `cucumbertest.server.*`
+5. nothing — the path stays relative and the `TestRestTemplate` resolves it
+
+Steps 4 and 5 are the pre-existing behaviour and must stay reachable. In particular the `server`
+service gets **no** default path prefix, because a prefix there would divert every call away from
+step 5. Resolution happens outside the `runCatching` of the request so that a configuration error
+surfaces instead of becoming a missing response.
 
 ### `bdd-cucumber-gherkin-lib-db`
 
@@ -83,6 +104,12 @@ this single artifact gets all three modules transitively. This is the recommende
 projects that use both REST and database sentences.
 
 All handwritten code lives in `src/test/` and is used to test the library itself.
+
+Because this module has **no `src/main`**, Kover creates no variant for it and ignores the binary
+reports of its test tasks. `config/gradle/kover_sonar.gradle` therefore feeds them into the root
+report through `additionalBinaryReports`. Without that the whole Gherkin suite counts for nothing
+and every glue class reads as 0%. Do not remove it, and keep it in mind when adding a test task
+here.
 
 ```
 src/test/kotlin/com/ragin/bdd
@@ -106,6 +133,8 @@ for all mutable state** during a Cucumber scenario.
 | `latestResponse` | yes | Last HTTP response |
 | `fileBasePath` | yes | Prefix for relative classpath file lookups |
 | `urlBasePath` | yes | Prefix prepended to relative URL paths |
+| `serviceName` | yes | Logical name of the web server the next requests go to; `null` derives it from the path |
+| `scenario` | **no** | The running Cucumber scenario, so every glue class can report. Set by the logging hook at order 1, which is *after* `reset()` at order 3 — clearing it there would empty every report |
 | `editableBody` | yes | Request body text |
 | `bearerToken` | yes (reset to `defaultBearerToken`) | Current authorization token |
 | `headerValues` | yes | Extra request headers |
@@ -225,6 +254,50 @@ logging and hide failure details.
 
 ---
 
+## Reporting and logging
+
+`ScenarioReporter` (`core/utils`) is the **only** sanctioned way to produce user-visible output.
+Never call `scenario.log`/`scenario.attach` or a logger directly from a glue class for something a
+reader is meant to see.
+
+It offers two kinds of output, because the Cucumber HTML report renders them differently:
+
+| Call | Media type | Rendered as | Use for |
+|---|---|---|---|
+| `summary(line)` | `text/x.cucumber.log+plain` | always-expanded block, no title | one short line: method, URL, status, duration, row count |
+| `attachJson` / `attachText` / `attachBody` | `application/json`, `text/plain` | **collapsed** block titled with the name | payloads: bodies, headers, SQL, query results |
+| `attachLink` | `text/uri-list` | clickable link | a URL worth opening |
+
+Rules:
+- `summary` also goes to the logger, so it reaches the console with no plugin configured.
+  Attachments never do — a body on the console buries the steps around it.
+- Everything attached passes through `ValueObfuscator.obfuscateSecretsIn`, so a credential that an
+  API echoes back cannot reach a shared report. Header values named in
+  `BddReportConstants.OBFUSCATED_HEADERS` are obfuscated by name as well.
+- A reporting failure must never fail a scenario: the reporter no-ops when no scenario is running
+  and swallows its own errors at debug level.
+
+### Log levels
+
+| Level | What belongs there |
+|---|---|
+| `error` | a failed scenario, and nothing else |
+| `warn` | something the project should fix, for example a discarded statement in databaseless mode |
+| `info` | the request and response summary lines, and nothing per-step beyond that |
+| `debug` | framework bookkeeping: state reset, scenario entry and exit, per-field matcher traces |
+
+All loggers sit under `com.ragin.bdd.cucumber`, so a project silences the library with a single
+`logging.level.com.ragin.bdd.cucumber` entry.
+
+### Console structure
+
+Cucumber cannot register a plugin automatically, so `BddPrettyFormatter` (`core/plugin`) is opt-in
+through `BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT`, **appended** to the plugins a
+project already configures. It wraps Cucumber's pretty writer with attachments switched off.
+Never make the library overwrite a project's own `cucumber.plugin` value.
+
+---
+
 ## Matchers
 
 Custom JSON field matchers implement `BddCucumberJsonMatcher` (interface in `core`) and extend
@@ -252,6 +325,17 @@ Spring `@ConfigurationProperties` prefix: `cucumbertest` (all lowercase, no sepa
 | `cucumbertest.server.protocol` | String | `http` | Target server protocol |
 | `cucumbertest.server.host` | String? | none | Target server host |
 | `cucumbertest.server.port` | String? | none | Target server port |
+| `cucumbertest.services.<name>.protocol` | String? | `cucumbertest.server.protocol` | Protocol of that service |
+| `cucumbertest.services.<name>.host` | String? | `cucumbertest.server.host`, else `localhost` | Host of that service |
+| `cucumbertest.services.<name>.port` | String? | the discovered `local.<name>.port` | Port of that service |
+| `cucumbertest.services.<name>.basePath` | String? | servlet context path for `server`, else empty | Prepended to every URL of that service |
+| `cucumbertest.services.<name>.pathPrefixes` | List<String>? | `/actuator` for `management`, else empty | Paths routed to that service; empty list disables routing |
+| `cucumbertest.logging.requestBody` | Boolean | true | Attach the request body to the report |
+| `cucumbertest.logging.responseBody` | Boolean | true | Attach the response body to the report |
+| `cucumbertest.logging.headers` | Boolean | false | Attach request and response headers, with credentials obfuscated |
+| `cucumbertest.logging.sql` | Boolean | false | Attach the executed SQL |
+| `cucumbertest.logging.prettyJson` | Boolean | true | Indent JSON before attaching it |
+| `cucumbertest.logging.maxBodyLength` | Int | 8192 | Truncate an attached payload beyond this length |
 | `cucumbertest.proxy.host` | String | `http` | Proxy host |
 | `cucumbertest.proxy.port` | Int? | none | Proxy port |
 | `cucumbertest.ssl.disableCheck` | Boolean | false | Disable SSL cert check |

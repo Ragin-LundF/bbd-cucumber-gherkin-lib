@@ -7,9 +7,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
-import org.junit.jupiter.api.assertNotNull
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
+import kotlin.test.assertNotNull
 
 /**
  * Valid date from context matcher.
@@ -29,7 +29,7 @@ class ValidDateContextMatcher(
             bddDateTimeFormats = dateTimeFormatCollection
         )
 
-        log.info { "Compare actual '$actual' with parameter 'parameter' as '$parameterFromContext'" }
+        log.debug { "Compare actual '$actual' with parameter '$parameter' as '$parameterFromContext'" }
         if (jsonDate != null) {
             return jsonDate.toLocalDate()
                 .format(DateTimeFormatter.ISO_LOCAL_DATE) == parameterFromContext

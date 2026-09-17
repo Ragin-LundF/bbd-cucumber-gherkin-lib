@@ -136,20 +136,87 @@ cucumberTest:
     protocol: https
     host: api.example.com
     port: "443"                     # "none" = omit; empty/absent = omit
+  services:                         # optional: additional web servers, by logical name
+    management:
+      port: "${local.management.port}"   # resolved when the request runs, so random ports work
+      path-prefixes: ["/actuator"]       # paths starting here are routed to this service
+    payment-mock:
+      host: localhost
+      port: "7070"
   proxy:
     host: localhost
     port: -1
   ssl:
     disableCheck: false
+  logging:                          # what the library reports about a call
+    request-body: true              # attach the request body to the report
+    response-body: true             # attach the response body to the report
+    headers: false                  # attach headers, with credentials obfuscated
+    sql: false                      # attach the executed SQL
+    pretty-json: true               # indent JSON before attaching it
+    max-body-length: 8192           # truncate an attached payload beyond this
   databaseless: false               # true = DB steps become no-ops (DB module)
 ```
 
 * If `cucumberTest.server.host` is **not** set, requests go to the locally started Spring Boot test
   server (`RANDOM_PORT`) — this is the normal case.
+* `cucumberTest.services` is only needed for servers that Spring does not start itself. Every web
+  server of the application under test is discovered automatically under the namespace Spring uses
+  for it (`server`, `management`, …), so an actuator on its own port is reachable as
+  `/actuator/...` without any configuration at all.
+* `base-path` is **prepended** to the URL, `path-prefixes` only decide which service a path is
+  routed to. Use `path-prefixes` when the feature file already spells the prefix out
+  (`"/actuator/health"`), `base-path` when it does not (`"/health"`). An empty `path-prefixes` list
+  switches the automatic routing of a service off.
 * ⚠️ The step `Given that a bearer token without scopes is used` is read via `@Value` and therefore
   needs the **exact camelCase key** `cucumberTest.authorization.bearerToken.noscope`. The kebab-case
   `bearer-token` form only feeds the *default* token. Without the exact key the step yields the
   literal string `none`.
+
+### 2.4.1 What you see while a test runs
+
+Two channels, on purpose.
+
+**The console** gets one short line per call, through SLF4J, with no setup at all:
+
+```
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+```
+
+Silence it with `logging.level.com.ragin.bdd.cucumber: WARN`. A failed scenario is logged at
+`ERROR` with its name and feature location, so a failure is never anonymous.
+
+Add the scenario and step tree by appending the library's report plugins to the ones the project
+already configures — Cucumber cannot register a plugin by itself:
+
+```kotlin
+@ConfigurationParameter(
+    key = Constants.PLUGIN_PROPERTY_NAME,
+    value = "html:build/reports/cucumber/cucumber.html, " +
+        BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT
+)
+```
+
+```
+Scenario: Unauthorized DELETE call ...              # delete_auth.feature:7
+  ✔ Given that the body of the request is
+INFO ScenarioReporter - → DELETE /api/v1/unauthorized
+INFO ScenarioReporter - ← 401 UNAUTHORIZED  (12 ms)
+  ✔ When executing a DELETE call to "/api/v1/unauthorized" with previously given body
+  ✔ Then I ensure that the status code of the response is 401
+```
+
+With Gradle, add `testLogging { showStandardStreams = true; exceptionFormat = 'full' }` or none of
+it is printed, and a failure is reduced to an exception type and a line number.
+
+**The report** gets the same summary lines plus the payloads as *collapsed, titled* blocks —
+request and response body, headers, SQL, query results, and expected-vs-actual on a failed
+comparison. JSON is indented by the report itself. Payloads are never echoed to the console.
+
+Credentials are obfuscated before anything is attached: the middle third of a `Bearer`, `Basic` or
+`Digest` credential is replaced with `*`, wherever it appears, including inside a response body that
+an API echoed back. Sensitive headers are obfuscated by name too.
 
 ### 2.5 Layout convention
 
@@ -199,6 +266,7 @@ A single object carrying all state between steps:
 | `latestResponse`        | the last executed request                                   | all `Then` assertions                |
 | `fileBasePath`          | `that all file paths are relative to`                       | every file lookup                    |
 | `urlBasePath`           | `that all URLs are relative to`                             | URL building                         |
+| `serviceName`           | `that the service ... is used`                              | picks the web server to call         |
 | `polling`               | polling `Given`s                                            | poll requests                        |
 | `executionTime`         | scenario start                                              | execution-time assertion             |
 
@@ -207,7 +275,7 @@ A single object carrying all state between steps:
 A `@Before` hook resets part of the state before **every** scenario.
 
 **Reset:** `latestResponse`, `editableBody`, `headerValues`, JSON compare options, `fileBasePath`,
-`urlBasePath`, `bearerToken` (back to the configured default), polling config,
+`urlBasePath`, `serviceName`, `bearerToken` (back to the configured default), polling config,
 `scenarioContextFileMap`, `executionTime` (restarted).
 
 **NOT reset (survives across scenarios and even across feature files):**
@@ -284,6 +352,7 @@ Gherkin keywords are interchangeable — a step registered as `@Then` can be wri
 |---|---|
 | `Given that all file paths are relative to "<basePath>"` | prefix for every file argument (end it with `/`) |
 | `Given that all URLs are relative to "<basePath>"` | prefix for every request URL |
+| `Given that the service "<name>" is used` | sends the following requests to that web server (`server`, `management`, or a name from `cucumberTest.services`); use `server` to switch back |
 | `Given that the API path is "<uri>"` | stores the URI for "previously given URI" steps |
 | `Given that the following users and tokens are existing` + data table `\| user \| token \|` | fills the user→token map (token column is context-resolved) |
 | `Given that the user is "<user>"` | selects that user's bearer token |

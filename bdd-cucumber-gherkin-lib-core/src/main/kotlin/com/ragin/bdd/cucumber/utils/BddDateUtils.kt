@@ -28,13 +28,10 @@ object BddDateUtils {
      *
      * @param dateObject    Object with date
      * @param bddDateTimeFormats Collection of BddCucumberDateFormat classes
-     * @return              true = valid | false = invalid
+     * @return true = valid | false = invalid
      */
     @JvmStatic
-    fun isValidMandatoryDate(
-        dateObject: Any,
-        bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>
-    ): Boolean {
+    fun isValidMandatoryDate(dateObject: Any, bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>): Boolean {
         return transformToLocalDateTime(
             dateObject = dateObject,
             bddDateTimeFormats = bddDateTimeFormats
@@ -44,7 +41,7 @@ object BddDateUtils {
     /**
      * create a list of default date and datetime formats.
      *
-     * @return  List with default date/time formatters
+     * @return List with default date/time formatters
      */
     private fun createDateList(): List<DateTimeFormatter> {
         return listOf(
@@ -63,7 +60,7 @@ object BddDateUtils {
      *
      * @param dateObject    object with possible date
      * @param bddDateTimeFormats Datetime formatter
-     * @return              LocalDateTime if valid date, else null
+     * @return LocalDateTime if valid date, else null
      * @throws DateTimeParseException   Exception, when date is not parseable
      */
     @Suppress("ReturnCount")
@@ -130,7 +127,7 @@ object BddDateUtils {
      *
      * @param date          date as string
      * @param formatter     entry which contains format (for logging) and DateTimeFormatter for parsing
-     * @return              LocalDateTime if valid, null if not parseable
+     * @return LocalDateTime if valid, null if not parseable
      */
     private fun parseDate(date: String, formatter: DateTimeFormatter): LocalDateTime? {
         return runCatching {
@@ -145,7 +142,7 @@ object BddDateUtils {
      *
      * @param dateTime      datetime as string
      * @param formatter     entry which contains format (for logging) and DateTimeFormatter for parsing
-     * @return              LocalDateTime if valid, null if not parseable
+     * @return LocalDateTime if valid, null if not parseable
      */
     private fun parseDateTime(dateTime: String, formatter: DateTimeFormatter): LocalDateTime? {
         return runCatching {
@@ -159,7 +156,7 @@ object BddDateUtils {
      * Create a set of all DateTimeFormatters (default + custom).
      *
      * @param bddDateTimeFormats    Collection of custom DateTimeFormatters
-     * @return                      Set which contains all DateTimeFormatters
+     * @return Set which contains all DateTimeFormatters
      */
     private fun createDateFormatters(
         bddDateTimeFormats: Collection<BddCucumberDateTimeFormat>

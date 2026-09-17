@@ -1,6 +1,7 @@
 package com.ragin.bdd.cucumber.utils
 
 import com.jayway.jsonpath.JsonPath
+import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.constants.BddLibConstants
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.getJsonPathOptions
@@ -20,12 +21,12 @@ import net.javacrumbs.jsonunit.JsonAssert
 import net.javacrumbs.jsonunit.core.Configuration
 import net.javacrumbs.jsonunit.core.Option
 import org.hamcrest.Matcher
-import org.junit.jupiter.api.assertNull
 import org.springframework.stereotype.Component
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -34,8 +35,11 @@ import kotlin.test.assertTrue
 @Component
 class BddJsonUtils(
     private val jsonMatcher: Collection<BddCucumberJsonMatcher>?,
-    private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>
+    private val bddCucumberDateTimeFormatter: Collection<BddCucumberDateTimeFormat>,
+    bddProperties: BddProperties? = null
 ) {
+    private val reporter = ScenarioReporter(options = bddProperties?.logging ?: BddProperties.Logging())
+
     /**
      * Assert that two JSON Strings are equal
      *
@@ -51,18 +55,11 @@ class BddJsonUtils(
                 configuration
             )
         }.onFailure { error ->
-            val minimizedExpected = minimizeJSON(json = expectedJSON)
-            val minimizedActual = minimizeJSON(json = actualJSON)
-            log.error {
-            """
-            JSON comparison failed.
-            Expected:
-                $minimizedExpected
-
-            Actual:
-                $minimizedActual
-            """.trimIndent()
-            }
+            // The assertion message already names the mismatching node, and Cucumber reports it.
+            // Expected and actual go to the report as collapsed blocks instead of being logged a
+            // second time here and a third time by the scenario failure hook.
+            reporter.attachComparison(expected = expectedJSON, actual = actualJSON)
+            log.debug { "JSON comparison failed: ${error.message}" }
             throw error
         }
     }
@@ -113,17 +110,22 @@ class BddJsonUtils(
      *
      * @param configuration Configuration
      * @param matcher       Class implementation of BddCucumberJsonMatcher interface
-     * @return              Configuration with added matcher
+     * @return Configuration with added matcher
      */
     private fun addMatcherConfiguration(configuration: Configuration, matcher: BddCucumberJsonMatcher): Configuration {
+        val hamcrestMatcher = matcher as? Matcher<*>
+        if (hamcrestMatcher != null) {
+            return configuration.withMatcher(matcher.matcherName(), hamcrestMatcher)
+        }
+
         var configurationVar = configuration
         runCatching {
             configurationVar = configurationVar.withMatcher(
                 matcher.matcherName(),
                 matcher.matcherClass().getDeclaredConstructor().newInstance()
             )
-        }.onFailure {
-            log.error { "Unable to instantiate the matcher [${matcher.matcherName()}]" }
+        }.onFailure { error ->
+            log.error(throwable = error) { "Unable to instantiate the matcher [${matcher.matcherName()}]" }
         }
         return configurationVar
     }
@@ -235,7 +237,7 @@ class BddJsonUtils(
      * Find custom matcher
      *
      * @param possibleMatcherName   string which possibly contains a matcher name
-     * @return  if matcher name was found the matcher name
+     * @return if matcher name was found the matcher name
      */
     @Suppress("MagicNumber")
     private fun findMatcherName(possibleMatcherName: String): Optional<String> {
@@ -247,37 +249,8 @@ class BddJsonUtils(
         }
     }
 
-    /**
-     * Minimize JSON object to be better comparable.
-     *
-     * Actions:
-     *
-     *  * Replace '\r' and '\n' with ''
-     *  * Replace '": ' with '":' (space between key/value)
-     *  * Trim everything
-     *
-     *
-     * @param json JSON string
-     * @return minimized JSON string
-     */
-    private fun minimizeJSON(json: String?): String {
-        val nullSafeJson = json ?: EMPTY_JSON
-
-        return nullSafeJson
-            .split(NEW_LINE)
-            .asSequence()
-            .map { it.replace(oldValue = CARRIAGE_RETURN, newValue = "") }
-            .map { it.replace(oldValue = JSON_SPACING, newValue = JSON_COMPACT) }
-            .joinToString(separator = "") { it.trim() }
-    }
-
     companion object {
         private val log = KotlinLogging.logger { }
-        const val EMPTY_JSON = "{}"
-        const val NEW_LINE = "\n"
-        const val CARRIAGE_RETURN = "\r"
-        const val JSON_SPACING = "\": "
-        const val JSON_COMPACT = "\":"
 
         private val uuidMatcher = UUIDMatcher()
         private val ibanMatcher = IBANMatcher()

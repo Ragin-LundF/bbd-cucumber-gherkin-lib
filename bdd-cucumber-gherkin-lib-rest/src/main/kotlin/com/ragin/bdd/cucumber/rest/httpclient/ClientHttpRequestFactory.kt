@@ -15,9 +15,7 @@ import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import java.net.Proxy
 
-open class ClientHttpRequestFactory(
-    private val bddProperties: BddProperties
-) {
+open class ClientHttpRequestFactory(private val bddProperties: BddProperties) {
     fun createRequestFactory(): ClientHttpRequestFactory {
         return HttpComponentsClientHttpRequestFactory(
             createHttpClient()
@@ -67,7 +65,6 @@ open class ClientHttpRequestFactory(
         return httpClientBuilder.build()
     }
 
-
     private fun proxyOrNull(proxyHost: String?, proxyPort: Int?): Pair<String, Int>? {
         return if (ScenarioStateContext.dynamicProxyHost != null && ScenarioStateContext.dynamicProxyPort != null) {
             Pair(first = ScenarioStateContext.dynamicProxyHost!!, second = ScenarioStateContext.dynamicProxyPort!!)
@@ -79,8 +76,8 @@ open class ClientHttpRequestFactory(
     }
 
     private fun hasProxyConfigured(): Boolean {
-        return bddProperties.proxy != null
-                && bddProperties.proxy!!.host.isNotEmpty()
-                && bddProperties.proxy!!.port != null && bddProperties.proxy!!.port!! > 0
+        return bddProperties.proxy != null &&
+            bddProperties.proxy!!.host.isNotEmpty() &&
+            bddProperties.proxy!!.port != null && bddProperties.proxy!!.port!! > 0
     }
 }

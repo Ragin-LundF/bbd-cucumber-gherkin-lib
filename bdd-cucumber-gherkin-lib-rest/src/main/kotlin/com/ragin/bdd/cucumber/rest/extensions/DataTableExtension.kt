@@ -4,7 +4,6 @@ import io.cucumber.datatable.DataTable
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 
-
 fun DataTable.asMultiValueMap(): MultiValueMap<String, String> {
     val formDataMap: MultiValueMap<String, String> = LinkedMultiValueMap()
     val lists = this.asLists()

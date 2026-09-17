@@ -1,7 +1,8 @@
 [versions]
 kotlin = "2.3.21"
-springBoot = "4.1.0"
-cucumber = "7.34.6"
+detekt = "2.0.0-alpha.6"
+springBoot = "4.1.1"
+cucumber = "7.34.8"
 testcontainers = "2.0.5"
 
 #
@@ -11,7 +12,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 #
 # --- Common Libs and Utils
 logging-logger = "io.github.oshai:kotlin-logging-jvm:8.0.4"
-logging-slf4j = "org.slf4j:slf4j-simple:2.0.18"
+logging-slf4j = "org.slf4j:slf4j-simple:2.0.19"
 #
 commons-io = "commons-io:commons-io:2.22.0"
 commons-text = "org.apache.commons:commons-text:1.15.0"
@@ -30,6 +31,7 @@ spring-boot-rest-client = { module = "org.springframework.boot:spring-boot-restc
 spring-boot-rest-client-test = { module = "org.springframework.boot:spring-boot-restclient-test", version.ref = "springBoot" }
 spring-boot-rest-test-client = { module = "org.springframework.boot:spring-boot-resttestclient", version.ref = "springBoot" }
 #
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "springBoot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springBoot" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "springBoot" }
 spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "springBoot" }
@@ -60,7 +62,7 @@ jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat
 httpclient = "org.apache.httpcomponents.client5:httpclient5:5.6.4"
 #
 # --- Database
-database-liquibase = "org.liquibase:liquibase-core:5.0.3"
+database-liquibase = "org.liquibase:liquibase-core:5.0.4"
 database-postgres = "org.postgresql:postgresql:42.7.13"
 #
 # --- Testcontainers
@@ -97,11 +99,11 @@ testcontainers = [
 
 #
 [plugins]
-jreleaser = "org.jreleaser:1.25.0"
-sonarqube = "org.sonarqube:7.4.0.8496"
+jreleaser = "org.jreleaser:1.26.0"
+sonarqube = "org.sonarqube:7.5.0.8588"
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kover = "org.jetbrains.kotlinx.kover:0.9.9"
-detekt = "dev.detekt:2.0.0-alpha.6"
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.1"

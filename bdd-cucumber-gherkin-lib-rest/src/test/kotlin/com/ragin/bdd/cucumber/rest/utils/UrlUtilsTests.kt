@@ -159,6 +159,19 @@ internal class UrlUtilsTests {
     }
 
     @Test
+    internal fun `fullURLFor omits port when port is the none placeholder`() {
+        assertEquals(
+            expected = "http://localhost/api",
+            actual = UrlUtils.fullURLFor(
+                path = "/api",
+                protocol = "http",
+                host = "localhost",
+                port = "none"
+            )
+        )
+    }
+
+    @Test
     internal fun `fullURLFor builds URL without protocol prefix when protocol and host are null`() {
         assertEquals(
             expected = "/api/v1",
@@ -189,6 +202,74 @@ internal class UrlUtilsTests {
                 protocol = "https",
                 host = "secure.host",
                 port = "443"
+            )
+        )
+    }
+
+    @Test
+    internal fun `fullURLFor puts the service path between the host and the path`() {
+        assertEquals(
+            expected = "http://localhost:9090/actuator/health",
+            actual = UrlUtils.fullURLFor(
+                path = "/health",
+                protocol = "http",
+                host = "localhost",
+                port = "9090",
+                servicePath = "/actuator"
+            )
+        )
+    }
+
+    @Test
+    internal fun `fullURLFor puts the service path in front of the urlBasePath`() {
+        ScenarioStateContext.urlBasePath = "/v1"
+        assertEquals(
+            expected = "http://localhost:9090/ctx/v1/users",
+            actual = UrlUtils.fullURLFor(
+                path = "/users",
+                protocol = "http",
+                host = "localhost",
+                port = "9090",
+                servicePath = "/ctx"
+            )
+        )
+    }
+
+    @Test
+    internal fun `fullURLFor does not duplicate separators around the service path`() {
+        assertEquals(
+            expected = "http://localhost:9090/actuator/health",
+            actual = UrlUtils.fullURLFor(
+                path = "health",
+                protocol = "http",
+                host = "localhost",
+                port = "9090",
+                servicePath = "actuator/"
+            )
+        )
+    }
+
+    @Test
+    internal fun `fullURLFor ignores an empty service path`() {
+        assertEquals(
+            expected = "http://localhost:9090/api",
+            actual = UrlUtils.fullURLFor(
+                path = "/api",
+                protocol = "http",
+                host = "localhost",
+                port = "9090",
+                servicePath = ""
+            )
+        )
+    }
+
+    @Test
+    internal fun `fullURLFor ignores the service path when the path is already absolute`() {
+        assertEquals(
+            expected = "http://example.com/api",
+            actual = UrlUtils.fullURLFor(
+                path = "http://example.com/api",
+                servicePath = "/actuator"
             )
         )
     }

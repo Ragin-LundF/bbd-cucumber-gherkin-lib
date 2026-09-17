@@ -22,9 +22,9 @@ class ThenRESTValidationGlue(
     jsonUtils: BddJsonUtils,
     bddProperties: BddProperties
 ) : BaseCucumberCore(
-    jsonUtils = jsonUtils,
-    bddProperties = bddProperties
-) {
+        jsonUtils = jsonUtils,
+        bddProperties = bddProperties
+    ) {
     /**
      * Ensure that the response code is valid
      * @param expectedStatusCode HTTP status code that is expected
@@ -35,7 +35,7 @@ class ThenRESTValidationGlue(
             expected = expectedStatusCode,
             actual = latestResponse?.statusCode?.value(),
             message = "Status code does not match! " +
-                    "Expected: $expectedStatusCode, actual: ${latestResponse?.statusCode?.value()}"
+                "Expected: $expectedStatusCode, actual: ${latestResponse?.statusCode?.value()}"
         )
     }
 
@@ -144,10 +144,7 @@ class ThenRESTValidationGlue(
      */
     @Then("I ensure that the response code is {int} and the body is equal to the file {string}")
     @Throws(IOException::class)
-    fun thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(
-        expectedStatusCode: Int,
-        pathToFile: String
-    ) {
+    fun thenEnsureTheResponseCodeAndBodyAsFileIsEqualTo(expectedStatusCode: Int, pathToFile: String) {
         val expectedBody = readFileAsString(path = pathToFile)
         assertEquals(
             expected = expectedStatusCode,
@@ -191,7 +188,9 @@ class ThenRESTValidationGlue(
         }
         val documentContext = JsonPath.parse(latestResponse!!.body)
         val field = documentContext.read(jsonPath, Any::class.java)
-        scenarioContextMap[replaceTrailingAndLeadingQuotes(value = contextName)] = field.toString()
+        val contextKey = replaceTrailingAndLeadingQuotes(value = contextName)
+        scenarioContextMap[contextKey] = field.toString()
+        reporter.summary(line = "$contextKey = $field  (from $jsonPath)")
     }
 
     /**
@@ -202,6 +201,7 @@ class ThenRESTValidationGlue(
     @Then("I ensure that the execution time is less than {long} ms")
     fun ensureThatExecutionTimeIsLessThan(expectedExecutionTime: Long) {
         val executionTime = System.currentTimeMillis() - executionTime
+        reporter.summary(line = "execution time $executionTime ms (limit $expectedExecutionTime ms)")
         val executionTimeValid = executionTime <= expectedExecutionTime
         assertTrue(
             actual = executionTimeValid,
@@ -216,10 +216,15 @@ class ThenRESTValidationGlue(
      */
     @Then("I wait for {long} ms")
     fun waitForSeconds(milliseconds: Long) {
+        reporter.summary(line = "waiting for $milliseconds ms")
         runCatching {
             Thread.sleep(milliseconds)
         }.onFailure { error ->
-            log.error(throwable = error) { "Wait has detected a problem" }
+            // Restore the flag so that the surrounding test runner still sees the interruption.
+            if (error is InterruptedException) {
+                Thread.currentThread().interrupt()
+            }
+            log.warn(throwable = error) { "Wait of $milliseconds ms was interrupted" }
         }
     }
 
@@ -227,7 +232,7 @@ class ThenRESTValidationGlue(
      * Replace trailing and leading quotes
      *
      * @param value     String value
-     * @return          argument without trailing and leading quotes
+     * @return argument without trailing and leading quotes
      */
     private fun replaceTrailingAndLeadingQuotes(value: String): String {
         var result = value
