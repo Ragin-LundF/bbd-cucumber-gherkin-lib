@@ -19,6 +19,7 @@ object UrlUtils {
      * @param protocol The protocol to be used (e.g., "http" or "https"). Optional, can be null.
      * @param host The host name or IP address. Optional, can be null.
      * @param port The port number as a string. Optional, can be null.
+     * @param servicePath The base path of the addressed service. Optional, can be null.
      * @return A string representing the full URL composed of the provided components and the specified path.
      */
     fun fullURLFor(
@@ -26,6 +27,7 @@ object UrlUtils {
         protocol: String? = null,
         host: String? = null,
         port: String? = null,
+        servicePath: String? = null,
     ): String {
         if (path.startsWith(prefix = HTTP_PROTOCOL_W_SEPARATOR) ||
             path.startsWith(prefix = HTTPS_PROTOCOL_W_SEPARATOR)
@@ -38,14 +40,12 @@ object UrlUtils {
             basePath.append(protocol)
             basePath.append(PROTOCOL_SEPARATOR)
             basePath.append(host)
-            if (PLACEHOLDER_PORT_NONE == port) {
-                basePath.append(":").append(port)
-            } else if (port != null && port.trim { it <= ' ' } != "") {
+            if (PLACEHOLDER_PORT_NONE != port && !port.isNullOrBlank()) {
                 basePath.append(":").append(port)
             }
         }
 
-        return appendPathElements(path = basePath.toString(), urlBasePath, path)
+        return appendPathElements(path = basePath.toString(), servicePath, urlBasePath, path)
     }
 
     /**

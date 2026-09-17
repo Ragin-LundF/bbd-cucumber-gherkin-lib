@@ -15,8 +15,6 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.postgresql.PostgreSQLContainer
-import kotlin.test.Ignore
-import kotlin.test.Test
 
 @ActiveProfiles("cucumberTest")
 @CucumberContextConfiguration
@@ -48,12 +46,6 @@ class CreateContextHooks {
     private val dbContainer: GenericContainer<*> = PostgreSQLContainer(postgresImage)
         .withNetwork(dockerNetwork)
         .withNetworkAliases(dockerNetworkName)
-
-    @Test
-    @Ignore("Empty test to avoid java.lang.Exception: No runnable methods.")
-    fun emptyTest() {
-        // See "http://sqa.fyicenter.com/FAQ/JUnit/Can_You_Explain_the_Exception_No_runnable_meth.html" for more info.
-    }
 
     @Before
     fun springDummyForConfiguration() {

@@ -11,6 +11,28 @@ kover {
     }
 }
 
+// The integration test module has no src/main, so Kover creates no variant for it and never
+// harvests its test tasks. That silently discarded the coverage of the whole Gherkin suite: every
+// glue class, hook and util reachable only through a scenario was reported as 0%, even though 165
+// scenarios exercise them. Feeding those binary reports in explicitly fixes the measurement.
+def integrationTestBinReports = providers.provider {
+    def binReportDir = project(":bdd-cucumber-gherkin-lib").layout.buildDirectory
+        .dir("kover/bin-reports").get().asFile
+    def reports = binReportDir.listFiles()
+    reports == null ? [] : reports.findAll { it.name.endsWith(".ic") }.toList()
+}
+
+rootProject.tasks.matching { it.name.startsWith("kover") }.configureEach { koverTask ->
+    if (koverTask.hasProperty("additionalBinaryReports")) {
+        koverTask.additionalBinaryReports.addAll(integrationTestBinReports)
+        // Declared, not just ordered, because Gradle rejects consuming another task's output
+        // without a dependency. Task paths as Strings so they resolve lazily.
+        // The cucumber task carries an onlyIf guard, so this never forces the Gherkin suite to run
+        // unless it was asked for explicitly.
+        koverTask.dependsOn(":bdd-cucumber-gherkin-lib:test", ":bdd-cucumber-gherkin-lib:cucumber")
+    }
+}
+
 sonar {
     properties {
         property "sonar.coverage.jacoco.xmlReportPaths", "${rootProject.layout.buildDirectory.get().toString()}/reports/kover/report.xml"

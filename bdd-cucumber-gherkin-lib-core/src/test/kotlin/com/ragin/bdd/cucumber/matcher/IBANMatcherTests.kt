@@ -50,6 +50,22 @@ internal class IBANMatcherTests {
     }
 
     @Test
+    internal fun `valid Kazakh IBAN matches`() {
+        assertTrue(actual = matcher.matches(actual = "KZ86125KZT5004100100"))
+    }
+
+    @Test
+    internal fun `valid Kuwaiti IBAN matches`() {
+        assertTrue(actual = matcher.matches(actual = "KW81CBKU0000000000001234560101"))
+    }
+
+    @Test
+    internal fun `unknown country code with Kazakh-shaped IBAN does not match`() {
+        // guards the former country-agnostic catch-all alternative
+        assertFalse(actual = matcher.matches(actual = "XX86125KZT5004100100"))
+    }
+
+    @Test
     internal fun `matcherName returns isValidIBAN`() {
         assertEquals(expected = "isValidIBAN", actual = matcher.matcherName())
     }

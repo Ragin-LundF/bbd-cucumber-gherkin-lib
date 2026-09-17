@@ -27,10 +27,7 @@ class UserSelection {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{}")
     }
 
-    private fun createUserResponse(
-        token: String,
-        username: String
-    ): String {
+    private fun createUserResponse(token: String, username: String): String {
         return mapOf(
             "username" to username,
             "token" to token

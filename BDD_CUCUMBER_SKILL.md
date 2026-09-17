@@ -147,10 +147,32 @@ cucumberTest:
     protocol: https
     host: api.example.com
     port: "443"
+  services:                   # optional; every web server Spring starts is found without this
+    management:
+      port: "${local.management.port}"
+      path-prefixes: ["/actuator"]
   proxy: { host: localhost, port: -1 }
   ssl: { disableCheck: false }
+  logging:                    # what is reported about a call
+    request-body: true
+    response-body: true
+    headers: false            # credentials are obfuscated when switched on
+    sql: false
+    pretty-json: true
+    max-body-length: 8192
   databaseless: false         # true = DB steps become no-ops
 ```
+
+### Output while a test runs
+
+The console gets one line per call with no setup (`→ GET /api/v1/users`, `← 200 OK (23 ms)`);
+silence it with `logging.level.com.ragin.bdd.cucumber: WARN`. Append
+`BddLibConfigConstants.Plugin.PLUGIN_PROPERTY_VALUES_DEFAULT` to the runner's plugin list for the
+scenario and step tree, and set Gradle's `testLogging { showStandardStreams = true }`.
+
+The report gets the same lines plus collapsed, titled blocks for request/response bodies, headers,
+SQL, query results and expected-vs-actual. Credentials are obfuscated everywhere, including inside
+a body an API echoed back.
 
 ## Cheat sheet
 
@@ -160,7 +182,8 @@ One `ScenarioStateContext` carries API path, body, headers, bearer token, contex
 response.
 
 **Reset before each scenario:** response, body, headers, JSON tolerance options, file/URL base
-paths, bearer token (back to the configured default), polling config, file context, execution timer.
+paths, selected service, bearer token (back to the configured default), polling config, file
+context, execution timer.
 **Survives scenarios and feature files:** `scenarioContextMap`, user/token map, `uriPath`, proxy.
 → Set the API path inside the scenario; set base paths in `Background:`.
 
@@ -175,8 +198,15 @@ paths, bearer token (back to the configured default), polling config, file conte
 | `absolutePath:` | file path prefix that bypasses the file base path (classpath root) |
 
 Files are read from the classpath (`src/test/resources`); the base path is a plain prefix, so it must
-end with `/`. URLs starting with `http://`/`https://` are called as-is; otherwise
-`protocol://host[:port]` (if configured) + URL base path + path.
+end with `/`. URLs starting with `http://`/`https://` are called as-is; otherwise the target is
+resolved in this order: the service selected by `Given that the service "<name>" is used`, then the
+service whose longest `path-prefixes` entry matches the path, then `cucumberTest.server.*`, then the
+path stays relative and the `TestRestTemplate` resolves it against the application under test. The
+URL is `protocol://host[:port]` + service base path + URL base path + path.
+
+Every web server the Spring context starts is discovered under the name Spring uses for it, so
+`/actuator/health` reaches the management port with no configuration. Feature files never contain a
+protocol, host or port.
 
 Requests default to `Content-Type`/`Accept: application/json`; the `authorized` variants add
 `Authorization: Bearer <token>` unless an `Authorization` header was set manually. Bodies are only
@@ -188,6 +218,7 @@ asserted directly.
 ```gherkin
 Given that all file paths are relative to "features/user/"
 Given that all URLs are relative to "/api"
+Given that the service "management" is used                     # only for a second port
 Given that the API path is "/api/v1/{resourceId}"
 Given that the following users and tokens are existing        # data table: user | token
 Given that the user is "john_doe"

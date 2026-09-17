@@ -34,8 +34,10 @@ internal class UUIDMatcherTests {
 
     @Test
     internal fun `UUID without hyphens does not match`() {
-        assertFalse(actual = uuidMatcher.matches(
-            item = Uuid.random().toString().replace(oldValue = "-", newValue = ""))
+        assertFalse(
+            actual = uuidMatcher.matches(
+                item = Uuid.random().toString().replace(oldValue = "-", newValue = "")
+            )
         )
     }
 

@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class Authentication(
-    private val bddProperties: BddProperties
-) {
+class Authentication(private val bddProperties: BddProperties) {
 
     @GetMapping("/api/v1/unauthorized")
     fun stubUnauthorizedGet(): ResponseEntity<String> {
@@ -44,9 +42,7 @@ class Authentication(
     }
 
     @GetMapping("/api/v1/authorized")
-    fun stubAuthenticatedWithTokenGet(
-        @RequestHeader("Authorization") authToken: String
-    ): ResponseEntity<String> {
+    fun stubAuthenticatedWithTokenGet(@RequestHeader("Authorization") authToken: String): ResponseEntity<String> {
         if (authToken == BEARER + bddProperties.authorization?.bearerToken?.default) {
             return ResponseEntity.ok().body(createAuthorizedResponse())
         }

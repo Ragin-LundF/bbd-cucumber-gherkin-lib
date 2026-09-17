@@ -1,6 +1,8 @@
 package com.ragin.bdd.cucumber.database.glue
 
 import com.ragin.bdd.cucumber.config.BddProperties
+import com.ragin.bdd.cucumber.constants.BddReportConstants.AttachmentNames
+import com.ragin.bdd.cucumber.constants.BddReportConstants.Markers
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.database.executor.IDatabaseExecutorService
 import com.ragin.bdd.cucumber.utils.BddJacksonUtils
@@ -35,11 +37,9 @@ open class DatabaseGlue(
     @Transactional
     @Throws(Exception::class)
     open fun givenThatTheDatabaseWasInitializedWithLiquibaseFile(pathToFile: String) {
-        databaseExecutorService.executeLiquibaseScript(
-            liquibaseScript = getFilePath(
-                path = pathToFile
-            )
-        )
+        val liquibaseScript = getFilePath(path = pathToFile)
+        reporter.summary(line = "${Markers.DATABASE} Liquibase script $liquibaseScript")
+        databaseExecutorService.executeLiquibaseScript(liquibaseScript = liquibaseScript)
     }
 
     /**
@@ -54,6 +54,8 @@ open class DatabaseGlue(
     open fun givenThatTheDatabaseWasInitializedWithSQLFile(pathToQueryFile: String) {
         // read file
         val sqlStatements = readFileAsString(path = pathToQueryFile)
+        reporter.summary(line = "${Markers.DATABASE} SQL file $pathToQueryFile")
+        attachSql(sql = sqlStatements)
         // execute query
         databaseExecutorService.executeSQL(sql = sqlStatements)
     }
@@ -71,12 +73,15 @@ open class DatabaseGlue(
     open fun thenEnsureThatResultOfQueryOfFileIsEqualToCSV(pathToQueryFile: String, pathToCsvFile: String) {
         // read file
         val sqlStatements = readFileAsString(path = pathToQueryFile)
+        reporter.summary(line = "${Markers.DATABASE} query from $pathToQueryFile")
+        attachSql(sql = sqlStatements)
         // execute query
         val queryResults = generifyDatabaseJSONFiles(
             data = databaseExecutorService.executeQuerySQL(
                 sql = sqlStatements
             )
         )
+        reporter.summary(line = "${Markers.DATABASE} ${queryResults.size} rows returned")
 
         // Generify the results to be database independent
         val iterator: Iterator<Map<String, Any?>> = CsvMapper()
@@ -95,11 +100,25 @@ open class DatabaseGlue(
         val expectedResultAsJSON = mapper.writeValueAsString(data)
         val actualResultAsJSON = mapper.writeValueAsString(queryResults)
 
+        reporter.attachJson(name = AttachmentNames.QUERY_RESULT, json = actualResultAsJSON)
+        reporter.attachJson(name = AttachmentNames.EXPECTED_QUERY_RESULT, json = expectedResultAsJSON)
+
         // compare JSON
         assertJSONisEqual(
             expected = expectedResultAsJSON,
             actual = actualResultAsJSON
         )
+    }
+
+    /**
+     * Attaches the executed SQL, which is off by default because it is rarely what a reader needs.
+     */
+    private fun attachSql(sql: String) {
+        if (!bddProperties.logging.sql) {
+            return
+        }
+
+        reporter.attachText(name = AttachmentNames.SQL, text = sql)
     }
 
     /**
@@ -155,7 +174,7 @@ open class DatabaseGlue(
      * @param columnValue the columnValue to be processed
      * @param <V> any object
      * @return the columnName processed to be database independent
-    </V> */
+     </V> */
     private fun <V> generifyDatabaseColumnValue(columnValue: V): Any {
         if (columnValue is Boolean) {
             return if (columnValue) 1 else 0

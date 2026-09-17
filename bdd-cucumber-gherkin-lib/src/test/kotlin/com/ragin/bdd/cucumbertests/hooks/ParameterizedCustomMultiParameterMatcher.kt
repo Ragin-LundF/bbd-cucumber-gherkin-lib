@@ -6,9 +6,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
-import org.junit.jupiter.api.assertNotNull
+import kotlin.test.assertNotNull
 
-class ParameterizedCustomMultiParameterMatcher : BaseMatcher<Any>(), BddCucumberJsonMatcher, ParametrizedMatcher {
+class ParameterizedCustomMultiParameterMatcher :
+    BaseMatcher<Any>(),
+    BddCucumberJsonMatcher,
+    ParametrizedMatcher {
     private var jsonParameter: JsonParameter? = null
 
     override fun matcherName(): String {
@@ -34,7 +37,7 @@ class ParameterizedCustomMultiParameterMatcher : BaseMatcher<Any>(), BddCucumber
     override fun matches(actual: Any): Boolean {
         val actualParameter = actual.toString()
         return (isFirstValid(actualParameter) || isSecondValid(actualParameter)) &&
-                !(isFirstValid(actualParameter) && isSecondValid(actualParameter))
+            !(isFirstValid(actualParameter) && isSecondValid(actualParameter))
     }
 
     override fun describeTo(description: Description) = Unit

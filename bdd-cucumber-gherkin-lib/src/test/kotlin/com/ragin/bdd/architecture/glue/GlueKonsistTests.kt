@@ -31,11 +31,12 @@ internal class GlueKonsistTests {
     }
 
     private fun konsistDirectoryScope(): KoScope {
-        return Konsist.scopeFromDirectories(
-            paths = listOf(
-                "bdd-cucumber-gherkin-lib-rest/src/main/kotlin/com/ragin/bdd/cucumber/rest/glue",
-                "bdd-cucumber-gherkin-lib-db/src/main/kotlin/com/ragin/bdd/cucumber/database/glue"
-            )
+        return Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber.rest.glue",
+            sourceSetName = "main"
+        ) + Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber.database.glue",
+            sourceSetName = "main"
         )
     }
 }

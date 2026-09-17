@@ -5,7 +5,6 @@ import net.javacrumbs.jsonunit.core.ParametrizedMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.springframework.stereotype.Component
-import kotlin.collections.get
 
 /**
  * Is not equal to string.
@@ -13,7 +12,10 @@ import kotlin.collections.get
  * ${json-unit.matches:isNotEqualTo}MY_CONTEXT_VALUE
  */
 @Component
-class NeStringMatcher : BaseMatcher<Any>(), ParametrizedMatcher, BddCucumberJsonMatcher {
+class NeStringMatcher :
+    BaseMatcher<Any>(),
+    ParametrizedMatcher,
+    BddCucumberJsonMatcher {
     private var parameter: String? = null
 
     override fun matches(actual: Any): Boolean {

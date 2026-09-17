@@ -58,11 +58,12 @@ internal class TestKonsistTests {
     }
 
     private fun konsistDirectoryScope(): KoScope {
-        return Konsist.scopeFromDirectories(
-            paths = listOf(
-                "bdd-cucumber-gherkin-lib/src/test/kotlin/com/ragin/bdd/cucumber",
-                "bdd-cucumber-gherkin-lib-core/src/test/kotlin/com/ragin/bdd/cucumber"
-            )
+        // Package-scoped rather than path-scoped: covers every module's test source set
+        // (including bdd-cucumber-gherkin-lib-rest, previously missed) and no longer
+        // depends on the working directory being the repository root.
+        return Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber..",
+            sourceSetName = "test"
         )
     }
 }

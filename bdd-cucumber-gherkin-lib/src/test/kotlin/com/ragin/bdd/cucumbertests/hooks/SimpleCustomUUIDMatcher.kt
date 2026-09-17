@@ -4,7 +4,9 @@ import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 
-class SimpleCustomUUIDMatcher : BaseMatcher<String>(), BddCucumberJsonMatcher {
+class SimpleCustomUUIDMatcher :
+    BaseMatcher<String>(),
+    BddCucumberJsonMatcher {
     override fun matcherName(): String {
         return "isUUID"
     }

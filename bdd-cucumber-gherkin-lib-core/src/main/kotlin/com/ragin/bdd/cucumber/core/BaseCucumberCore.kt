@@ -2,16 +2,22 @@ package com.ragin.bdd.cucumber.core
 
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
+import com.ragin.bdd.cucumber.utils.ScenarioReporter
 import org.springframework.stereotype.Component
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 @Component
-open class BaseCucumberCore(
-    protected val jsonUtils: BddJsonUtils,
-    protected val bddProperties: BddProperties
-) {
+open class BaseCucumberCore(protected val jsonUtils: BddJsonUtils, protected val bddProperties: BddProperties) {
+    /**
+     * The only sanctioned way to write user-visible output from a glue class.
+     *
+     * Writes short summary lines that stay visible in the report and on the console, and attaches
+     * payloads as collapsed blocks. See [ScenarioReporter].
+     */
+    protected val reporter = ScenarioReporter(options = bddProperties.logging)
+
     /**
      * Handle BearerToken
      *
@@ -45,7 +51,7 @@ open class BaseCucumberCore(
      * If the path contains the reserved word "absolutePath:" it tries to resolve the file from the classpath root.
      *
      * @param path              Path to file
-     * @return                  Content of file as String
+     * @return Content of file as String
      * @throws java.io.IOException      Error while reading file
      */
     @Throws(IOException::class)
@@ -61,7 +67,7 @@ open class BaseCucumberCore(
      * If the path contains the reserved word "absolutePath:" it tries to resolve the file from the classpath root.
      *
      * @param path              Path to file
-     * @return                  Content of file as ByteArray
+     * @return Content of file as ByteArray
      * @throws IOException      Error while reading file
      */
     @Throws(IOException::class)

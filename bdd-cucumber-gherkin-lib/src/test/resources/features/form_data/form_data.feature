@@ -32,3 +32,17 @@ Feature: Form Data
         "identifier":"MY-ID"
       }
       """
+
+
+  Scenario: Post url-encoded fields
+    When executing a url-encoded POST call to "/api/v1/urlencoded" with the fields
+    | Key         | Value      |
+    | identifier  | MY-ID      |
+    | fileContext | MY-CONTEXT |
+    Then I ensure that the response code is 201 and the body is equal to
+      """
+      {
+        "fileContext": "MY-CONTEXT",
+        "identifier":"MY-ID"
+      }
+      """

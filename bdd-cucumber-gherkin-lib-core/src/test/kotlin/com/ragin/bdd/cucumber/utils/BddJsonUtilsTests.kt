@@ -2,6 +2,9 @@ package com.ragin.bdd.cucumber.utils
 
 import com.jayway.jsonpath.JsonPath
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
+import com.ragin.bdd.cucumber.matcher.BddCucumberJsonMatcher
+import org.hamcrest.BaseMatcher
+import org.hamcrest.Description
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -78,5 +81,38 @@ internal class BddJsonUtilsTests {
                 actualJSON = """{"name":"Bob"}"""
             )
         }
+    }
+
+    @Test
+    internal fun `custom matcher without a no-arg constructor is registered and used`() {
+        val expectedValue = "Alice"
+        // An anonymous object has no no-arg constructor, so the previous reflective
+        // registration could not build it and the matcher was silently dropped.
+        val ctorDependentMatcher = object : BaseMatcher<Any>(), BddCucumberJsonMatcher {
+            override fun matcherName(): String {
+                return "ctorDependent"
+            }
+
+            override fun matcherClass(): Class<out BaseMatcher<*>> {
+                return this::class.java
+            }
+
+            override fun matches(actual: Any?): Boolean {
+                return actual.toString() == expectedValue
+            }
+
+            override fun describeTo(description: Description) {
+                description.appendText("equals ").appendValue(expectedValue)
+            }
+        }
+        val utilsWithCustomMatcher = BddJsonUtils(
+            jsonMatcher = listOf(ctorDependentMatcher),
+            bddCucumberDateTimeFormatter = emptyList()
+        )
+
+        utilsWithCustomMatcher.assertJsonEquals(
+            expectedJSON = """{"name":"${'$'}{json-unit.matches:ctorDependent}","age":30}""",
+            actualJSON = sampleJson
+        )
     }
 }
