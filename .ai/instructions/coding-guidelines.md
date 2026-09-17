@@ -1,6 +1,7 @@
 # Kotlin Coding Guidelines
 
 Use these rules for all Kotlin code unless a more specific repository instruction says otherwise.
+General rule: Never commit code. All new code MUST be reviewed by a human.
 
 ## Kotlin style
 
