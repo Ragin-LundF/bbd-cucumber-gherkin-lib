@@ -136,6 +136,13 @@ cucumberTest:
     protocol: https
     host: api.example.com
     port: "443"                     # "none" = omit; empty/absent = omit
+  services:                         # optional: additional web servers, by logical name
+    management:
+      port: "${local.management.port}"   # resolved when the request runs, so random ports work
+      path-prefixes: ["/actuator"]       # paths starting here are routed to this service
+    payment-mock:
+      host: localhost
+      port: "7070"
   proxy:
     host: localhost
     port: -1
@@ -146,6 +153,14 @@ cucumberTest:
 
 * If `cucumberTest.server.host` is **not** set, requests go to the locally started Spring Boot test
   server (`RANDOM_PORT`) — this is the normal case.
+* `cucumberTest.services` is only needed for servers that Spring does not start itself. Every web
+  server of the application under test is discovered automatically under the namespace Spring uses
+  for it (`server`, `management`, …), so an actuator on its own port is reachable as
+  `/actuator/...` without any configuration at all.
+* `base-path` is **prepended** to the URL, `path-prefixes` only decide which service a path is
+  routed to. Use `path-prefixes` when the feature file already spells the prefix out
+  (`"/actuator/health"`), `base-path` when it does not (`"/health"`). An empty `path-prefixes` list
+  switches the automatic routing of a service off.
 * ⚠️ The step `Given that a bearer token without scopes is used` is read via `@Value` and therefore
   needs the **exact camelCase key** `cucumberTest.authorization.bearerToken.noscope`. The kebab-case
   `bearer-token` form only feeds the *default* token. Without the exact key the step yields the
@@ -199,6 +214,7 @@ A single object carrying all state between steps:
 | `latestResponse`        | the last executed request                                   | all `Then` assertions                |
 | `fileBasePath`          | `that all file paths are relative to`                       | every file lookup                    |
 | `urlBasePath`           | `that all URLs are relative to`                             | URL building                         |
+| `serviceName`           | `that the service ... is used`                              | picks the web server to call         |
 | `polling`               | polling `Given`s                                            | poll requests                        |
 | `executionTime`         | scenario start                                              | execution-time assertion             |
 
@@ -207,7 +223,7 @@ A single object carrying all state between steps:
 A `@Before` hook resets part of the state before **every** scenario.
 
 **Reset:** `latestResponse`, `editableBody`, `headerValues`, JSON compare options, `fileBasePath`,
-`urlBasePath`, `bearerToken` (back to the configured default), polling config,
+`urlBasePath`, `serviceName`, `bearerToken` (back to the configured default), polling config,
 `scenarioContextFileMap`, `executionTime` (restarted).
 
 **NOT reset (survives across scenarios and even across feature files):**
@@ -284,6 +300,7 @@ Gherkin keywords are interchangeable — a step registered as `@Then` can be wri
 |---|---|
 | `Given that all file paths are relative to "<basePath>"` | prefix for every file argument (end it with `/`) |
 | `Given that all URLs are relative to "<basePath>"` | prefix for every request URL |
+| `Given that the service "<name>" is used` | sends the following requests to that web server (`server`, `management`, or a name from `cucumberTest.services`); use `server` to switch back |
 | `Given that the API path is "<uri>"` | stores the URI for "previously given URI" steps |
 | `Given that the following users and tokens are existing` + data table `\| user \| token \|` | fills the user→token map (token column is context-resolved) |
 | `Given that the user is "<user>"` | selects that user's bearer token |

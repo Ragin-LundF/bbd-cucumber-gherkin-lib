@@ -61,8 +61,29 @@ com.ragin.bdd.cucumber.rest
   extensions/   — Kotlin extension functions adapting Cucumber types for REST use
   glue/         — REST step definitions (Given/When/Then) and abstract HTTP execution base
   httpclient/   — HTTP client factory and configuration
-  utils/        — URL construction, path placeholder replacement, request logging
+  utils/        — URL construction, service/web-server resolution, path placeholder replacement,
+                  request logging
 ```
+
+#### Multi-port resolution (`rest`)
+
+`ServiceUrlResolver` enumerates every web server of the application under test by scanning the
+Spring `Environment` for the `local.<namespace>.port` properties that Spring Boot registers for
+each of them. The namespace is the service name (`server`, `management`, …). Discovered services
+are merged field by field with `cucumbertest.services.<name>`, configuration winning.
+
+`BaseRESTExecutionGlue.targetUrlFor` resolves the request URL in this order:
+
+1. path already absolute (`http://`, `https://`) — used as-is
+2. `ScenarioStateContext.serviceName` — fails fast when the name is unknown
+3. the service with the longest matching `pathPrefixes` entry
+4. `cucumbertest.server.*`
+5. nothing — the path stays relative and the `TestRestTemplate` resolves it
+
+Steps 4 and 5 are the pre-existing behaviour and must stay reachable. In particular the `server`
+service gets **no** default path prefix, because a prefix there would divert every call away from
+step 5. Resolution happens outside the `runCatching` of the request so that a configuration error
+surfaces instead of becoming a missing response.
 
 ### `bdd-cucumber-gherkin-lib-db`
 
@@ -106,6 +127,7 @@ for all mutable state** during a Cucumber scenario.
 | `latestResponse` | yes | Last HTTP response |
 | `fileBasePath` | yes | Prefix for relative classpath file lookups |
 | `urlBasePath` | yes | Prefix prepended to relative URL paths |
+| `serviceName` | yes | Logical name of the web server the next requests go to; `null` derives it from the path |
 | `editableBody` | yes | Request body text |
 | `bearerToken` | yes (reset to `defaultBearerToken`) | Current authorization token |
 | `headerValues` | yes | Extra request headers |
@@ -252,6 +274,11 @@ Spring `@ConfigurationProperties` prefix: `cucumbertest` (all lowercase, no sepa
 | `cucumbertest.server.protocol` | String | `http` | Target server protocol |
 | `cucumbertest.server.host` | String? | none | Target server host |
 | `cucumbertest.server.port` | String? | none | Target server port |
+| `cucumbertest.services.<name>.protocol` | String? | `cucumbertest.server.protocol` | Protocol of that service |
+| `cucumbertest.services.<name>.host` | String? | `cucumbertest.server.host`, else `localhost` | Host of that service |
+| `cucumbertest.services.<name>.port` | String? | the discovered `local.<name>.port` | Port of that service |
+| `cucumbertest.services.<name>.basePath` | String? | servlet context path for `server`, else empty | Prepended to every URL of that service |
+| `cucumbertest.services.<name>.pathPrefixes` | List<String>? | `/actuator` for `management`, else empty | Paths routed to that service; empty list disables routing |
 | `cucumbertest.proxy.host` | String | `http` | Proxy host |
 | `cucumbertest.proxy.port` | Int? | none | Proxy port |
 | `cucumbertest.ssl.disableCheck` | Boolean | false | Disable SSL cert check |

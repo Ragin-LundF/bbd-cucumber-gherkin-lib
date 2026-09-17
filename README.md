@@ -13,6 +13,8 @@ It ships pre-built step definitions so tests can be written in plain Gherkin wit
 - Execute **GET, POST, PUT, PATCH, DELETE** calls against any base URL
 - Configure **authentication** (Bearer tokens, per-user credentials) in one `Given` step
 - Set a **base path** once in `Background` and use short relative paths in all scenarios
+- Call an app that listens on **several ports** (e.g. the actuator/management port) with plain
+  paths — every web server is detected automatically, so no protocol, host or port in the tests
 - Validate **HTTP status codes**, **response headers**, and **response bodies** against inline JSON or JSON files
 
 ### JSON validation

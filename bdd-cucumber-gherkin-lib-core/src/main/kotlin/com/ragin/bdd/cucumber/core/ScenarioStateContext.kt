@@ -7,6 +7,13 @@ object ScenarioStateContext {
     var latestResponse: ResponseEntity<String>? = null
     var fileBasePath: String = ""
     var urlBasePath: String = ""
+
+    /**
+     * Logical name of the service (web server) the next requests are sent to.
+     *
+     * `null` means that the service is derived from the requested path, which is the default.
+     */
+    var serviceName: String? = null
     var bearerToken: String? = null
     var editableBody: String? = ""
     var uriPath: String = ""
@@ -50,6 +57,7 @@ object ScenarioStateContext {
         latestResponse = null
         fileBasePath = ""
         urlBasePath = ""
+        serviceName = null
         editableBody = ""
         headerValues.clear()
         jsonPathOptions.clear()

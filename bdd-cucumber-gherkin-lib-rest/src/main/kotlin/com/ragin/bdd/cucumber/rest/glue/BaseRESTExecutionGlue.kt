@@ -10,6 +10,7 @@ import com.ragin.bdd.cucumber.core.ScenarioStateContext.uriPath
 import com.ragin.bdd.cucumber.rest.extensions.asMultiValueMap
 import com.ragin.bdd.cucumber.rest.httpclient.ClientHttpRequestFactory
 import com.ragin.bdd.cucumber.rest.utils.RequestLoggerUtils
+import com.ragin.bdd.cucumber.rest.utils.ServiceUrlResolver
 import com.ragin.bdd.cucumber.rest.utils.UrlUtils
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.createHTTPHeader
@@ -17,10 +18,11 @@ import com.ragin.bdd.cucumber.utils.RESTCommunicationUtils.prepareDynamicURLWith
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.Scenario
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.resttestclient.exchange
 import org.springframework.boot.resttestclient.postForEntity
-import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -42,9 +44,20 @@ abstract class BaseRESTExecutionGlue(
     jsonUtils = jsonUtils,
     bddProperties = bddProperties
 ) {
-    @LocalServerPort
-    protected var port = 0
+    /**
+     * Nullable and not `lateinit` on purpose: a glue class that is constructed outside of Spring
+     * must keep working. A missing environment means that no service is discovered, which falls
+     * back to resolving URLs from `cucumbertest.server.*` alone.
+     */
+    @Autowired(required = false)
+    protected var environment: Environment? = null
     protected val clientHttpRequestFactory = ClientHttpRequestFactory(bddProperties = bddProperties)
+
+    private val serviceUrlResolver: ServiceUrlResolver? by lazy {
+        environment?.let { resolvedEnvironment ->
+            ServiceUrlResolver(environment = resolvedEnvironment, bddProperties = bddProperties)
+        }
+    }
 
     init {
         // init ScenarioContext
@@ -114,13 +127,10 @@ abstract class BaseRESTExecutionGlue(
             // there was a body...replace with new entity with body
             httpEntity = HttpEntity(body, headers)
         }
+        // Resolved outside of runCatching so that a configuration error surfaces as itself instead
+        // of being turned into a missing response by handleRestError.
+        val targetUrl = targetUrlFor(path = path)
         runCatching {
-            val targetUrl = UrlUtils.fullURLFor(
-                path = path,
-                protocol = bddProperties.server?.protocol,
-                host = bddProperties.server?.host,
-                port = bddProperties.server?.port
-            )
             RequestLoggerUtils.logRequest(httpMethod = httpMethod, url = targetUrl, scenario = scenario)
 
             setLatestResponse(
@@ -171,13 +181,10 @@ abstract class BaseRESTExecutionGlue(
         }
 
         val request = HttpEntity(formDataMap, headers)
+        // Resolved outside of runCatching so that a configuration error surfaces as itself instead
+        // of being turned into a missing response by handleRestError.
+        val targetUrl = targetUrlFor(path = path)
         runCatching {
-            val targetUrl = UrlUtils.fullURLFor(
-                path = path,
-                protocol = bddProperties.server?.protocol,
-                host = bddProperties.server?.host,
-                port = bddProperties.server?.port
-            )
             log.info { "Executing call to [POST][$targetUrl]" }
             setLatestResponse(
                 latestResponse = restTemplate.postForEntity<String>(
@@ -218,13 +225,10 @@ abstract class BaseRESTExecutionGlue(
 
         // create HttpEntity
         val httpEntity = HttpEntity(map, headers)
+        // Resolved outside of runCatching so that a configuration error surfaces as itself instead
+        // of being turned into a missing response by handleRestError.
+        val targetUrl = targetUrlFor(path = path)
         runCatching {
-            val targetUrl = UrlUtils.fullURLFor(
-                path = path,
-                protocol = bddProperties.server?.protocol,
-                host = bddProperties.server?.host,
-                port = bddProperties.server?.port
-            )
             RequestLoggerUtils.logRequest(
                 httpMethod = HttpMethod.POST,
                 url = targetUrl,
@@ -243,6 +247,41 @@ abstract class BaseRESTExecutionGlue(
             handleRestError(error = error)
         }
         RequestLoggerUtils.logResponse(scenario = scenario)
+    }
+
+    /**
+     * Builds the URL the request is sent to.
+     *
+     * The service is picked from the path or from the service the scenario selected explicitly.
+     * When no service matches, the URL is built from `cucumbertest.server.*` exactly as before,
+     * which keeps a relative path relative so that the TestRestTemplate resolves it against the
+     * application under test.
+     *
+     * @param path  requested path with all placeholders already replaced
+     * @return absolute or relative URL to call
+     */
+    protected fun targetUrlFor(path: String): String {
+        val service = serviceUrlResolver?.resolveFor(
+            relativePath = UrlUtils.appendPathElements(path = "", ScenarioStateContext.urlBasePath, path),
+            explicitServiceName = ScenarioStateContext.serviceName
+        )
+
+        if (service != null) {
+            return UrlUtils.fullURLFor(
+                path = path,
+                protocol = service.protocol,
+                host = service.host,
+                port = service.port,
+                servicePath = service.basePath
+            )
+        }
+
+        return UrlUtils.fullURLFor(
+            path = path,
+            protocol = bddProperties.server?.protocol,
+            host = bddProperties.server?.host,
+            port = bddProperties.server?.port
+        )
     }
 
     protected fun preparePath(dataTable: DataTable): String {

@@ -40,6 +40,20 @@ class GivenRESTStateGlue(jsonUtils: BddJsonUtils, bddProperties: BddProperties) 
     }
 
     /**
+     * Defines the service (web server) that the following requests are sent to.
+     *
+     * The service names are the namespaces Spring Boot uses for the web servers it starts
+     * (`server` for the application itself, `management` for the actuator port) plus every name
+     * configured under `cucumbertest.services`. Use `server` to switch back to the default.
+     *
+     * @param serviceName   name of the service, or a scenario context key holding it
+     */
+    @Given("that the service {string} is used")
+    fun givenThatTheServiceIsUsed(serviceName: String) {
+        ScenarioStateContext.serviceName = ScenarioStateContext.resolveEntry(key = serviceName)
+    }
+
+    /**
      * Set a list of users and tokens.
      *
      * @param userDataTable     data table which contains the user in the first row and token in the second

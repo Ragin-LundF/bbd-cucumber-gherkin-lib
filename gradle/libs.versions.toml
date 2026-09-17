@@ -32,6 +32,7 @@ spring-boot-rest-client = { module = "org.springframework.boot:spring-boot-restc
 spring-boot-rest-client-test = { module = "org.springframework.boot:spring-boot-restclient-test", version.ref = "springBoot" }
 spring-boot-rest-test-client = { module = "org.springframework.boot:spring-boot-resttestclient", version.ref = "springBoot" }
 #
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "springBoot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springBoot" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "springBoot" }
 spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "springBoot" }

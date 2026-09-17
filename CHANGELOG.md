@@ -1,4 +1,60 @@
 # Release 3.8.0
+
+## New features
+
+### Applications with more than one port
+Tests no longer need a protocol, host or port for an endpoint that runs on a second port.
+Every web server the Spring context starts is detected automatically under the name Spring uses
+for it, so an actuator on its own port is reachable with a plain path and no configuration at all:
+
+```gherkin
+Scenario: Read the health endpoint from the management port
+  When executing a GET call to "/actuator/health"
+  Then I ensure that the status code of the response is 200
+```
+
+Servers that Spring does not start itself — a mock, a side car, a second deployment — are declared
+once in the `application.yml` and then addressed the same way:
+
+```yaml
+cucumberTest:
+  services:
+    payment-mock:
+      host: localhost
+      port: "${wiremock.server.port}"
+      path-prefixes: ["/payments"]
+```
+
+`port`, `host` and `base-path` may contain `${...}` placeholders. They are resolved when the
+request runs and not when the properties are bound, so a random port is always the current one.
+
+`base-path` is prepended to the URL, while `path-prefixes` only decides which service a path is
+routed to. Use `path-prefixes` when the feature file already spells the prefix out
+(`"/actuator/health"`) and `base-path` when it does not (`"/health"`).
+
+### New sentence `that the service "..." is used`
+For the cases where a path prefix is not enough, a scenario can name the service explicitly.
+`server` is the application itself, so it also switches back to the default:
+
+```gherkin
+Scenario: Read a mocked endpoint
+  Given that the service "payment-mock" is used
+  When executing a GET call to "/v1/payments"
+  Then I ensure that the status code of the response is 200
+```
+
+An unknown name fails immediately and lists the names that are available.
+
+## Compatibility
+- Every existing feature file and `application.yml` resolves to the same URL as before. Without
+  `cucumberTest.services` and without a second port nothing is routed anywhere new, because the
+  `server` service intentionally claims no path prefix.
+- One behaviour change to be aware of: an application that already runs a management port now
+  answers `/actuator/...` calls from that port instead of returning 404 from the application port.
+  Set `cucumberTest.services.management.path-prefixes: []` to keep the old behaviour.
+- `BddProperties` gained a constructor parameter and `UrlUtils.fullURLFor` an optional parameter.
+
+## Internal changes
 - Some housekeeping under the hood: a handful of small glitches that had crept in over time are gone, so a few things now behave the way they always should have.
 - Tightened up the build itself. Tests, coverage and code formatting are checked automatically again instead of being quietly skipped.
 - Two leftovers that nobody was using are now marked as deprecated. They still work, but they will disappear with the next major release.

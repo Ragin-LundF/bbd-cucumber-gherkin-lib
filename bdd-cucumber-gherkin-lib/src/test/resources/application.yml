@@ -30,6 +30,17 @@ cucumberTest:
   ssl:
     disableCheck: false
 
+# Starts the actuator on its own random port, so the library's own tests run against an
+# application with two ports. server.port is 0 (RANDOM_PORT) and management.server.port is 0,
+# which Spring Boot treats as DIFFERENT and therefore creates a separate management context.
+management:
+  server:
+    port: 0
+  endpoints:
+    web:
+      exposure:
+        include: health
+
 spring:
   datasource:
     url: jdbc:tc:postgresql:17:///cucumber
