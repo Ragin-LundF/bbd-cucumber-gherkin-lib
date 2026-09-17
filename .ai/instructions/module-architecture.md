@@ -105,6 +105,12 @@ projects that use both REST and database sentences.
 
 All handwritten code lives in `src/test/` and is used to test the library itself.
 
+Because this module has **no `src/main`**, Kover creates no variant for it and ignores the binary
+reports of its test tasks. `config/gradle/kover_sonar.gradle` therefore feeds them into the root
+report through `additionalBinaryReports`. Without that the whole Gherkin suite counts for nothing
+and every glue class reads as 0%. Do not remove it, and keep it in mind when adding a test task
+here.
+
 ```
 src/test/kotlin/com/ragin/bdd
   (root)          — Spring Boot test application entry point

@@ -152,6 +152,14 @@ are obfuscated by name as well.
   `JSON_SPACING` and `JSON_COMPACT` constants of `BddJsonUtils`.
 
 ## Internal changes
+- **Coverage was being measured wrong.** The integration test module has no `src/main`, so Kover
+  created no variant for it and silently discarded every binary report it produced.
+- The url-encoded POST sentence had no scenario. It has one now, together with the endpoint it
+  needs, so all three request paths are demonstrated in the feature files.
+- Added unit tests for the parts of the new reporting that a scenario cannot assert: the
+  `max-body-length` boundary and the header obfuscation decision.
+- The demo application switches `cucumberTest.logging.headers` and `.sql` on, so the library's own
+  report shows what those produce and the obfuscation is exercised end to end.
 - Some housekeeping under the hood: a handful of small glitches that had crept in over time are gone, so a few things now behave the way they always should have.
 - Tightened up the build itself. Tests, coverage and code formatting are checked automatically again instead of being quietly skipped.
 - Two leftovers that nobody was using are now marked as deprecated. They still work, but they will disappear with the next major release.

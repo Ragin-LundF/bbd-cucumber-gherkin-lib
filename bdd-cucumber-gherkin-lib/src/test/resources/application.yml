@@ -29,6 +29,11 @@ cucumberTest:
     port: -1
   ssl:
     disableCheck: false
+  # Both are off by default. They are switched on here so the library's own report demonstrates
+  # them, and so the header obfuscation is exercised end to end by every authorized scenario.
+  logging:
+    headers: true
+    sql: true
 
 # Starts the actuator on its own random port, so the library's own tests run against an
 # application with two ports. server.port is 0 (RANDOM_PORT) and management.server.port is 0,

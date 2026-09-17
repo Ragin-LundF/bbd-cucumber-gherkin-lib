@@ -25,7 +25,7 @@ class RequestLoggerUtils(private val options: BddProperties.Logging) {
      * @param httpMethod        method of the request
      * @param url               URL the request is sent to
      * @param body              request body, if any
-     * @param headers           request headers, if any
+     * @param headers           request headers, or `null` when the caller has none to report
      * @param encodedDataMap    url-encoded form fields, if any
      */
     fun logRequest(
@@ -55,9 +55,9 @@ class RequestLoggerUtils(private val options: BddProperties.Logging) {
     /**
      * Reports the response of the last executed request.
      *
-     * @param durationMillis    time the call took, or `null` when it was not measured
+     * @param durationMillis    time the call took
      */
-    fun logResponse(durationMillis: Long? = null) {
+    fun logResponse(durationMillis: Long) {
         val response = ScenarioStateContext.latestResponse
         if (response == null) {
             reporter.summary(line = "${Markers.RESPONSE} no response${durationOf(durationMillis = durationMillis)}")
@@ -97,6 +97,8 @@ class RequestLoggerUtils(private val options: BddProperties.Logging) {
      * explicitly rather than relying on the class being a map.
      */
     private fun asMap(headers: HttpHeaders?): Map<String, List<String>> {
+        // Nullable because this is a published entry point: the library always passes headers, but a
+        // caller outside Kotlin's null checks can hand over nothing.
         if (headers == null) {
             return emptyMap()
         }
@@ -104,11 +106,7 @@ class RequestLoggerUtils(private val options: BddProperties.Logging) {
         return headers.headerNames().associateWith { name -> headers.getValuesAsList(name) }
     }
 
-    private fun durationOf(durationMillis: Long?): String {
-        if (durationMillis == null) {
-            return ""
-        }
-
+    private fun durationOf(durationMillis: Long): String {
         return "  ($durationMillis ms)"
     }
 }

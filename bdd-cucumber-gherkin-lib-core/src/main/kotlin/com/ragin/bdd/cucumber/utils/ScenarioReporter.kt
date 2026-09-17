@@ -122,7 +122,7 @@ class ScenarioReporter(private val options: BddProperties.Logging) {
     /**
      * Obfuscates the values of a sensitive header and leaves every other header untouched.
      */
-    private fun obfuscate(headerName: String, values: List<String>): String {
+    internal fun obfuscate(headerName: String, values: List<String>): String {
         if (!OBFUSCATED_HEADERS.contains(element = headerName.lowercase())) {
             return values.joinToString()
         }
@@ -141,7 +141,11 @@ class ScenarioReporter(private val options: BddProperties.Logging) {
         }
     }
 
-    private fun truncate(content: String): String {
+    /**
+     * Internal rather than private so the boundary can be asserted directly: `maxBodyLength` is a
+     * documented guarantee and an off-by-one here would either cut a byte short or overrun it.
+     */
+    internal fun truncate(content: String): String {
         if (options.maxBodyLength <= 0 || content.length <= options.maxBodyLength) {
             return content
         }
