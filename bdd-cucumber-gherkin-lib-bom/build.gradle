@@ -14,5 +14,6 @@ dependencies {
         api project(":bdd-cucumber-gherkin-lib-core")
         api project(":bdd-cucumber-gherkin-lib-db")
         api project(":bdd-cucumber-gherkin-lib-rest")
+        api project(":bdd-cucumber-gherkin-lib-security")
     }
 }

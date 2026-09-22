@@ -1,3 +1,47 @@
+# Release 3.9.0
+
+## New features
+
+### New module `bdd-cucumber-gherkin-lib-security`
+Dynamic application security testing (DAST) driven from the Cucumber suite that already exists.
+
+A `@Before` hook starts an [OWASP ZAP](https://www.zaproxy.org/) container, exposes the ports of the application under
+test to it and routes the HTTP client of the library through its proxy. Every request the functional scenarios make is
+recorded, and a final scenario attacks that recorded traffic, writes a report and fails the build on findings:
+
+```gherkin
+@securityScan
+Feature: Security scan
+
+    @securityExecuteScan
+    Scenario: scan the application and fail on relevant findings
+        Then I run the security scan for max. 30 minutes and fail on findings of risk "MEDIUM" or higher
+```
+
+No step code is needed in the consuming project — one test dependency, the glue package and a profile:
+
+```yaml
+cucumbertest:
+    security:
+        enabled: true
+        target:
+            host: host.testcontainers.internal
+            exposed-ports: ["${server.port}"]
+```
+
+The time budget and the risk that fails the build are sentence parameters rather than properties, so a feature file
+states its own limits and no profile can silently weaken the gate.
+
+Nothing a project writes names a scanner: the tags, the properties and the sentences are all `security*`. Replacing
+ZAP means publishing one `SecurityScanner` bean — every ZAP bean is `@ConditionalOnMissingBean(SecurityScanner)`, so
+no feature file, tag, property or Gradle task changes.
+
+The module is **not** part of the `bdd-cucumber-gherkin-lib` bundle: it needs Docker and is only useful for the runner
+that executes the scan. Add it explicitly, next to the REST module.
+
+Setup, configuration reference, replay mode and the granular sentences are documented in
+[bdd-cucumber-gherkin-lib-security/README.md](bdd-cucumber-gherkin-lib-security/README.md).
+
 # Release 3.8.0
 
 ## New features
