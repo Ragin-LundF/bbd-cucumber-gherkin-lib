@@ -9,6 +9,12 @@ The current implementation is [OWASP ZAP](https://www.zaproxy.org/), but **nothi
 product** - the profile, the tag, the properties and the Gherkin sentences are all `security*`, so replacing the
 scanner costs one bean and no test changes.
 
+This module contributes the Cucumber surface: the Gherkin sentences, the lifecycle hooks and the Spring Boot
+auto-configuration. The scanner abstraction, the scan orchestration, the finding gate, the configuration objects and
+the ZAP implementation live in [bdd-cucumber-gherkin-lib-security-core](../bdd-cucumber-gherkin-lib-security-core/README.md),
+which carries no Cucumber and no Spring dependency and comes in transitively - nothing to add for a Cucumber project.
+A project that does not use Cucumber depends on that module directly and drives the scan from a plain jUnit suite.
+
 ## How it works
 
 1. A `@Before` hook starts the scanner container once per JVM and exposes the host ports of the application under test
@@ -216,27 +222,32 @@ next scan roughly ten times larger.
 
 ```
   Feature files ──@securityScan──┐
-                                 │
-  SecurityScanHooks  ────────────┤   scanner independent
-  ThenSecurityScanGlue ──────────┤   (com.ragin.bdd.cucumber.security)
-  SecurityScan       ────────────┤
-  SecurityAlertGate  ────────────┘
+                                 │   this module
+  SecurityScanHooks  ────────────┤   (….security.hooks / .glue)
+  ThenSecurityScanGlue ──────────┘
+            │
+            ▼
+  SecurityScanSession ───────────┐
+  SecurityScan       ────────────┤   scanner independent
+  SecurityAlertGate  ────────────┘   (com.ragin.bdd.cucumber.security, security-core)
             │
             │ SecurityScanner (interface = the seam)
             ▼
   ZapSecurityScanner ────────────┐
   ZapContainer                   │   product specific
-  ZapApiClient                   │   (….security.zap)
+  ZapApiClient                   │   (….security.zap, security-core)
                           ───────┘
 
-  SecurityAlert, SecurityRisk, ProxyEndpoint      (….security.models)
-  SecurityScanProperties + one type per group     (….security.config)
+  SecurityAlert, SecurityRisk, ProxyEndpoint      (….security.models, security-core)
+  SecurityScanProperties + one type per group     (….security.config, security-core)
+  SecurityScanExtension                           (….security.junit, security-core)
 ```
 
 | Class                                                | Responsibility                                                                               |
 |------------------------------------------------------|----------------------------------------------------------------------------------------------|
 | `SecurityScanHooks`                                  | Starts the scanner, exposes the host ports, wires the proxy, skips scenarios in replay mode. |
 | `ThenSecurityScanGlue`                               | The Gherkin sentences. Free of any product name.                                             |
+| `SecurityScanSession`                                | The lifecycle - start, hand out the proxy, scan, gate, stop. Shared with the jUnit entry point. |
 | `SecurityScan`                                       | Orchestration - what to attack and in which order.                                           |
 | `SecurityAlertGate`                                  | The verdict - ignore list, confidence threshold, risk threshold, failure message.            |
 | `SecurityScanner`                                    | The seam every implementation has to satisfy.                                                |
@@ -257,8 +268,8 @@ fun securityScanner(/* … */): SecurityScanner {
 }
 ```
 
-Every ZAP bean is declared `@ConditionalOnMissingBean(SecurityScanner::class)`, so yours wins and the ZAP ones are
-never created. No feature file, tag, property, sentence, Gradle task or CI change is needed.
+The ZAP bean is declared `@ConditionalOnMissingBean(SecurityScanner::class)`, so yours wins and ZAP is never
+started. No feature file, tag, property, sentence, Gradle task or CI change is needed.
 
 ## Notes and caveats
 

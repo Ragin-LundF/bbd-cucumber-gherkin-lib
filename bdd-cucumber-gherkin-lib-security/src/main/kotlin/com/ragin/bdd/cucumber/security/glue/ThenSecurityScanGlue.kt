@@ -2,7 +2,7 @@ package com.ragin.bdd.cucumber.security.glue
 
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
-import com.ragin.bdd.cucumber.security.SecurityScan
+import com.ragin.bdd.cucumber.security.SecurityScanSession
 import com.ragin.bdd.cucumber.security.SecurityScanner
 import com.ragin.bdd.cucumber.security.config.SecurityScanProperties
 import com.ragin.bdd.cucumber.security.models.SecurityRisk
@@ -24,7 +24,7 @@ class ThenSecurityScanGlue(
     bddProperties: BddProperties,
     private val properties: SecurityScanProperties,
     private val scanner: SecurityScanner,
-    private val securityScan: SecurityScan
+    private val session: SecurityScanSession
 ) : BaseCucumberCore(
         jsonUtils = jsonUtils,
         bddProperties = bddProperties
@@ -39,7 +39,7 @@ class ThenSecurityScanGlue(
             return
         }
         try {
-            securityScan.scanAndVerify(
+            session.scanAndVerify(
                 maxDuration = Duration.ofMinutes(minutes.toLong()),
                 failFrom = SecurityRisk.valueOf(failFrom.uppercase())
             )
@@ -53,7 +53,7 @@ class ThenSecurityScanGlue(
         if (skipWhenDisabled()) {
             return
         }
-        securityScan.importApiDefinition(url = url)
+        session.scan.importApiDefinition(url = url)
     }
 
     @Then("I run the security scan for max. {int} minutes")
@@ -61,8 +61,8 @@ class ThenSecurityScanGlue(
         if (skipWhenDisabled()) {
             return
         }
-        securityScan.runScan(maxDuration = Duration.ofMinutes(minutes.toLong()))
-        securityScan.awaitAnalysis()
+        session.scan.runScan(maxDuration = Duration.ofMinutes(minutes.toLong()))
+        session.scan.awaitAnalysis()
     }
 
     @Then("I store the security scan report to the file {string}")
@@ -70,7 +70,7 @@ class ThenSecurityScanGlue(
         if (skipWhenDisabled()) {
             return
         }
-        securityScan.storeReport(destination = Path.of(filePath))
+        session.scan.storeReport(destination = Path.of(filePath))
     }
 
     @Then("I export the recorded security scan traffic to the file {string}")
@@ -78,7 +78,7 @@ class ThenSecurityScanGlue(
         if (skipWhenDisabled()) {
             return
         }
-        securityScan.exportRecording(destination = Path.of(filePath))
+        session.scan.exportRecording(destination = Path.of(filePath))
     }
 
     @Then("I ensure that no security finding has a risk of {string} or higher")
@@ -86,7 +86,7 @@ class ThenSecurityScanGlue(
         if (skipWhenDisabled()) {
             return
         }
-        securityScan.verifyAlerts(failFrom = SecurityRisk.valueOf(failFrom.uppercase()))
+        session.scan.verifyAlerts(failFrom = SecurityRisk.valueOf(failFrom.uppercase()))
     }
 
     @Then("I make sure that the security scanner is stopped")

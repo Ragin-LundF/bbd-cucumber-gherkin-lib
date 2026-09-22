@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.security.config
 
 /** Optional API definitions that widen the attack surface beyond the recorded traffic. */
-data class ApiProperties(
+data class ApiProperties @JvmOverloads constructor(
     /**
      * API definitions to import before the scan.
      *

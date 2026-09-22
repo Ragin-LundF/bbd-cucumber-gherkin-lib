@@ -1,3 +1,68 @@
+# Release 3.10.0
+
+## New features
+
+### New module `bdd-cucumber-gherkin-lib-security-core`
+The security scan is now split into two artifacts.
+
+`bdd-cucumber-gherkin-lib-security-core` contains the basic implementations without Cucumber dependencies: the
+`SecurityScanner` abstraction, the scan orchestration, the finding gate, the configuration objects, the
+Testcontainers based OWASP ZAP implementation, and the entry points a plain jUnit suite needs. It depends on no
+Spring artifact and on no other module of this library, so a project on a different Spring Boot generation can create
+the objects and load the configuration itself.
+
+`bdd-cucumber-gherkin-lib-security` adds the Gherkin sentences, the lifecycle hooks and the Spring Boot
+auto-configuration on top. **A project that uses the sentences needs no change** — the core module comes in
+transitively, the sentences, tags, properties and beans are unchanged.
+
+Driving the scan from a test suite that is not Cucumber:
+
+```kotlin
+val properties = SecurityScanProperties(enabled = true)
+
+SecurityScanSession(properties, ZapSecurityScanner.create(properties)).use { session ->
+    val proxy = session.start(hostPorts = setOf(port))
+
+    // route the HTTP client of the tests through proxy.host:proxy.port, then run the traffic
+
+    session.scanAndVerify(maxDuration = Duration.ofMinutes(30), failFrom = SecurityRisk.MEDIUM)
+}
+```
+
+A jUnit 5 extension wraps the same session around a test class:
+
+```kotlin
+@RegisterExtension
+val securityScan = SecurityScanExtension(
+    properties = properties,
+    scanner = ZapSecurityScanner.create(properties),
+    maxDuration = Duration.ofMinutes(30),
+    failFrom = SecurityRisk.MEDIUM,
+    hostPorts = Supplier { setOf(port) }
+)
+```
+
+The time budget and the risk that fails the build stay parameters rather than properties, so nothing can silently
+weaken the gate.
+
+Setup, configuration and the caveats are documented in
+[bdd-cucumber-gherkin-lib-security-core/README.md](bdd-cucumber-gherkin-lib-security-core/README.md).
+
+## Changes
+
+### Security scan internals
+These only concern a project that reached past the Gherkin sentences into the beans of the security module.
+
+- `SecurityScanProperties` no longer carries `@ConfigurationProperties`; it is a plain data class so the core module
+  stays free of Spring. `SecurityScanBeanConfig` binds the prefix — named by `SecurityScanProperties.PREFIX` — with a
+  `Binder`, which gives the same relaxed, constructor based binding. Configuration files are unchanged.
+- The `SecurityScan` bean is replaced by a `SecurityScanSession` bean, which owns the scan and the scanner lifecycle.
+  The hook and the steps share it, so the target list and the attack always work on the same state.
+- The `ZapContainer` and `ZapApiClient` beans are gone. `ZapSecurityScanner.create(properties)` builds the stack, and
+  the single `SecurityScanner` bean stays `@ConditionalOnMissingBean`, so replacing the scanner still costs one bean.
+- The ZAP API client now uses the JDK HTTP client instead of Spring's `RestClient`. The
+  `jdk.httpclient.allowRestrictedHeaders=host` system property the setup already required is unchanged.
+
 # Release 3.9.0
 
 ## New features

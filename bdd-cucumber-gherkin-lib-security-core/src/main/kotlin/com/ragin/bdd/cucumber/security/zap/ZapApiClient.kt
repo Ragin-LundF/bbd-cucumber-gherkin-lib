@@ -2,11 +2,15 @@ package com.ragin.bdd.cucumber.security.zap
 
 import com.ragin.bdd.cucumber.security.models.SecurityAlert
 import com.ragin.bdd.cucumber.security.models.SecurityRisk
-import com.ragin.bdd.cucumber.utils.BddJacksonUtils
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.web.client.RestClient
-import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
+import java.net.URLEncoder
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse.BodyHandlers
+import java.nio.charset.StandardCharsets
 import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
 
 /**
  * Thin typed client for the subset of the ZAP REST API that the scan needs.
@@ -17,9 +21,13 @@ import tools.jackson.databind.JsonNode
  * Every call carries `Host: zap`. ZAP serves the proxy and its own API on one port and uses that
  * header to decide which one is meant - without it the mapped Testcontainers port is read as a
  * proxy target and the call is forwarded instead of answered. See [ZapContainer.API_HOST].
+ *
+ * `Host` is a restricted header, so `jdk.httpclient.allowRestrictedHeaders=host` has to be set on
+ * the test JVM before the first request. Without it the JDK drops the header silently and every
+ * call here fails in a way that is hard to read.
  */
 class ZapApiClient(private val container: ZapContainer) {
-    private val restClient = RestClient.create()
+    private val http: HttpClient = HttpClient.newHttpClient()
 
     fun version(): String {
         return json(path = "/JSON/core/view/version/").path("version").asString("")
@@ -105,11 +113,8 @@ class ZapApiClient(private val container: ZapContainer) {
 
     /** Exports everything ZAP recorded as a HAR document. */
     fun exportHar(): ByteArray {
-        return restClient.get()
-            .uri(container.apiBaseUrl + "/OTHER/exim/other/exportHar/")
-            .header(ZapContainer.HOST_HEADER, ZapContainer.API_HOST)
-            .retrieve()
-            .body(ByteArray::class.java)
+        return http.send(request(path = "/OTHER/exim/other/exportHar/"), BodyHandlers.ofByteArray())
+            .body()
             ?: ByteArray(size = 0)
     }
 
@@ -139,26 +144,34 @@ class ZapApiClient(private val container: ZapContainer) {
     }
 
     private fun json(path: String, vararg params: Pair<String, String?>): JsonNode {
-        val builder = UriComponentsBuilder.fromUriString(container.apiBaseUrl + path)
-        params.forEach { (key, value) -> value?.let { builder.queryParam(key, it) } }
-        val uri = builder.build().toUri()
-
         log.debug { "calling ZAP API $path" }
-        val body = restClient.get()
-            .uri(uri)
-            .header(ZapContainer.HOST_HEADER, ZapContainer.API_HOST)
-            .retrieve()
-            .body(String::class.java)
-        val response = BddJacksonUtils.mapper.readTree(checkNotNull(body) { "empty response from ZAP API $path" })
+        val body = http.send(request(path = path, params = params), BodyHandlers.ofString()).body()
+        val response = mapper.readTree(checkNotNull(body) { "empty response from ZAP API $path" })
 
         // ZAP answers 200 with a body of {"code":..,"message":..} for rejected calls.
         check(!response.has("code")) { "ZAP API $path failed: $response" }
         return response
     }
 
+    /** A GET against the ZAP API, with the `Host` header that separates it from the proxy. */
+    private fun request(path: String, vararg params: Pair<String, String?>): HttpRequest {
+        val query = params.mapNotNull { (key, value) ->
+            value?.let { "$key=" + URLEncoder.encode(it, StandardCharsets.UTF_8) }
+        }.joinToString(separator = "&")
+        val uri = URI.create(container.apiBaseUrl + path + if (query.isEmpty()) "" else "?$query")
+
+        return HttpRequest.newBuilder(uri)
+            .header(ZapContainer.HOST_HEADER, ZapContainer.API_HOST)
+            .GET()
+            .build()
+    }
+
     private companion object {
         const val REPORT_DIR = "/home/zap"
         const val PAGE_SIZE = 500
         val log = KotlinLogging.logger {}
+
+        /** Only trees are read here, so the mapper needs none of the modules the library configures. */
+        val mapper = JsonMapper.builder().build()
     }
 }

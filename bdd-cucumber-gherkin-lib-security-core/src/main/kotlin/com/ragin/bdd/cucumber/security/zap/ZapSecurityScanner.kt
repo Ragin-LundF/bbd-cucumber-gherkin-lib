@@ -124,8 +124,24 @@ class ZapSecurityScanner(
         return false
     }
 
-    private companion object {
-        const val COMPLETE = 100
-        val log = KotlinLogging.logger {}
+    companion object {
+        /**
+         * The wired ZAP stack: container, API client and scanner.
+         *
+         * The one place a project that does not use Spring has to name the product. Everything it
+         * touches afterwards is the scanner independent [SecurityScanner] interface.
+         */
+        @JvmStatic
+        fun create(properties: SecurityScanProperties): SecurityScanner {
+            val container = ZapContainer(properties = properties)
+            return ZapSecurityScanner(
+                properties = properties,
+                container = container,
+                client = ZapApiClient(container = container)
+            )
+        }
+
+        private const val COMPLETE = 100
+        private val log = KotlinLogging.logger {}
     }
 }

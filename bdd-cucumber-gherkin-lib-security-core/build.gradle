@@ -1,0 +1,28 @@
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib-security-core"
+    publishDescription = "Framework independent DAST security scan core for bdd-cucumber-gherkin-lib"
+}
+
+// Deliberately no Spring, no Cucumber and no other module of this repository: this artifact is
+// consumed from projects that run on a different Spring Boot generation and create their own beans.
+dependencies {
+    // --- JSON: only databind, the scanner API is read as a tree and nothing is mapped onto a type
+    implementation(libs.jackson.databind)
+
+    // --- Scanner container
+    implementation(libs.testcontainers)
+
+    // --- jUnit 5 extension for suites that are not Cucumber.
+    // compileOnly on purpose: the consumer runs jUnit anyway, and publishing a version would push
+    // this repository's jUnit onto a project that is on another one.
+    compileOnly(libs.testing.junit.jupiter.api)
+
+    // --- Logging
+    implementation(libs.logging.logger)
+
+    // --- Testing
+    testImplementation(libs.testing.kotlin.test)
+
+    // SLF4J binding for the unit tests, otherwise SLF4J falls back to NOP and warns
+    testImplementation(libs.logging.slf4j)
+}
