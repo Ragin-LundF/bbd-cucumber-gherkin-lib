@@ -26,6 +26,7 @@ Coordinates: `io.github.ragin-lundf`.
 | REST only                     | `bdd-cucumber-gherkin-lib-rest`     | service has no DB steps                          |
 | DB only                       | `bdd-cucumber-gherkin-lib-db`       | only Liquibase/SQL/CSV steps                     |
 | Security scan (DAST)          | `bdd-cucumber-gherkin-lib-security` | route the whole run through a scanner proxy (§7) |
+| Security scan core            | `bdd-cucumber-gherkin-lib-security-core` | transitive; only direct for a suite without Cucumber |
 | Core (state, matchers, utils) | `bdd-cucumber-gherkin-lib-core`     | transitive; needed for custom matchers           |
 | BOM                           | `bdd-cucumber-gherkin-lib-bom`      | version alignment                                |
 
@@ -35,7 +36,11 @@ come in transitively (`api` scope). You still add `spring-boot-starter-test` (or
 
 The security module is deliberately **not** part of the `bdd-cucumber-gherkin-lib` bundle: it needs
 Docker and is only useful for the runner that executes the scan. Add it explicitly, next to the
-REST module (§7).
+REST module (§7). It contributes only the Cucumber surface — sentences, hooks and the Spring Boot
+auto-configuration. The scanner abstraction, the orchestration, the gate, the configuration types
+and the ZAP implementation live in `bdd-cucumber-gherkin-lib-security-core`, which depends on
+neither Cucumber nor Spring and comes in transitively; a suite without Cucumber depends on it
+directly and drives the scan from plain jUnit.
 
 ---
 
@@ -1100,7 +1105,8 @@ is needed.
    short bodies.
 10. **Add new endpoints for new sentences.** In *this* repository, new sentences are proven against
     the dummy Spring Boot app in `bdd-cucumber-gherkin-lib/src/test` — add a controller there and a
-    feature file that exercises the sentence.
+    feature file that exercises the sentence. Security sentences are proven the same way, by
+    `CucumberSecurityRunner` and `features/zzz_securityscan/` via `./gradlew cucumberSecurity`.
 11. **Never weaken the security gate.** Do not lower the risk in `... and fail on findings of risk
     "<risk>" or higher`, and do not add a rule id to
     `cucumbertest.security.alerts.ignored-rule-ids` without a comment stating why the finding was
@@ -1139,9 +1145,11 @@ is needed.
 | Runnable examples for every feature | `bdd-cucumber-gherkin-lib/src/test/resources/features/` |
 | Custom matcher / date format examples | `bdd-cucumber-gherkin-lib/src/test/kotlin/com/ragin/bdd/cucumbertests/hooks/` |
 | Security scan sentences | `bdd-cucumber-gherkin-lib-security/src/main/kotlin/com/ragin/bdd/cucumber/security/glue/ThenSecurityScanGlue.kt` |
-| Security scan hooks (proxy wiring, replay skip) | `.../security/hooks/SecurityScanHooks.kt` |
-| Scan orchestration and verdict | `.../security/SecurityScan.kt`, `.../security/SecurityAlertGate.kt` |
-| Scanner seam and ZAP adapter | `.../security/SecurityScanner.kt`, `.../security/zap/` |
-| Security scan properties | `.../security/config/SecurityScanProperties.kt` |
-| Security module documentation | `bdd-cucumber-gherkin-lib-security/README.md` |
+| Security scan hooks (proxy wiring, replay skip) | `bdd-cucumber-gherkin-lib-security/.../security/hooks/SecurityScanHooks.kt` |
+| Security scan auto-configuration | `bdd-cucumber-gherkin-lib-security/src/main/kotlin/configuration/.../SecurityScanBeanConfig.kt` |
+| Scan orchestration, session and verdict | `bdd-cucumber-gherkin-lib-security-core/.../security/SecurityScan.kt`, `SecurityScanSession.kt`, `SecurityAlertGate.kt` |
+| Scanner seam, ZAP adapter, jUnit entry point | `bdd-cucumber-gherkin-lib-security-core/.../security/SecurityScanner.kt`, `.../security/zap/`, `.../security/junit/` |
+| Security scan properties | `bdd-cucumber-gherkin-lib-security-core/.../security/config/SecurityScanProperties.kt` |
+| Security module documentation | `bdd-cucumber-gherkin-lib-security/README.md`, `bdd-cucumber-gherkin-lib-security-core/README.md` |
+| Runnable scan example (runner, feature, Gradle task) | `bdd-cucumber-gherkin-lib/src/test/kotlin/com/ragin/bdd/cucumbertests/CucumberSecurityRunner.kt`, `.../resources/features/zzz_securityscan/`, `config/gradle/tests.gradle` |
 | Release notes / new sentences | `CHANGELOG.md` |

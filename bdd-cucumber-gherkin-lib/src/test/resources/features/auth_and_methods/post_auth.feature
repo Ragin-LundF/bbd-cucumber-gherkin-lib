@@ -1,4 +1,6 @@
-@post_auth
+# @securityScan lets this feature seed the DAST run: every request it makes is recorded by the
+# scanner proxy and becomes part of the attack surface of features/zzz_securityscan/.
+@post_auth @securityScan
 Feature: Authorization with POST tests
   Background:
     Given that all file paths are relative to "features/auth_and_methods/"

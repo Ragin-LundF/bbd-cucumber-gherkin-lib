@@ -385,7 +385,10 @@ ports of the application under test to it and routes every request of the run th
 proxy; a final scenario attacks the recorded traffic, writes a report and fails the build on
 findings. The recorded traffic *is* the attack surface — an endpoint no scenario calls is only
 scanned when its OpenAPI definition is imported. Nothing a project writes names the scanner
-(currently OWASP ZAP): tags, properties and sentences are all `security*`.
+(currently OWASP ZAP): tags, properties and sentences are all `security*`. The scanner, the
+orchestration and the configuration types live in `bdd-cucumber-gherkin-lib-security-core`, which
+comes in transitively and needs neither Cucumber nor Spring — a suite without Cucumber depends on
+that module directly.
 
 Integration is one dependency plus configuration — no glue code, and the Spring context class stays
 untouched (the beans come from Spring auto-configuration):
