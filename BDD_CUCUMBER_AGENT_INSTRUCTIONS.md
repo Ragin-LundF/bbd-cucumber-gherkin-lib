@@ -20,17 +20,22 @@ hard-coded values.
 
 Coordinates: `io.github.ragin-lundf`.
 
-| Module                        | Artifact                        | Use when                                        |
-|-------------------------------|---------------------------------|-------------------------------------------------|
-| Meta package (REST + DB)      | `bdd-cucumber-gherkin-lib`      | default; you want everything                    |
-| REST only                     | `bdd-cucumber-gherkin-lib-rest` | service has no DB steps                         |
-| DB only                       | `bdd-cucumber-gherkin-lib-db`   | only Liquibase/SQL/CSV steps                    |
-| Core (state, matchers, utils) | `bdd-cucumber-gherkin-lib-core` | transitive; needed for custom matchers          |
-| BOM                           | `bdd-cucumber-gherkin-lib-bom`  | version alignment                               |
+| Module                        | Artifact                            | Use when                                         |
+|-------------------------------|-------------------------------------|--------------------------------------------------|
+| Meta package (REST + DB)      | `bdd-cucumber-gherkin-lib`          | default; you want everything                     |
+| REST only                     | `bdd-cucumber-gherkin-lib-rest`     | service has no DB steps                          |
+| DB only                       | `bdd-cucumber-gherkin-lib-db`       | only Liquibase/SQL/CSV steps                     |
+| Security scan (DAST)          | `bdd-cucumber-gherkin-lib-security` | route the whole run through a scanner proxy (§7) |
+| Core (state, matchers, utils) | `bdd-cucumber-gherkin-lib-core`     | transitive; needed for custom matchers           |
+| BOM                           | `bdd-cucumber-gherkin-lib-bom`      | version alignment                                |
 
 `cucumber-java`, `cucumber-spring`, `cucumber-junit-platform-engine`, `json-unit` and `json-path`
 come in transitively (`api` scope). You still add `spring-boot-starter-test` (or the
 `resttestclient` starter), and for DB tests a datasource + `spring-boot-starter-liquibase`.
+
+The security module is deliberately **not** part of the `bdd-cucumber-gherkin-lib` bundle: it needs
+Docker and is only useful for the runner that executes the scan. Add it explicitly, next to the
+REST module (§7).
 
 ---
 
@@ -53,6 +58,12 @@ Maven:
     <version>${bddCucumberVersion}</version>
     <scope>test</scope>
 </dependency>
+```
+
+The security module is added separately — it is not part of the bundle (§7):
+
+```groovy
+testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security:${bddCucumberVersion}"
 ```
 
 ### 2.2 Runner
@@ -82,11 +93,15 @@ class CucumberRunner
 
 Available glue constants:
 
-| Constant                          | Registers                                   |
-|-----------------------------------|---------------------------------------------|
-| `GLUE_PROPERTY_VALUES_REST`       | core hooks + REST glue                      |
-| `GLUE_PROPERTY_VALUES_DATABASE`   | core hooks + DB hooks + DB glue             |
+| Constant                             | Registers                                   |
+|--------------------------------------|---------------------------------------------|
+| `GLUE_PROPERTY_VALUES_REST`          | core hooks + REST glue                      |
+| `GLUE_PROPERTY_VALUES_DATABASE`      | core hooks + DB hooks + DB glue             |
 | `GLUE_PROPERTY_VALUES_REST_DATABASE` | core hooks + REST glue + DB hooks + DB glue |
+| `GLUE_PROPERTY_VALUES_SECURITY`      | security hooks + security glue              |
+
+`GLUE_PROPERTY_VALUES_SECURITY` is not folded into the other values: **append** it to one of them,
+and only for the runner that executes the scan (§7).
 
 ### 2.3 Spring context class
 
@@ -168,6 +183,8 @@ cucumberTest:
   routed to. Use `path-prefixes` when the feature file already spells the prefix out
   (`"/actuator/health"`), `base-path` when it does not (`"/health"`). An empty `path-prefixes` list
   switches the automatic routing of a service off.
+* `cucumbertest.security.*` (§7.4) exists only when the security module is on the classpath, and
+  every hook and step of it is a no-op while `cucumbertest.security.enabled` is `false`.
 * ⚠️ The step `Given that a bearer token without scopes is used` is read via `@Value` and therefore
   needs the **exact camelCase key** `cucumberTest.authorization.bearerToken.noscope`. The kebab-case
   `bearer-token` form only feeds the *default* token. Without the exact key the step yields the
@@ -831,7 +848,237 @@ Tag a `Feature:` or a single `Scenario:` with `@ignore` — the runner excludes 
 
 ---
 
-## 7. Rules for the agent
+## 7. Security scan (DAST) — optional module
+
+`bdd-cucumber-gherkin-lib-security` turns the functional suite that already exists into a dynamic
+security test. A `@Before` hook starts a scanner in a container, exposes the host ports of the
+application under test to it (Testcontainers `exposeHostPorts`) and points the HTTP client of the
+library at the scanner's proxy, so **every** request the scenarios make is recorded. A final
+scenario attacks that recorded traffic, writes a report and fails the build on findings.
+
+The proxy history *is* the attack surface: the scan can only test the endpoints the scenarios
+actually called. Endpoints no scenario touches are added by importing an OpenAPI definition
+(`cucumbertest.security.api.definition-urls`). Growing the functional suite grows the attack
+surface.
+
+The current implementation is [OWASP ZAP](https://www.zaproxy.org/), but **nothing a project writes
+names a product** — the profile, the tags, the properties and the sentences are all `security*`
+(§7.6).
+
+**Prerequisite:** Docker, so that Testcontainers can pull and run the scanner image.
+
+### 7.1 Integration — dependency, glue, profile, task, runner
+
+No Java/Kotlin code is required in the consuming project. The beans register themselves through
+Spring auto-configuration (`configuration.com.ragin.bdd.cucumber.security.SecurityScanBeanConfig`),
+so the `@CucumberContextConfiguration` class of §2.3 stays untouched.
+
+```groovy
+testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security:${bddCucumberVersion}"
+```
+
+Because every step and hook is a no-op while `cucumbertest.security.enabled` is `false` (the
+default), the dependency can stay on the test classpath of the regular Cucumber run.
+
+**Glue** — append the security value to the glue the runner already declares:
+
+```kotlin
+@ConfigurationParameter(
+    key = Constants.GLUE_PROPERTY_NAME,
+    value = BddLibConfigConstants.GLUE_PROPERTY_VALUES_REST +
+        BddLibConfigConstants.Base.COMMA +
+        BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY
+)
+```
+
+**Profile** (e.g. `application-cucumberSecurity.yaml`) — the application under test runs in the test
+JVM on the host while the scanner runs in a container, so **every URL the tests build has to use the
+Testcontainers host alias**; otherwise the scanner cannot reach the application:
+
+```yaml
+cucumbertest:
+    server:
+        protocol: http
+        host: host.testcontainers.internal
+        port: ${server.port}
+
+    security:
+        enabled: true
+        target:
+            host: host.testcontainers.internal
+            port: ${server.port}
+            # every port that has to be reachable from inside the container
+            exposed-ports:
+                - ${server.port}
+                - ${management.server.port}
+        alerts:
+            ignored-rule-ids:
+                - "40042"   # Spring Actuator Information Leak — assessed and accepted
+```
+
+**Gradle task** — a dedicated task keeps the scan out of the regular Cucumber run:
+
+```groovy
+tasks.register('cucumberSecurity', Test) {
+    group 'verification'
+    dependsOn assemble
+    exclude '**/*Tests*'
+    include '**/*CucumberSecurity*'
+    systemProperty 'spring.profiles.active', 'cucumberSecurity'
+
+    // REQUIRED. ZAP serves its API only for requests whose Host header is 'zap',
+    // and both JDK HTTP clients treat Host as restricted and would silently drop it.
+    systemProperty 'sun.net.http.allowRestrictedHeaders', 'true'
+    systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
+
+    // the test JVM runs in the module directory — write the report next to the other artifacts
+    systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
+
+    onlyIf("Execute only if cucumberSecurity task is called directly") {
+        gradle.startParameter.taskNames.contains("cucumberSecurity")
+    }
+}
+```
+
+> ⚠️ The two `allowRestrictedHeaders` properties are **not optional**. ZAP serves the proxy and its
+> own REST API on the same port and tells them apart by the `Host` header: only the reserved name
+> `zap` reaches the API. Addressing it as `localhost:<mappedPort>` — all Testcontainers can offer —
+> is interpreted as "please proxy a request to localhost:<mappedPort>" instead. Without these
+> properties the JDK strips the header and every scanner API call fails in a way that is hard to
+> read.
+
+**Runner** — its own suite, selected by tag:
+
+```kotlin
+@Suite
+@IncludeEngines("cucumber")
+@SelectPackages("cucumber")
+@ConfigurationParameter(key = Constants.EXECUTION_ORDER_PROPERTY_NAME, value = "lexical")
+@ExcludeTags("ignore")
+@IncludeTags("securityScan")
+class CucumberSecurityRunner
+```
+
+Pin the execution order to `lexical` and put the scan scenario in a directory that sorts last (e.g.
+`cucumber/zzz_securityscan/`). The scan must see the traffic of all other features.
+
+### 7.2 Tags
+
+| Tag                    | Meaning                                                                                    |
+|------------------------|--------------------------------------------------------------------------------------------|
+| `@securityScan`        | marks a feature that should contribute traffic; the security runner includes this tag       |
+| `@securityExecuteScan` | marks the scan scenario itself; in replay mode every scenario *without* it is skipped (§7.5) |
+
+### 7.3 Sentences
+
+The composite sentence covers the whole default case — export the recording, import the configured
+API definitions, scan every target, wait for the analysis, write the report, and fail on findings.
+The scanner is stopped afterwards even when the gate failed:
+
+```gherkin
+@securityScan
+Feature: Security scan
+
+  @securityExecuteScan
+  Scenario: scan the application and fail on relevant findings
+    Then I run the security scan for max. 30 minutes and fail on findings of risk "MEDIUM" or higher
+```
+
+The granular sentences exist for projects that need a different order or want to opt out of a single
+part:
+
+| Step                                                                   | Effect                                                              |
+|------------------------------------------------------------------------|---------------------------------------------------------------------|
+| `Then I import the API definition "<url>" into the security scanner`   | imports one OpenAPI definition; a failure is logged and ignored     |
+| `Then I run the security scan for max. <int> minutes`                  | attacks every target, then waits for the analysis to catch up       |
+| `Then I ensure that no security finding has a risk of "<risk>" or higher` | the gate on its own                                               |
+| `Then I store the security scan report to the file "<path>"`           | writes the report                                                   |
+| `Then I export the recorded security scan traffic to the file "<path>"` | writes the HAR recording                                           |
+| `Then I make sure that the security scanner is stopped`                | stops the container (the only sentence that also runs when disabled) |
+
+* `<risk>` is one of `INFORMATIONAL` < `LOW` < `MEDIUM` < `HIGH`, case-insensitive. The same scale is
+  used for `alerts.min-confidence`.
+* The **time budget** and the **risk that fails the build** are deliberately *not* properties. Both
+  are sentence parameters, so a feature file states its own limits and no profile can silently
+  weaken the gate.
+* The budget is the limit for the *whole* run: it is shared by all targets, not granted to each of
+  them. Overrunning it fails the scenario.
+* An application usually listens on more than one port (public, intranet, management) and scanners
+  keep a separate tree per `host:port`, so both the scan and the alert query run **per base URL**.
+  Filtering on a single one would silently drop findings on the others.
+
+### 7.4 Configuration reference (`cucumbertest.security`)
+
+All properties are optional.
+
+| Property                  | Default                                | Description                                                                                                 |
+|---------------------------|----------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `enabled`                 | `false`                                | Master switch. While `false`, every step and hook is a no-op.                                                |
+| `scanner.image`           | `zaproxy/zap-stable:latest`            | Scanner image. A floating tag keeps the rule set current but makes runs irreproducible — pin it when needed. |
+| `scanner.startup-timeout` | `5m`                                   | Container start-up timeout.                                                                                  |
+| `scanner.plugins`         | *(empty)*                              | Scanner add-ons to install on start-up. Needs marketplace access from the build agent.                       |
+| `target.host`             | `host.testcontainers.internal`         | How the application is reachable **from inside** the container.                                              |
+| `target.port`             | *(the bound port)*                     | Primary port. When unset, the port the application actually bound is used.                                   |
+| `target.exposed-ports`    | *(empty)*                              | All host ports that must be reachable from the container (public, intranet, management).                     |
+| `api.definition-urls`     | *(empty)*                              | OpenAPI definitions to import before the scan, to also attack endpoints no scenario touches.                 |
+| `scan.poll-interval`      | `10s`                                  | How often scan progress is polled.                                                                           |
+| `scan.recurse`            | `true`                                 | Attack the whole tree below a target, not just the exact URL.                                                |
+| `scan.in-scope-only`      | `false`                                | Also attack URLs the scanner does not consider part of a configured context.                                 |
+| `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak.                              |
+| `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                  |
+| `report.template`         | `traditional-html`                     | Report template.                                                                                             |
+| `report.title`            | `Security scan`                        | Report title.                                                                                                |
+| `report.output-dir`       | `.`                                    | Directory the report is written to, absolute or relative to the working directory.                           |
+| `report.file-name`        | `security-report.html`                 | Report file name.                                                                                            |
+| `recording.export`        | `true`                                 | Export the recorded traffic (HAR) after the run.                                                             |
+| `recording.export-path`   | `build/reports/security/recording.har` | Where the recording is written.                                                                              |
+| `recording.replay-from`   | *(unset)*                              | Host path of a previously exported recording — see §7.5.                                                     |
+
+### 7.5 Replay mode — iterating on the scan
+
+A full run is slow: the functional suite has to produce the traffic before anything can be scanned.
+To iterate on the scan itself, replay a recording from an earlier run:
+
+```yaml
+cucumbertest:
+    security:
+        recording:
+            replay-from: build/reports/security/recording.har
+```
+
+Every scenario without `@securityExecuteScan` is then skipped (`TestAbortedException`), the
+recording is imported into the scanner, and only the scan runs.
+
+The recording is exported **before** the scan on purpose. At that point it holds exactly the traffic
+the functional scenarios produced, which is what replaying it should reproduce. Exporting afterwards
+would fold the scanner's own attack requests into the recording; replaying that both re-raises every
+finding the attacks provoked and makes the next scan roughly ten times larger.
+
+### 7.6 Replacing the scanner
+
+Publish your own `SecurityScanner` bean:
+
+```kotlin
+@Bean
+fun securityScanner(/* … */): SecurityScanner {
+    return MyOtherScanner(/* … */)
+}
+```
+
+Every ZAP bean is declared `@ConditionalOnMissingBean(SecurityScanner::class)`, so yours wins and
+the ZAP ones are never created. No feature file, tag, property, sentence, Gradle task or CI change
+is needed.
+
+### 7.7 Caveats
+
+* Automated scanners produce **false positives**. Every finding has to be checked manually; put the
+  ones you have assessed and accepted into `alerts.ignored-rule-ids` **with a comment saying why**.
+* A floating image tag means two builds of the same commit can report different findings.
+* The scan only covers what the proxy recorded.
+
+---
+
+## 8. Rules for the agent
 
 1. **Reuse existing sentences.** Check §4 before writing glue code. If a sentence is genuinely
    missing and you must add one, put it in the project's own glue package, follow the existing
@@ -854,8 +1101,12 @@ Tag a `Feature:` or a single `Scenario:` with `@ignore` — the runner excludes 
 10. **Add new endpoints for new sentences.** In *this* repository, new sentences are proven against
     the dummy Spring Boot app in `bdd-cucumber-gherkin-lib/src/test` — add a controller there and a
     feature file that exercises the sentence.
+11. **Never weaken the security gate.** Do not lower the risk in `... and fail on findings of risk
+    "<risk>" or higher`, and do not add a rule id to
+    `cucumbertest.security.alerts.ignored-rule-ids` without a comment stating why the finding was
+    assessed and accepted. Fix the finding instead (§7).
 
-## 8. Checklist before you finish
+## 9. Checklist before you finish
 
 - [ ] Every new/changed sentence exists in §4 (or was added to glue **and** the runner glue path).
 - [ ] `Background:` sets file/URL base paths that the scenarios rely on.
@@ -866,8 +1117,13 @@ Tag a `Feature:` or a single `Scenario:` with `@ignore` — the runner excludes 
 - [ ] Parameterized matchers are only used in full-body compares, not in field validation.
 - [ ] The feature has a tag, and skipped scenarios use `@ignore`.
 - [ ] Tests run: `./gradlew test` (in this repo the feature files are executed by `CucumberRunner`).
+- [ ] Security scan (§7): every contributing feature carries `@securityScan`, the scan scenario
+      carries `@securityExecuteScan`, and its feature file sorts last in the lexical order.
+- [ ] Security scan: the profile uses the Testcontainers host alias for `cucumbertest.server.host`
+      **and** `security.target.host`, and lists every needed port in `target.exposed-ports`.
+- [ ] Security scan: the risk threshold was not lowered and no rule id was ignored without a reason.
 
-## 9. Where to look in this repository
+## 10. Where to look in this repository
 
 | What | Path |
 |---|---|
@@ -882,4 +1138,10 @@ Tag a `Feature:` or a single `Scenario:` with `@ignore` — the runner excludes 
 | Reset / tag hooks | `bdd-cucumber-gherkin-lib-core/src/main/kotlin/com/ragin/bdd/cucumber/hooks/ResetHooks.kt` |
 | Runnable examples for every feature | `bdd-cucumber-gherkin-lib/src/test/resources/features/` |
 | Custom matcher / date format examples | `bdd-cucumber-gherkin-lib/src/test/kotlin/com/ragin/bdd/cucumbertests/hooks/` |
+| Security scan sentences | `bdd-cucumber-gherkin-lib-security/src/main/kotlin/com/ragin/bdd/cucumber/security/glue/ThenSecurityScanGlue.kt` |
+| Security scan hooks (proxy wiring, replay skip) | `.../security/hooks/SecurityScanHooks.kt` |
+| Scan orchestration and verdict | `.../security/SecurityScan.kt`, `.../security/SecurityAlertGate.kt` |
+| Scanner seam and ZAP adapter | `.../security/SecurityScanner.kt`, `.../security/zap/` |
+| Security scan properties | `.../security/config/SecurityScanProperties.kt` |
+| Security module documentation | `bdd-cucumber-gherkin-lib-security/README.md` |
 | Release notes / new sentences | `CHANGELOG.md` |
