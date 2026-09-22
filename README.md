@@ -35,6 +35,11 @@ It ships pre-built step definitions so tests can be written in plain Gherkin wit
 ### Database
 - **[Database steps](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Common-Database)**: Liquibase migrations, SQL execution, CSV result comparison
 
+### Security scan (DAST)
+- **[Security scan](bdd-cucumber-gherkin-lib-security/README.md)**: route the whole Cucumber run through an
+  [OWASP ZAP](https://www.zaproxy.org/) proxy, attack the recorded traffic and **fail the build** on findings above a
+  risk the feature file states itself — no step code, one dependency and a profile
+
 ### Dates
 - **[Dynamic date generation](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Common-Dates)**: past/future timestamps without hardcoded values
 
@@ -85,6 +90,17 @@ dependencies {
 }
 ```
 
+For the security scan (in addition to REST):
+
+```groovy
+dependencies {
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
+It is deliberately not part of the `bdd-cucumber-gherkin-lib` bundle: it needs Docker and it is only useful for the
+runner that executes the scan. See [its README](bdd-cucumber-gherkin-lib-security/README.md) for the setup.
+
 ## Documentation
 
 Full documentation lives in the **[Wiki](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki)**.
@@ -106,3 +122,4 @@ Full documentation lives in the **[Wiki](https://github.com/Ragin-LundF/bbd-cucu
 | Dynamic date handling                           | [Common — Dates](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Common-Dates) |
 | Liquibase, SQL, CSV comparison                  | [Common — Database](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Common-Database) |
 | Built-in and custom JSON matchers               | [JSON-Unit](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/JSON-Unit) |
+| Security scan (DAST) setup and sentences        | [bdd-cucumber-gherkin-lib-security](bdd-cucumber-gherkin-lib-security/README.md) |

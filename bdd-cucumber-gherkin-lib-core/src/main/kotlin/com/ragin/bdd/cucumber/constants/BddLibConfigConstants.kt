@@ -22,6 +22,11 @@ object BddLibConfigConstants {
         const val GLUE_PROPERTY_VALUES_GLUE_REST = "$BASE_PACKAGE.rest.glue"
     }
 
+    object Security {
+        const val GLUE_PROPERTY_VALUES_HOOKS_SECURITY = "$BASE_PACKAGE.security.hooks"
+        const val GLUE_PROPERTY_VALUES_GLUE_SECURITY = "$BASE_PACKAGE.security.glue"
+    }
+
     /**
      * Report plugins for the Cucumber runner.
      *
@@ -62,4 +67,16 @@ object BddLibConfigConstants {
         Database.GLUE_PROPERTY_VALUES_HOOKS_DATABASE +
         COMMA +
         Database.GLUE_PROPERTY_VALUES_GLUE_DATABASE
+
+    /**
+     * Glue of the security scan module.
+     *
+     * Append it to the glue a runner already declares, for example
+     * `GLUE_PROPERTY_VALUES_REST + COMMA + GLUE_PROPERTY_VALUES_SECURITY`. It is deliberately not
+     * folded into the REST or database values: a project adds it only for the runner that
+     * executes the scan.
+     */
+    const val GLUE_PROPERTY_VALUES_SECURITY = Security.GLUE_PROPERTY_VALUES_HOOKS_SECURITY +
+        COMMA +
+        Security.GLUE_PROPERTY_VALUES_GLUE_SECURITY
 }

@@ -22,6 +22,9 @@ internal class HooksKonsistTests {
         ) + Konsist.scopeFromPackage(
             packagee = "com.ragin.bdd.cucumber.database.hooks",
             sourceSetName = "main"
+        ) + Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber.security.hooks",
+            sourceSetName = "main"
         )
     }
 }
