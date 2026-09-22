@@ -18,6 +18,7 @@ Each technical domain is a separate Gradle subproject with explicit dependencies
 | `bdd-cucumber-gherkin-lib-core` | published | Shared scenario state, base class for all glue, matchers, hooks, utilities |
 | `bdd-cucumber-gherkin-lib-rest` | published | REST Gherkin step definitions (Given/When/Then), HTTP client, URL utilities |
 | `bdd-cucumber-gherkin-lib-db` | published | Database Gherkin step definitions, Liquibase integration, CSV comparison |
+| `bdd-cucumber-gherkin-lib-security` | published | Security scan (DAST) hook, Gherkin step definitions and the scanner abstraction with its OWASP ZAP implementation |
 | `bdd-cucumber-gherkin-lib-bom` | published | Bill of Materials for consumer dependency management |
 | `bdd-cucumber-gherkin-lib` | published | Convenience aggregator — pulls `core`, `rest`, and `db` as transitive `api` dependencies; consumers get everything with one dependency. Also hosts the integration test suite (demo app, Cucumber runner, Konsist architecture tests) in `src/test/`. |
 
@@ -26,15 +27,20 @@ Each technical domain is a separate Gradle subproject with explicit dependencies
 ## Dependency graph
 
 ```
-rest ──► core
-db   ──► core
+rest     ──► core
+db       ──► core
+security ──► rest ──► core
 bdd-cucumber-gherkin-lib ──► rest, db, core
 ```
 
 Rules:
-- `core` has no runtime dependency on `rest` or `db`. Never add one.
+- `core` has no runtime dependency on `rest`, `db` or `security`. Never add one.
 - `rest` and `db` are independent of each other. Neither imports from the other.
-- `bdd-cucumber-gherkin-lib` is the only module that wires all three together (as `api` dependencies).
+- `security` depends on `rest` because it reconfigures the HTTP client of that module to run through the
+  scanner proxy. Nothing depends on `security`.
+- `bdd-cucumber-gherkin-lib` is the only module that wires `core`, `rest` and `db` together (as `api`
+  dependencies). `security` is deliberately **not** in that bundle: it needs Docker and is only useful for the
+  runner that executes the scan, so a project adds it explicitly.
 
 ---
 
@@ -95,6 +101,29 @@ com.ragin.bdd.cucumber.database
 configuration/com.ragin.bdd.cucumber.database/
               — Spring bean configuration for the database executor
 ```
+
+### `bdd-cucumber-gherkin-lib-security`
+
+```
+com.ragin.bdd.cucumber.security
+  (root)        — the SecurityScanner seam, the scan orchestration and the pass/fail gate
+  config/       — Spring @ConfigurationProperties binding (prefix "cucumbertest.security"), one type per group
+  glue/         — security scan step definitions (Then)
+  hooks/        — Cucumber lifecycle hook that starts the scanner and wires its proxy
+  models/       — normalised finding, risk level and proxy endpoint
+  utils/        — Testcontainers log consumer that routes container output into kotlin-logging
+  zap/          — the only classes that know OWASP ZAP exists
+configuration/com.ragin.bdd.cucumber.security/
+              — Spring bean configuration for the scanner and the scan
+```
+
+`SecurityScanner` is the seam. The hook, the glue, the orchestration and the configuration are scanner independent
+and talk only to that interface; every ZAP bean is `@ConditionalOnMissingBean(SecurityScanner::class)`, so a project
+replaces the product with one bean and no test change. Keep it that way — a product name outside the `zap/` package
+is a bug.
+
+The time budget and the risk that fails the build are parameters of the Gherkin sentence, not properties, so a
+feature file states its own limits and no profile can weaken the gate. Do not turn them into properties.
 
 ### `bdd-cucumber-gherkin-lib` (aggregator + integration test module)
 
@@ -237,7 +266,7 @@ Reserved order slots:
 | 1 | Logging — scenario entry and exit logging |
 | 2 | Database reset — run before state reset so the DB is clean when state initializes |
 | 3 | State reset — reset `ScenarioStateContext` to a clean baseline |
-| 10+ | Tag-guarded setup — optional configuration applied only when a scenario carries a specific tag |
+| 10+ | Tag-guarded setup — optional configuration applied only when a scenario carries a specific tag, and the security scan hooks |
 
 Rules:
 - Do not add a hook at order 3 or lower that depends on database state — database reset runs at order 2.
@@ -318,6 +347,11 @@ New matchers belong in `core` unless they are specific to the REST or database d
 
 Spring `@ConfigurationProperties` prefix: `cucumbertest` (all lowercase, no separator).
 
+`BddProperties` lives in `core` and only holds what `core`, `rest` and `db` need. A module with its own configuration
+binds a nested prefix from its own `@ConfigurationProperties` class instead of widening `BddProperties` —
+`security` does this with `cucumbertest.security` (`SecurityScanProperties`). Keep it that way, so `core` never has to
+know about a module that depends on it.
+
 | Property | Type | Default | Purpose |
 |---|---|---|---|
 | `cucumbertest.authorization.bearerToken.default` | String? | none | Default bearer token |
@@ -367,10 +401,13 @@ Do not suppress or disable them.
 | Step that mutates the request body or headers at runtime | `rest` | a `When*Glue` class |
 | Step that validates an HTTP response | `rest` | a `Then*Glue` class |
 | Step that initializes or queries the database | `db` | a `Given*Glue` or `Then*Glue` class |
+| Step that drives or gates the security scan | `security` | a `Then*Glue` class |
+| Anything that names a concrete security scanner | `security` | `zap/`, behind the `SecurityScanner` interface |
 | Utility shared across REST and database steps | `core` | `utils/` |
 | Custom JSON assertion matcher | `core` | `matcher/` |
 | State shared across multiple modules within a scenario | `core` | field on `ScenarioStateContext`, reset in `reset()` |
 | Lifecycle hook for scenario setup or teardown | `core` | `hooks/` |
 | Lifecycle hook specific to database concerns | `db` | `hooks/` |
 | Spring bean configuration for database infrastructure | `db` | `configuration/` |
+| Spring bean configuration for the security scan | `security` | `configuration/` |
 | Demo controller or fixture for testing a sentence | `bdd-cucumber-gherkin-lib` | `src/test/` |

@@ -1,0 +1,34 @@
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib-security"
+    publishDescription = "DAST security scan sentences for bdd-cucumber-gherkin-lib"
+}
+
+dependencies {
+    api project(':bdd-cucumber-gherkin-lib-core')
+    // the scan routes the REST client of this module through the scanner proxy
+    api project(':bdd-cucumber-gherkin-lib-rest')
+
+    // --- Spring
+    implementation(libs.spring.boot)
+    implementation(libs.spring.boot.autoconfigure)
+    implementation(libs.spring.web)
+    implementation(libs.spring.boot.rest.test.client)
+
+    // --- Cucumber
+    implementation(libs.cucumber.java)
+
+    // --- JSON
+    implementation(libs.bundles.jackson)
+
+    // --- Scanner container
+    implementation(libs.testcontainers)
+
+    // --- Testing (kotlin-test also provides the TestAbortedException used to skip scenarios)
+    implementation(libs.testing.kotlin.test)
+
+    // --- Logging
+    implementation(libs.logging.logger)
+
+    // SLF4J binding for the unit tests, otherwise SLF4J falls back to NOP and warns
+    testImplementation(libs.logging.slf4j)
+}
