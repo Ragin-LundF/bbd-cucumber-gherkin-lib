@@ -47,11 +47,15 @@ cucumber-junit-platform = { module = "io.cucumber:cucumber-junit-platform-engine
 #
 # --- jUnit / Testing
 testing-junit-platform-suite = { module = "org.junit.platform:junit-platform-suite" }
+testing-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 testing-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
 testing-konsist = "com.lemonappdev:konsist:0.17.3"
 #
 # --- Jackson
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
+# pinned rather than managed by the Spring Boot BOM: the security core module is published for
+# projects on another Spring Boot generation, which would resolve no version for it at all
+jackson-databind = "tools.jackson.core:jackson-databind:3.1.5"
 jackson-jaxb = { module = "tools.jackson.module:jackson-module-jaxb-annotations" }
 jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
 jackson-module-blackbird = { module = "tools.jackson.module:jackson-module-blackbird" }

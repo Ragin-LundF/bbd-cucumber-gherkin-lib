@@ -3,7 +3,7 @@ package com.ragin.bdd.cucumber.security.hooks
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
 import com.ragin.bdd.cucumber.rest.httpclient.ClientHttpRequestFactory
-import com.ragin.bdd.cucumber.security.SecurityScan
+import com.ragin.bdd.cucumber.security.SecurityScanSession
 import com.ragin.bdd.cucumber.security.SecurityScanner
 import com.ragin.bdd.cucumber.security.config.SecurityScanProperties
 import io.cucumber.java.Before
@@ -23,7 +23,7 @@ import org.springframework.core.env.Environment
 open class SecurityScanHooks(
     private val properties: SecurityScanProperties,
     private val scanner: SecurityScanner,
-    private val securityScan: SecurityScan,
+    private val session: SecurityScanSession,
     private val bddProperties: BddProperties,
     private val restTemplate: TestRestTemplate,
     private val environment: Environment
@@ -39,13 +39,7 @@ open class SecurityScanHooks(
         }
 
         val targetPort = properties.target.port ?: serverPort()
-        val hostPorts = (properties.target.exposedPorts + targetPort).toSet()
-        securityScan.rememberTargets(ports = hostPorts)
-        scanner.start(exposedHostPorts = hostPorts)
-
-        if (properties.recording.replayEnabled) {
-            securityScan.importRecording()
-        }
+        session.start(hostPorts = (properties.target.exposedPorts + targetPort).toSet())
 
         configureProxy()
     }

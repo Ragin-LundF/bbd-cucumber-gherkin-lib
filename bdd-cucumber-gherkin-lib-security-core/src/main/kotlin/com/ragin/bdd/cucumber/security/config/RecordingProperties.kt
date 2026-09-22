@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.security.config
 
 /** Export and replay of the traffic the functional scenarios produced. */
-data class RecordingProperties(
+data class RecordingProperties @JvmOverloads constructor(
     /** Export the recorded traffic (HAR) after the run. */
     val export: Boolean = true,
     val exportPath: String = "build/reports/security/recording.har",

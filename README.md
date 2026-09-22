@@ -39,6 +39,8 @@ It ships pre-built step definitions so tests can be written in plain Gherkin wit
 - **[Security scan](bdd-cucumber-gherkin-lib-security/README.md)**: route the whole Cucumber run through an
   [OWASP ZAP](https://www.zaproxy.org/) proxy, attack the recorded traffic and **fail the build** on findings above a
   risk the feature file states itself — no step code, one dependency and a profile
+- **[Security scan without Cucumber](bdd-cucumber-gherkin-lib-security-core/README.md)**: the same scan driven from a
+  plain jUnit suite, through a scan session or a jUnit 5 extension — no Cucumber and no Spring dependency
 
 ### Dates
 - **[Dynamic date generation](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Common-Dates)**: past/future timestamps without hardcoded values
@@ -101,6 +103,17 @@ dependencies {
 It is deliberately not part of the `bdd-cucumber-gherkin-lib` bundle: it needs Docker and it is only useful for the
 runner that executes the scan. See [its README](bdd-cucumber-gherkin-lib-security/README.md) for the setup.
 
+For a project that does not use Cucumber, the same scan is available without any Cucumber or Spring dependency:
+
+```groovy
+dependencies {
+    testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security-core:${version.bdd-cucumber-gherkin-lib}"
+}
+```
+
+It comes in transitively with the module above, so a Cucumber project never adds it explicitly. See
+[its README](bdd-cucumber-gherkin-lib-security-core/README.md) for the scan session and the jUnit 5 extension.
+
 ## Documentation
 
 Full documentation lives in the **[Wiki](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki)**.
@@ -123,3 +136,4 @@ Full documentation lives in the **[Wiki](https://github.com/Ragin-LundF/bbd-cucu
 | Liquibase, SQL, CSV comparison                  | [Common — Database](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/Steps-Common-Database) |
 | Built-in and custom JSON matchers               | [JSON-Unit](https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib/wiki/JSON-Unit) |
 | Security scan (DAST) setup and sentences        | [bdd-cucumber-gherkin-lib-security](bdd-cucumber-gherkin-lib-security/README.md) |
+| Security scan from a plain jUnit suite          | [bdd-cucumber-gherkin-lib-security-core](bdd-cucumber-gherkin-lib-security-core/README.md) |

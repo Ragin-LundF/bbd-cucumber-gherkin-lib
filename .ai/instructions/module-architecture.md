@@ -18,7 +18,8 @@ Each technical domain is a separate Gradle subproject with explicit dependencies
 | `bdd-cucumber-gherkin-lib-core` | published | Shared scenario state, base class for all glue, matchers, hooks, utilities |
 | `bdd-cucumber-gherkin-lib-rest` | published | REST Gherkin step definitions (Given/When/Then), HTTP client, URL utilities |
 | `bdd-cucumber-gherkin-lib-db` | published | Database Gherkin step definitions, Liquibase integration, CSV comparison |
-| `bdd-cucumber-gherkin-lib-security` | published | Security scan (DAST) hook, Gherkin step definitions and the scanner abstraction with its OWASP ZAP implementation |
+| `bdd-cucumber-gherkin-lib-security-core` | published | Framework independent security scan: the scanner abstraction, the scan orchestration, the pass/fail gate, the configuration objects, the OWASP ZAP implementation and the jUnit entry points |
+| `bdd-cucumber-gherkin-lib-security` | published | Security scan (DAST) hook, Gherkin step definitions and the Spring Boot wiring on top of `security-core` |
 | `bdd-cucumber-gherkin-lib-bom` | published | Bill of Materials for consumer dependency management |
 | `bdd-cucumber-gherkin-lib` | published | Convenience aggregator — pulls `core`, `rest`, and `db` as transitive `api` dependencies; consumers get everything with one dependency. Also hosts the integration test suite (demo app, Cucumber runner, Konsist architecture tests) in `src/test/`. |
 
@@ -27,9 +28,10 @@ Each technical domain is a separate Gradle subproject with explicit dependencies
 ## Dependency graph
 
 ```
-rest     ──► core
-db       ──► core
-security ──► rest ──► core
+rest          ──► core
+db            ──► core
+security      ──► security-core, rest ──► core
+security-core ──► (nothing in this repository)
 bdd-cucumber-gherkin-lib ──► rest, db, core
 ```
 
@@ -38,6 +40,10 @@ Rules:
 - `rest` and `db` are independent of each other. Neither imports from the other.
 - `security` depends on `rest` because it reconfigures the HTTP client of that module to run through the
   scanner proxy. Nothing depends on `security`.
+- `security-core` depends on **no** other module of this repository and on **no** Spring artifact. It is consumed by
+  projects that do not run Cucumber and that may be on an older Spring Boot generation. Never add such a dependency —
+  a Spring or Cucumber import in that module is a bug. Its published dependencies are Testcontainers, Jackson and
+  kotlin-logging, plus a `compileOnly` `junit-jupiter-api` so the consumer's own jUnit version is used.
 - `bdd-cucumber-gherkin-lib` is the only module that wires `core`, `rest` and `db` together (as `api`
   dependencies). `security` is deliberately **not** in that bundle: it needs Docker and is only useful for the
   runner that executes the scan, so a project adds it explicitly.
@@ -102,28 +108,49 @@ configuration/com.ragin.bdd.cucumber.database/
               — Spring bean configuration for the database executor
 ```
 
+### `bdd-cucumber-gherkin-lib-security-core`
+
+```
+com.ragin.bdd.cucumber.security
+  (root)        — the SecurityScanner seam, the scan orchestration, the pass/fail gate and the scan session
+  config/       — plain configuration data classes (bound from the prefix "cucumbertest.security"), one type per group
+  junit/        — jUnit 5 extension that drives the scan around a test class
+  models/       — normalised finding, risk level and proxy endpoint
+  utils/        — Testcontainers log consumer that routes container output into kotlin-logging
+  zap/          — the only classes that know OWASP ZAP exists
+```
+
+`SecurityScanner` is the seam. Everything else here is scanner independent and talks only to that interface; the ZAP
+stack is built by `ZapSecurityScanner.create(properties)`. Keep it that way — a product name outside the `zap/`
+package is a bug. `SecurityScanSession` and `SecurityScanExtension` therefore take the scanner as a **required**
+constructor argument rather than defaulting to ZAP.
+
+The configuration classes carry no `@ConfigurationProperties`: the module must stay free of Spring so a project on
+another Spring Boot generation can use it. Whoever creates the bean binds the prefix, which
+`SecurityScanProperties.PREFIX` names. Every constructor carries `@JvmOverloads` because the module is consumed from
+Java as well.
+
 ### `bdd-cucumber-gherkin-lib-security`
 
 ```
 com.ragin.bdd.cucumber.security
-  (root)        — the SecurityScanner seam, the scan orchestration and the pass/fail gate
-  config/       — Spring @ConfigurationProperties binding (prefix "cucumbertest.security"), one type per group
   glue/         — security scan step definitions (Then)
   hooks/        — Cucumber lifecycle hook that starts the scanner and wires its proxy
-  models/       — normalised finding, risk level and proxy endpoint
-  utils/        — Testcontainers log consumer that routes container output into kotlin-logging
-  zap/          — the only classes that know OWASP ZAP exists
 configuration/com.ragin.bdd.cucumber.security/
-              — Spring bean configuration for the scanner and the scan
+              — Spring bean configuration: binds the properties, creates the scanner and the scan session
 ```
 
-`SecurityScanner` is the seam. The hook, the glue, the orchestration and the configuration are scanner independent
-and talk only to that interface; every ZAP bean is `@ConditionalOnMissingBean(SecurityScanner::class)`, so a project
-replaces the product with one bean and no test change. Keep it that way — a product name outside the `zap/` package
-is a bug.
+The two modules own disjoint sub-packages of `com.ragin.bdd.cucumber.security`, so nothing is split across artifacts.
+Do not move `glue/` or `hooks/` — `BddLibConfigConstants.Security` in `core` and the Konsist scopes name those
+packages as strings.
+
+The ZAP bean is `@ConditionalOnMissingBean(SecurityScanner::class)`, so a project replaces the product with one bean
+and no test change. There is exactly one `SecurityScanSession` bean: the hook remembers the targets and the step
+attacks them, so they have to work on the same state.
 
 The time budget and the risk that fails the build are parameters of the Gherkin sentence, not properties, so a
-feature file states its own limits and no profile can weaken the gate. Do not turn them into properties.
+feature file states its own limits and no profile can weaken the gate. Do not turn them into properties. The jUnit
+extension follows the same rule with constructor parameters.
 
 ### `bdd-cucumber-gherkin-lib` (aggregator + integration test module)
 
@@ -348,9 +375,10 @@ New matchers belong in `core` unless they are specific to the REST or database d
 Spring `@ConfigurationProperties` prefix: `cucumbertest` (all lowercase, no separator).
 
 `BddProperties` lives in `core` and only holds what `core`, `rest` and `db` need. A module with its own configuration
-binds a nested prefix from its own `@ConfigurationProperties` class instead of widening `BddProperties` —
-`security` does this with `cucumbertest.security` (`SecurityScanProperties`). Keep it that way, so `core` never has to
-know about a module that depends on it.
+binds a nested prefix of its own instead of widening `BddProperties` — `security` does this with
+`cucumbertest.security` (`SecurityScanProperties`, bound with a `Binder` in `SecurityScanBeanConfig` because the type
+itself lives in the Spring-free `security-core`). Keep it that way, so `core` never has to know about a module that
+depends on it.
 
 | Property | Type | Default | Purpose |
 |---|---|---|---|
@@ -402,7 +430,9 @@ Do not suppress or disable them.
 | Step that validates an HTTP response | `rest` | a `Then*Glue` class |
 | Step that initializes or queries the database | `db` | a `Given*Glue` or `Then*Glue` class |
 | Step that drives or gates the security scan | `security` | a `Then*Glue` class |
-| Anything that names a concrete security scanner | `security` | `zap/`, behind the `SecurityScanner` interface |
+| Security scan logic that is not Cucumber specific | `security-core` | the root package, behind `SecurityScanner` |
+| Anything that names a concrete security scanner | `security-core` | `zap/`, behind the `SecurityScanner` interface |
+| Entry point for a security scan driven from plain jUnit | `security-core` | `SecurityScanSession`, `junit/` |
 | Utility shared across REST and database steps | `core` | `utils/` |
 | Custom JSON assertion matcher | `core` | `matcher/` |
 | State shared across multiple modules within a scenario | `core` | field on `ScenarioStateContext`, reset in `reset()` |
@@ -410,4 +440,5 @@ Do not suppress or disable them.
 | Lifecycle hook specific to database concerns | `db` | `hooks/` |
 | Spring bean configuration for database infrastructure | `db` | `configuration/` |
 | Spring bean configuration for the security scan | `security` | `configuration/` |
+| Configuration property type for the security scan | `security-core` | `config/`, a plain data class |
 | Demo controller or fixture for testing a sentence | `bdd-cucumber-gherkin-lib` | `src/test/` |

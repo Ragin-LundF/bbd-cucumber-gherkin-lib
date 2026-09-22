@@ -1,15 +1,14 @@
 package configuration.com.ragin.bdd.cucumber.security
 
-import com.ragin.bdd.cucumber.security.SecurityScan
+import com.ragin.bdd.cucumber.security.SecurityScanSession
 import com.ragin.bdd.cucumber.security.SecurityScanner
 import com.ragin.bdd.cucumber.security.config.SecurityScanProperties
-import com.ragin.bdd.cucumber.security.zap.ZapApiClient
-import com.ragin.bdd.cucumber.security.zap.ZapContainer
 import com.ragin.bdd.cucumber.security.zap.ZapSecurityScanner
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.context.annotation.Bean
+import org.springframework.core.env.Environment
 
 /**
  * Registers the security scan without the consuming project having to touch its
@@ -23,37 +22,42 @@ import org.springframework.context.annotation.Bean
  * `cucumbertest.security.enabled` is false, which is the default. That way the module can stay
  * on the test classpath of the regular cucumber run.
  *
- * **Swapping the scanner**: define your own [SecurityScanner] bean. Every ZAP bean here is
- * conditional on no [SecurityScanner] being present, so yours wins and the ZAP ones are not
- * created at all. Nothing else in the project changes.
+ * **Swapping the scanner**: define your own [SecurityScanner] bean. The ZAP bean here is
+ * conditional on no [SecurityScanner] being present, so yours wins and ZAP is never started.
+ * Nothing else in the project changes.
  */
 @AutoConfiguration
-@EnableConfigurationProperties(SecurityScanProperties::class)
 class SecurityScanBeanConfig {
+    /**
+     * Binds `cucumbertest.security` by hand instead of through `@EnableConfigurationProperties`.
+     *
+     * [SecurityScanProperties] lives in the security core module, which carries no Spring
+     * dependency so that projects on another Spring Boot generation can use it. [Binder] gives the
+     * same relaxed, constructor based binding the annotation would.
+     */
     @Bean
-    @ConditionalOnMissingBean(SecurityScanner::class)
-    fun zapContainer(properties: SecurityScanProperties): ZapContainer {
-        return ZapContainer(properties = properties)
+    @ConditionalOnMissingBean(SecurityScanProperties::class)
+    fun securityScanProperties(environment: Environment): SecurityScanProperties {
+        return Binder.get(environment)
+            .bind(SecurityScanProperties.PREFIX, SecurityScanProperties::class.java)
+            .orElseGet { SecurityScanProperties() }
     }
 
     @Bean
     @ConditionalOnMissingBean(SecurityScanner::class)
-    fun zapApiClient(container: ZapContainer): ZapApiClient {
-        return ZapApiClient(container = container)
+    fun securityScanner(properties: SecurityScanProperties): SecurityScanner {
+        return ZapSecurityScanner.create(properties = properties)
     }
 
+    /**
+     * One session for the whole run, so the hook that remembers the targets and the step that
+     * attacks them work on the same state. It is the same entry point a plain jUnit suite uses.
+     */
     @Bean
-    @ConditionalOnMissingBean(SecurityScanner::class)
-    fun securityScanner(
+    fun securityScanSession(
         properties: SecurityScanProperties,
-        container: ZapContainer,
-        client: ZapApiClient
-    ): SecurityScanner {
-        return ZapSecurityScanner(properties = properties, container = container, client = client)
-    }
-
-    @Bean
-    fun securityScan(properties: SecurityScanProperties, scanner: SecurityScanner): SecurityScan {
-        return SecurityScan(properties = properties, scanner = scanner)
+        scanner: SecurityScanner
+    ): SecurityScanSession {
+        return SecurityScanSession(properties = properties, scanner = scanner)
     }
 }

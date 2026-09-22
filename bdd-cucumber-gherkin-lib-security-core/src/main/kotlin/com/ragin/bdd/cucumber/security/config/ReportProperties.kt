@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.security.config
 
 /** Where and how the human readable scan report is written. */
-data class ReportProperties(
+data class ReportProperties @JvmOverloads constructor(
     val template: String = "traditional-html",
     val title: String = "Security scan",
     /**

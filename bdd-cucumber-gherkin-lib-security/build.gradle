@@ -4,6 +4,8 @@ ext {
 }
 
 dependencies {
+    // the scanner abstraction, the scan orchestration and the OWASP ZAP implementation
+    api project(':bdd-cucumber-gherkin-lib-security-core')
     api project(':bdd-cucumber-gherkin-lib-core')
     // the scan routes the REST client of this module through the scanner proxy
     api project(':bdd-cucumber-gherkin-lib-rest')
@@ -11,17 +13,10 @@ dependencies {
     // --- Spring
     implementation(libs.spring.boot)
     implementation(libs.spring.boot.autoconfigure)
-    implementation(libs.spring.web)
     implementation(libs.spring.boot.rest.test.client)
 
     // --- Cucumber
     implementation(libs.cucumber.java)
-
-    // --- JSON
-    implementation(libs.bundles.jackson)
-
-    // --- Scanner container
-    implementation(libs.testcontainers)
 
     // --- Testing (kotlin-test also provides the TestAbortedException used to skip scenarios)
     implementation(libs.testing.kotlin.test)

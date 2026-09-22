@@ -1,7 +1,7 @@
 package com.ragin.bdd.cucumber.security.config
 
 /** Where the application under test is reachable while the scan runs. */
-data class TargetProperties(
+data class TargetProperties @JvmOverloads constructor(
     /** How the application under test is reachable from inside the scanner container. */
     val host: String = "host.testcontainers.internal",
     /** Primary port. When `null`, the port the application actually bound is used. */

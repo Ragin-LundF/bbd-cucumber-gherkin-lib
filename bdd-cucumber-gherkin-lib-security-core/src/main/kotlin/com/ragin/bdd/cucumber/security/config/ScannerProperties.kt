@@ -3,7 +3,7 @@ package com.ragin.bdd.cucumber.security.config
 import java.time.Duration
 
 /** How the scanner itself is started - the only part of the configuration bound to a product. */
-data class ScannerProperties(
+data class ScannerProperties @JvmOverloads constructor(
     /**
      * Image of the scanner to run.
      *
