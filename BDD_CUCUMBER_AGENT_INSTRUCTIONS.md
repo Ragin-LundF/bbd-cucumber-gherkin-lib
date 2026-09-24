@@ -27,6 +27,8 @@ Coordinates: `io.github.ragin-lundf`.
 | DB only                       | `bdd-cucumber-gherkin-lib-db`       | only Liquibase/SQL/CSV steps                     |
 | Security scan (DAST)          | `bdd-cucumber-gherkin-lib-security` | route the whole run through a scanner proxy (§7) |
 | Security scan core            | `bdd-cucumber-gherkin-lib-security-core` | transitive; only direct for a suite without Cucumber |
+| CVE scan of dependencies      | `bdd-cucumber-gherkin-lib-security-cve` | scan the libraries for known vulnerabilities (§7a) |
+| CVE scan core                 | `bdd-cucumber-gherkin-lib-security-cve-core` | transitive; only direct for a suite without Cucumber |
 | Core (state, matchers, utils) | `bdd-cucumber-gherkin-lib-core`     | transitive; needed for custom matchers           |
 | BOM                           | `bdd-cucumber-gherkin-lib-bom`      | version alignment                                |
 
@@ -104,6 +106,7 @@ Available glue constants:
 | `GLUE_PROPERTY_VALUES_DATABASE`      | core hooks + DB hooks + DB glue             |
 | `GLUE_PROPERTY_VALUES_REST_DATABASE` | core hooks + REST glue + DB hooks + DB glue |
 | `GLUE_PROPERTY_VALUES_SECURITY`      | security hooks + security glue              |
+| `GLUE_PROPERTY_VALUES_SECURITY_CVE`  | CVE scan glue (no hooks)                    |
 
 `GLUE_PROPERTY_VALUES_SECURITY` is not folded into the other values: **append** it to one of them,
 and only for the runner that executes the scan (§7).
@@ -190,6 +193,8 @@ cucumberTest:
   switches the automatic routing of a service off.
 * `cucumbertest.security.*` (§7.4) exists only when the security module is on the classpath, and
   every hook and step of it is a no-op while `cucumbertest.security.enabled` is `false`.
+* `cucumbertest.security.cve.*` (§7a) is separate from it: it has its own `enabled` switch and
+  exists only when the CVE module is on the classpath.
 * ⚠️ The step `Given that a bearer token without scopes is used` is read via `@Value` and therefore
   needs the **exact camelCase key** `cucumberTest.authorization.bearerToken.noscope`. The kebab-case
   `bearer-token` form only feeds the *default* token. Without the exact key the step yields the
@@ -937,7 +942,8 @@ tasks.register('cucumberSecurity', Test) {
     systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
 
     // the test JVM runs in the module directory — write the report next to the other artifacts
-    systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
+    // report.output-dir belongs in the profile; a system property of that name overrides it (optional)
+    // systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
 
     onlyIf("Execute only if cucumberSecurity task is called directly") {
         gradle.startParameter.taskNames.contains("cucumberSecurity")
@@ -1029,7 +1035,7 @@ All properties are optional.
 | `scan.poll-interval`      | `10s`                                  | How often scan progress is polled.                                                                           |
 | `scan.recurse`            | `true`                                 | Attack the whole tree below a target, not just the exact URL.                                                |
 | `scan.in-scope-only`      | `false`                                | Also attack URLs the scanner does not consider part of a configured context.                                 |
-| `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak.                              |
+| `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report. |
 | `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                  |
 | `report.template`         | `traditional-html`                     | Report template.                                                                                             |
 | `report.title`            | `Security scan`                        | Report title.                                                                                                |
@@ -1083,6 +1089,61 @@ is needed.
 
 ---
 
+## 7a. CVE scan of the dependencies — optional module
+
+`bdd-cucumber-gherkin-lib-security-cve` scans the libraries of the application under test for known
+vulnerabilities (CVEs) with Trivy, which runs in a short-lived Testcontainers container. It is
+independent of the DAST scan (§7): no proxy, no hook, no recorded traffic, no execution order. It
+needs Docker and network access to the vulnerability databases (or a mirror) and is not part of the
+bundle. A suite without Cucumber uses `bdd-cucumber-gherkin-lib-security-cve-core` and its jUnit 5
+extension `VulnerabilityScanExtension` instead; that module depends on neither Cucumber nor Spring.
+
+```groovy
+testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security-cve:${bddCucumberVersion}"
+```
+
+Runner: append `BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY_CVE` to the glue and keep the
+runner (`@IncludeTags("cveScan")`) and its Gradle task out of the regular run, like §7.
+
+```gherkin
+@cveScan
+Feature: CVE scan
+
+  Scenario: No dependency has a known critical vulnerability
+    Then I scan the dependencies for known vulnerabilities and fail on findings of severity "CRITICAL" or higher
+
+  Scenario: The packaged application has no known high vulnerability
+    Then I scan the artifacts "build/libs" for known vulnerabilities and fail on findings of severity "HIGH" or higher
+```
+
+* **Dependencies** = every archive on the classpath of the test JVM; a pathing jar's manifest
+  `Class-Path` is followed, class directories are skipped. **Artifacts** = comma separated
+  archives or directories (searched recursively), relative to the working directory.
+* Severity scale: `UNKNOWN` < `LOW` < `MEDIUM` < `HIGH` < `CRITICAL`.
+* Properties (prefix `cucumbertest.security.cve`): `enabled` [`false`], `scanner.image` [Trivy,
+  pinned by digest], `scanner.timeout` [`10m`], `scanner.cache-volume`
+  [`bdd-cucumber-trivy-cache`], `scanner.database.*` / `scanner.java-database.*`
+  (`repositories`, `archive`, `archive-headers`, `max-age` [`24h`]), `scanner.registry-username`,
+  `scanner.registry-password`, `scanner.https-proxy`, `scanner.no-proxy`,
+  `vulnerabilities.ignored-ids`, `vulnerabilities.ignore-unfixed` [`false`],
+  `vulnerabilities.excluded-packages` [`group:artifact` with `*`], `report.output-dir` [`.`],
+  `report.name-prefix` [`vulnerability-report`].
+* Reports: every sentence writes `<prefix>-<scan>.json` (raw findings) and one self-contained
+  `<prefix>-<scan>.html` (styles embedded, no JavaScript); the scan is `dependencies` or
+  `artifacts-<paths>`. The HTML report is written before the gate fails. Set `report.output-dir` in the
+  profile; a system property of that name overrides it.
+* Database sources, for build agents without access to the public registries: a registry mirror or
+  pull-through cache (`scanner.database.repositories`, in priority order), a daily updated storage
+  (`scanner.database.archive`: `http(s)` URL or file path of a `.tar.gz`, loaded into the cache
+  volume when older than `max-age`), or a proxy (`scanner.https-proxy`). Same keys under
+  `scanner.java-database`.
+* The test tooling (jUnit, Cucumber, Testcontainers) is on the scanned classpath too; exclude it
+  with `vulnerabilities.excluded-packages` rather than raising the severity.
+* Keep an overridden `scanner.image` pinned by digest: tags of the Trivy image were compromised in
+  March 2026.
+
+---
+
 ## 8. Rules for the agent
 
 1. **Reuse existing sentences.** Check §4 before writing glue code. If a sentence is genuinely
@@ -1110,7 +1171,9 @@ is needed.
 11. **Never weaken the security gate.** Do not lower the risk in `... and fail on findings of risk
     "<risk>" or higher`, and do not add a rule id to
     `cucumbertest.security.alerts.ignored-rule-ids` without a comment stating why the finding was
-    assessed and accepted. Fix the finding instead (§7).
+    assessed and accepted. Fix the finding instead (§7). The same applies to the CVE scan (§7a):
+    never lower its severity; upgrade the library, and add to `vulnerabilities.ignored-ids` only
+    with a comment stating why the vulnerability is not exploitable.
 
 ## 9. Checklist before you finish
 

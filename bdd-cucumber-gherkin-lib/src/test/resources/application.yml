@@ -34,6 +34,14 @@ cucumberTest:
   logging:
     headers: true
     sql: true
+  # Where the security scans write their reports. Configured like everything else; a system property
+  # of the same name still overrides it. Both scans stay disabled unless their Gradle task enables them.
+  security:
+    report:
+      output-dir: build/reports/security
+    cve:
+      report:
+        output-dir: build/reports/cve-scan
 
 # Starts the actuator on its own random port, so the library's own tests run against an
 # application with two ports. server.port is 0 (RANDOM_PORT) and management.server.port is 0,

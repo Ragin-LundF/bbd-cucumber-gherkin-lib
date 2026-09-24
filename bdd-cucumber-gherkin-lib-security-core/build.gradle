@@ -26,3 +26,8 @@ dependencies {
     // SLF4J binding for the unit tests, otherwise SLF4J falls back to NOP and warns
     testImplementation(libs.logging.slf4j)
 }
+
+// ZapApiClientTests talk to a local stub over the real client, which sets the restricted Host header.
+test {
+    systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
+}

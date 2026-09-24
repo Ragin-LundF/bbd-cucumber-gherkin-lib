@@ -13,6 +13,7 @@ def readableTestOutput = {
 test {
     exclude '**/*CucumberRunner*'
     exclude '**/*CucumberSecurity*'
+    exclude '**/*CucumberCve*'
     useJUnitPlatform()
     configure readableTestOutput
 }
@@ -75,10 +76,41 @@ tasks.register('cucumberSecurity', Test) {
     systemProperty 'sun.net.http.allowRestrictedHeaders', 'true'
     systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
 
-    systemProperty 'cucumbertest.security.report.output-dir',
-        layout.buildDirectory.dir('reports/security').get().asFile.absolutePath
+    // the report directory comes from application.yml; a system property of the same name would override it
 
     onlyIf("Execute only if cucumberSecurity task is called directly") {
         gradle.startParameter.taskNames.contains("cucumberSecurity")
+    }
+}
+
+// The CVE scan starts a scanner container and downloads its vulnerability databases, so like the
+// security scan it needs Docker and network and only runs when it is asked for by name.
+tasks.register('cucumberCve', Test) {
+    useJUnitPlatform()
+    group = 'verification'
+    exclude '**/*Test*'
+    include '**/*CucumberCve*'
+    testClassesDirs = testing.suites.test.sources.output.classesDirs
+    classpath = testing.suites.test.sources.runtimeClasspath
+
+    // the feature scans the packaged archive of the module as well
+    dependsOn tasks.named('jar')
+
+    configure readableTestOutput
+
+    minHeapSize = "512m"
+    maxHeapSize = "1024m"
+
+    // system properties instead of a spring profile, for the same reason as in 'cucumberSecurity'
+    systemProperty 'cucumbertest.security.cve.enabled', 'true'
+    // the report directory comes from application.yml; a system property of the same name would override it
+
+    // the test tooling is on the classpath of this JVM but never ships with the application
+    systemProperty 'cucumbertest.security.cve.vulnerabilities.excluded-packages[0]', 'org.junit*:*'
+    systemProperty 'cucumbertest.security.cve.vulnerabilities.excluded-packages[1]', 'io.cucumber:*'
+    systemProperty 'cucumbertest.security.cve.vulnerabilities.excluded-packages[2]', 'org.testcontainers:*'
+
+    onlyIf("Execute only if cucumberCve task is called directly") {
+        gradle.startParameter.taskNames.contains("cucumberCve")
     }
 }

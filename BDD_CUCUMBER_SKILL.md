@@ -1,6 +1,6 @@
 ---
 name: bdd-cucumber-gherkin
-description: Write, extend and fix Cucumber/Gherkin tests for Spring Boot REST APIs and databases with the bdd-cucumber-gherkin-lib step library. Use when creating or changing .feature files, asserting JSON responses with dynamic values (UUIDs, dates, generated ids), configuring authentication/polling/form-data/database steps, adding custom JSON-Unit matchers, or setting up the DAST security scan that routes the suite through a scanner proxy. Triggers: "write a cucumber test", "add a feature file", "gherkin step", "json-unit matcher", "bdd-cucumber-gherkin-lib", "security scan", "DAST", "bdd-cucumber-gherkin-lib-security".
+description: Write, extend and fix Cucumber/Gherkin tests for Spring Boot REST APIs and databases with the bdd-cucumber-gherkin-lib step library. Use when creating or changing .feature files, asserting JSON responses with dynamic values (UUIDs, dates, generated ids), configuring authentication/polling/form-data/database steps, adding custom JSON-Unit matchers, setting up the DAST security scan that routes the suite through a scanner proxy, or the CVE scan of the dependencies. Triggers: "write a cucumber test", "add a feature file", "gherkin step", "json-unit matcher", "bdd-cucumber-gherkin-lib", "security scan", "DAST", "bdd-cucumber-gherkin-lib-security", "CVE scan", "vulnerable dependencies", "bdd-cucumber-gherkin-lib-security-cve".
 ---
 
 # Skill: BDD Cucumber Gherkin Tests
@@ -33,7 +33,8 @@ Optional extras, if more information is needed:
    seed data with Liquibase/SQL where possible.
 5. **Never weaken an assertion to make a test pass.** Fix the expectation or the code.
 6. **Never weaken the security gate.** Do not lower the risk in the scan sentence and do not ignore
-   a scanner rule id without a comment saying why the finding was assessed and accepted.
+   a scanner rule id without a comment saying why the finding was assessed and accepted. The same
+   goes for the CVE scan: never lower its severity, and ignore an advisory id only with a comment.
 
 ## Feature file organisation
 
@@ -87,8 +88,8 @@ src/test/resources/features/
 ## Setup (only if the project does not run Cucumber yet)
 
 Dependency (`bdd-cucumber-gherkin-lib` = REST + DB; `-rest` / `-db` for single modules; `-bom` for
-version alignment; `-security` for the DAST scan, which is not part of the bundle and is added
-separately). `cucumber-java`, `cucumber-spring`, `cucumber-junit-platform-engine`, `json-unit` and
+version alignment; `-security` for the DAST scan and `-security-cve` for the CVE scan, which are not
+part of the bundle and are added separately). `cucumber-java`, `cucumber-spring`, `cucumber-junit-platform-engine`, `json-unit` and
 `json-path` come in transitively.
 
 ```groovy
@@ -429,7 +430,8 @@ tasks.register('cucumberSecurity', Test) {
     // REQUIRED — ZAP separates proxy and API by the Host header, which both JDK clients drop
     systemProperty 'sun.net.http.allowRestrictedHeaders', 'true'
     systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
-    systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
+    // report.output-dir belongs in the profile; a system property of that name overrides it (optional)
+    // systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
 }
 ```
 
@@ -487,6 +489,48 @@ scan on purpose — afterwards it would also contain the scanner's own attack re
 
 Automated scanners produce false positives. Check every finding manually and put the accepted ones
 into `alerts.ignored-rule-ids` with a comment; never lower the risk threshold to get a green build.
+Ignored rule ids are dropped by the gate and left out of the report.
+
+## CVE scan of the dependencies (optional module)
+
+`bdd-cucumber-gherkin-lib-security-cve` scans the libraries of the application under test for known
+vulnerabilities with Trivy in a Testcontainers container. It needs Docker, is **not** part of the
+bundle and is independent of the DAST scan: no proxy, no hook, no traffic, no execution order. The
+archives come from the classpath of the test JVM, so there is no build plugin and no SBOM. A suite
+without Cucumber uses `bdd-cucumber-gherkin-lib-security-cve-core` and its
+`VulnerabilityScanExtension` (jUnit 5) instead.
+
+```groovy
+testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security-cve:${bddCucumberVersion}"
+```
+
+Runner glue: append `BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY_CVE`; keep the runner and its
+Gradle task separate from the regular run (`@IncludeTags("cveScan")`), like the security scan.
+
+```gherkin
+@cveScan
+Feature: CVE scan
+
+  Scenario: No dependency has a known critical vulnerability
+    Then I scan the dependencies for known vulnerabilities and fail on findings of severity "CRITICAL" or higher
+
+  Scenario: The packaged application has no known high vulnerability
+    Then I scan the artifacts "build/libs" for known vulnerabilities and fail on findings of severity "HIGH" or higher
+```
+
+Severity scale: `UNKNOWN` < `LOW` < `MEDIUM` < `HIGH` < `CRITICAL`. Properties (prefix
+`cucumbertest.security.cve`, all optional): `enabled` [`false`], `scanner.image` [Trivy, pinned by
+digest - keep any override pinned by digest too], `scanner.timeout` [`10m`], `scanner.cache-volume`,
+`scanner.database.*` / `scanner.java-database.*` [`repositories` = registry mirror or pull-through cache in
+priority order; `archive` = `http(s)` URL or file path of a `.tar.gz` in a daily updated storage, loaded when older
+than `max-age` (`24h`), with `archive-headers`], `scanner.registry-username` / `-password`, `scanner.https-proxy`,
+`scanner.no-proxy`, `vulnerabilities.ignored-ids`,
+`vulnerabilities.ignore-unfixed` [`false`], `vulnerabilities.excluded-packages` [`group:artifact`
+patterns with `*`, for the test tooling such as `org.junit*:*`], `report.output-dir` [`.`],
+`report.name-prefix` [`vulnerability-report`]. Put `report.output-dir` into the profile; a system property of that
+name overrides it. Every sentence writes `<prefix>-<scan>.json` and one self-contained HTML report
+`<prefix>-<scan>.html` (scan = `dependencies` or `artifacts-<paths>`); it stays readable when Jenkins' default CSP
+drops its embedded styles.
 
 ## Output expectations
 

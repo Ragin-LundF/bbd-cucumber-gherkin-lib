@@ -26,5 +26,8 @@ import org.junit.platform.suite.api.Suite
 )
 @ConfigurationParameter(key = Constants.PLUGIN_PUBLISH_ENABLED_PROPERTY_NAME, value = "true")
 // @IncludeTags("custom_matcher")
-@ExcludeTags("ignore")
+// The scan scenarios have their own runners and Gradle tasks (CucumberSecurityRunner, CucumberCveRunner). Their glue is
+// not registered here, so without the exclusion their steps would be undefined and fail this run. Only the scan
+// scenarios themselves are excluded: @securityScan also marks the functional features that feed the scan.
+@ExcludeTags("ignore", "securityExecuteScan", "cveScan")
 class CucumberRunner

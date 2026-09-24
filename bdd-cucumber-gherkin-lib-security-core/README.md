@@ -49,7 +49,11 @@ test touches are added by importing an API definition (`cucumbertest.security.ap
 `SecurityScanSession` is the whole lifecycle in one object:
 
 ```kotlin
-val properties = SecurityScanProperties(enabled = true)
+val properties = SecurityScanProperties(
+    enabled = true,
+    // hand the report directory over - nothing in this module reads system properties
+    report = ReportProperties(outputDir = "build/reports/security")
+)
 
 SecurityScanSession(properties, ZapSecurityScanner.create(properties)).use { session ->
     val proxy = session.start(hostPorts = setOf(port))
@@ -169,7 +173,9 @@ silently drop findings on the others.
 ## Notes and caveats
 
 - Automated scanners produce false positives. Every finding has to be checked manually; use
-  `alerts.ignored-rule-ids` for the ones you have assessed and accepted, with a comment saying why.
+  `alerts.ignored-rule-ids` for the ones you have assessed and accepted, with a comment saying why. Ignored rules are
+  dropped by the gate and left out of the report (ZAP marks them as false positive through the `alertFilters` add-on,
+  which `zap-stable` bundles).
 - A floating image tag means two builds of the same commit can report different findings. Pin `scanner.image` when a
   run has to be reproducible.
 - The scan only covers what the proxy recorded. Growing the test suite grows the attack surface.

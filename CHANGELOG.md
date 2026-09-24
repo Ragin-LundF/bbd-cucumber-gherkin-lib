@@ -1,3 +1,54 @@
+# Release 3.11.0
+
+## New features
+
+### CVE scan of the dependencies: `bdd-cucumber-gherkin-lib-security-cve` and `-security-cve-core`
+Two new modules scan the libraries of the application under test for known vulnerabilities with
+[Trivy](https://trivy.dev/), which runs in a short-lived Testcontainers container. There is nothing to install and no
+build plugin: the archives come from the classpath of the test JVM, a pathing jar included, and the vulnerability
+databases are kept in a Docker volume between runs.
+
+```gherkin
+Then I scan the dependencies for known vulnerabilities and fail on findings of severity "CRITICAL" or higher
+Then I scan the artifacts "build/libs" for known vulnerabilities and fail on findings of severity "HIGH" or higher
+```
+
+The scan is configured under `cucumbertest.security.cve` (disabled by default), its glue is
+`BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY_CVE`. `bdd-cucumber-gherkin-lib-security-cve-core` has no Cucumber
+and no Spring dependency and brings a jUnit 5 extension, `VulnerabilityScanExtension`, for suites without Cucumber.
+Both modules are independent of the DAST scan. The default Trivy image is pinned by digest, because tags of that image
+were compromised in March 2026.
+
+Every scan writes its raw JSON report and an HTML report named after the scan
+(`vulnerability-report-dependencies.html`, `vulnerability-report-artifacts-build-libs.html`), so the scans of one run
+keep their own reports. The HTML report is one self-contained file - styles embedded, no JavaScript - and shows the
+verdict, the counts per severity and every finding with its advisory link, including the ignored ones with the reason.
+
+The vulnerability databases can come from a registry mirror or pull-through cache
+(`scanner.database.repositories`), from a daily updated storage (`scanner.database.archive`, an `http(s)` URL or a file
+path, loaded into the cache volume at most once per `max-age`) or through a proxy (`scanner.https-proxy`) - separately
+for the vulnerability and the Java database.
+
+### Report directories come from the configuration
+`cucumbertest.security.report.output-dir` and `cucumbertest.security.cve.report.output-dir` are set in the profile like
+every other property; a system property of the same name still overrides them. The framework independent core modules
+read no system properties: a project that creates the properties objects itself passes the directory.
+
+## Bugfixes
+
+### The security scan failed with `Unrecognized token 'ZAP'`
+The JDK HTTP client talks HTTP/2 by default and ZAP accepts the `h2c` upgrade on the first API call. HTTP/2 has no
+`Host` header, so every later call lost the `Host: zap` that separates ZAP's API from its proxy: ZAP forwarded the call
+to `localhost:<port>` and answered with a 502 error page instead of JSON - typically on the start of the active scan.
+The ZAP API client is pinned to HTTP/1.1 now.
+
+### `alerts.ignored-rule-ids` is applied to the security report
+The ignore list was only used by the gate, so the HTML report still listed every ignored rule. ZAP now marks each
+ignored rule id as false positive through a global alert filter registered right after start - before any proxied
+or replayed traffic - and the report is generated with `includedConfidences=Low|Medium|High|Confirmed`, so false
+positives are left out. The filters need the `alertFilters` add-on, which `zap-stable` bundles; without it a warning is
+logged and only the report is affected, the gate still drops the rules. No configuration change is needed.
+
 # Release 3.10.0
 
 ## New features
