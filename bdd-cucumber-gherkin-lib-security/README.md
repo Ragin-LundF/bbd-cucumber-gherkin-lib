@@ -88,6 +88,9 @@ cucumbertest:
         alerts:
             ignored-rule-ids:
                 - "40042"   # Spring Actuator Information Leak
+        report:
+            # relative to the working directory of the test JVM, i.e. the module directory
+            output-dir: build/reports/security
 ```
 
 ### 4. Gradle task and runner
@@ -107,8 +110,8 @@ tasks.register('cucumberSecurity', Test) {
     systemProperty 'sun.net.http.allowRestrictedHeaders', 'true'
     systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
 
-    // the test JVM runs in the module directory - write the report next to the other top level artifacts
-    systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
+    // optional: override the report directory of the profile, e.g. to collect it at the root project
+    // systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
 
     onlyIf("Execute only if cucumberSecurity task is called directly") {
         gradle.startParameter.taskNames.contains("cucumberSecurity")
@@ -152,11 +155,11 @@ All properties are optional. Prefix: `cucumbertest.security`.
 | `scan.poll-interval`      | `10s`                                  | How often scan progress is polled.                                                                                                       |
 | `scan.recurse`            | `true`                                 | Attack the whole tree below a target, not just the exact URL.                                                                            |
 | `scan.in-scope-only`      | `false`                                | Also attack URLs the scanner does not consider part of a configured context.                                                             |
-| `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak.                                                         |
+| `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report.         |
 | `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                                              |
 | `report.template`         | `traditional-html`                     | Report template.                                                                                                                         |
 | `report.title`            | `Security scan`                        | Report title.                                                                                                                            |
-| `report.output-dir`       | `.`                                    | Directory the report is written to, absolute or relative to the working directory.                                                       |
+| `report.output-dir`       | `.`                                    | Directory the report is written to, absolute or relative to the working directory. Set it in the profile; a system property of the same name overrides it. Without Spring, pass it to `ReportProperties`. |
 | `report.file-name`        | `security-report.html`                 | Report file name.                                                                                                                        |
 | `recording.export`        | `true`                                 | Export the recorded traffic (HAR) after the run.                                                                                         |
 | `recording.export-path`   | `build/reports/security/recording.har` | Where the recording is written.                                                                                                          |

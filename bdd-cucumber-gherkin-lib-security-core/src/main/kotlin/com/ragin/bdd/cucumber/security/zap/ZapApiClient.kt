@@ -3,14 +3,14 @@ package com.ragin.bdd.cucumber.security.zap
 import com.ragin.bdd.cucumber.security.models.SecurityAlert
 import com.ragin.bdd.cucumber.security.models.SecurityRisk
 import io.github.oshai.kotlinlogging.KotlinLogging
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
 import java.net.URI
 import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import java.nio.charset.StandardCharsets
-import tools.jackson.databind.JsonNode
-import tools.jackson.databind.json.JsonMapper
 
 /**
  * Thin typed client for the subset of the ZAP REST API that the scan needs.
@@ -25,9 +25,16 @@ import tools.jackson.databind.json.JsonMapper
  * `Host` is a restricted header, so `jdk.httpclient.allowRestrictedHeaders=host` has to be set on
  * the test JVM before the first request. Without it the JDK drops the header silently and every
  * call here fails in a way that is hard to read.
+ *
+ * [apiBaseUrl] is read on every call because the container only knows its mapped port once it runs.
  */
-class ZapApiClient(private val container: ZapContainer) {
-    private val http: HttpClient = HttpClient.newHttpClient()
+class ZapApiClient(private val apiBaseUrl: () -> String) {
+    constructor(container: ZapContainer) : this(apiBaseUrl = { container.apiBaseUrl })
+
+    // HTTP/1.1 on purpose: the JDK client defaults to HTTP/2 and ZAP accepts the h2c upgrade on the first
+    // call. From then on the connection speaks HTTP/2, which has no Host header - the JDK sends the
+    // authority of the URL instead - so ZAP reads every later call as a proxy request and answers 502.
+    private val http: HttpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build()
 
     fun version(): String {
         return json(path = "/JSON/core/view/version/").path("version").asString("")
@@ -45,6 +52,22 @@ class ZapApiClient(private val container: ZapContainer) {
     /** Requires the `exim` add-on. */
     fun importHar(containerFilePath: String): JsonNode {
         return json(path = "/JSON/exim/action/importHar/", "filePath" to containerFilePath)
+    }
+
+    /**
+     * Marks every alert of [ruleId] raised from now on as false positive. Requires the
+     * `alertFilters` add-on, which `zap-stable` bundles.
+     *
+     * A filter only touches alerts raised after it exists, so it has to be in place before any
+     * traffic is proxied or replayed.
+     */
+    fun addGlobalAlertFilter(ruleId: String): JsonNode {
+        return json(
+            path = "/JSON/alertFilter/action/addGlobalAlertFilter/",
+            "ruleId" to ruleId,
+            "newLevel" to FALSE_POSITIVE_LEVEL,
+            "enabled" to "true"
+        )
     }
 
     fun startActiveScan(url: String, recurse: Boolean, inScopeOnly: Boolean): String {
@@ -99,6 +122,9 @@ class ZapApiClient(private val container: ZapContainer) {
      *
      * The file is written into the container because the report add-on only writes to disk;
      * [ZapContainer.copyFileFromContainer] brings it back to the host.
+     *
+     * The confidences are listed explicitly because an empty list makes ZAP include every
+     * confidence, false positives - and with them every ignored rule - included.
      */
     fun generateReport(title: String, template: String, fileName: String): String {
         json(
@@ -106,7 +132,8 @@ class ZapApiClient(private val container: ZapContainer) {
             "title" to title,
             "template" to template,
             "reportFileName" to fileName,
-            "reportDir" to REPORT_DIR
+            "reportDir" to REPORT_DIR,
+            "includedConfidences" to REPORTED_CONFIDENCES
         )
         return "$REPORT_DIR/$fileName"
     }
@@ -158,7 +185,7 @@ class ZapApiClient(private val container: ZapContainer) {
         val query = params.mapNotNull { (key, value) ->
             value?.let { "$key=" + URLEncoder.encode(it, StandardCharsets.UTF_8) }
         }.joinToString(separator = "&")
-        val uri = URI.create(container.apiBaseUrl + path + if (query.isEmpty()) "" else "?$query")
+        val uri = URI.create(apiBaseUrl() + path + if (query.isEmpty()) "" else "?$query")
 
         return HttpRequest.newBuilder(uri)
             .header(ZapContainer.HOST_HEADER, ZapContainer.API_HOST)
@@ -169,6 +196,12 @@ class ZapApiClient(private val container: ZapContainer) {
     private companion object {
         const val REPORT_DIR = "/home/zap"
         const val PAGE_SIZE = 500
+
+        /** The `newLevel` of an alert filter that marks the alert as false positive. */
+        const val FALSE_POSITIVE_LEVEL = "-1"
+
+        /** Every ZAP confidence except "False Positive", in the `|` separated form the API expects. */
+        const val REPORTED_CONFIDENCES = "Low|Medium|High|Confirmed"
         val log = KotlinLogging.logger {}
 
         /** Only trees are read here, so the mapper needs none of the modules the library configures. */

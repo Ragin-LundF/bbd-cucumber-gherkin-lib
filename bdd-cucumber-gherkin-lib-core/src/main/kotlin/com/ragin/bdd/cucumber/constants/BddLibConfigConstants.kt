@@ -25,6 +25,7 @@ object BddLibConfigConstants {
     object Security {
         const val GLUE_PROPERTY_VALUES_HOOKS_SECURITY = "$BASE_PACKAGE.security.hooks"
         const val GLUE_PROPERTY_VALUES_GLUE_SECURITY = "$BASE_PACKAGE.security.glue"
+        const val GLUE_PROPERTY_VALUES_GLUE_SECURITY_CVE = "$BASE_PACKAGE.security.cve.glue"
     }
 
     /**
@@ -79,4 +80,10 @@ object BddLibConfigConstants {
     const val GLUE_PROPERTY_VALUES_SECURITY = Security.GLUE_PROPERTY_VALUES_HOOKS_SECURITY +
         COMMA +
         Security.GLUE_PROPERTY_VALUES_GLUE_SECURITY
+
+    /**
+     * Glue of the CVE scan module. Append it to the glue a runner already declares, like
+     * [GLUE_PROPERTY_VALUES_SECURITY]. It needs no hooks and does not depend on the DAST scan.
+     */
+    const val GLUE_PROPERTY_VALUES_SECURITY_CVE = Security.GLUE_PROPERTY_VALUES_GLUE_SECURITY_CVE
 }
