@@ -40,6 +40,9 @@ internal class GlueKonsistTests {
         ) + Konsist.scopeFromPackage(
             packagee = "com.ragin.bdd.cucumber.security.glue",
             sourceSetName = "main"
+        ) + Konsist.scopeFromPackage(
+            packagee = "com.ragin.bdd.cucumber.security.cve.glue",
+            sourceSetName = "main"
         )
     }
 }

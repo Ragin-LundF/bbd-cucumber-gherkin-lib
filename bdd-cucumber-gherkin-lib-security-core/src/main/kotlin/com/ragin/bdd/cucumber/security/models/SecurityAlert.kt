@@ -4,7 +4,8 @@ package com.ragin.bdd.cucumber.security.models
  * A single finding, normalised across scanners.
  *
  * [ruleId] is whatever the scanner calls the rule that fired - a ZAP plugin id, for example -
- * and is what `cucumbertest.security.alerts.ignored-rule-ids` matches on.
+ * and is what `cucumbertest.security.alerts.ignored-rule-ids` matches on, both in the gate and in
+ * the report.
  */
 data class SecurityAlert(
     val ruleId: String,

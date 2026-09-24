@@ -20,6 +20,8 @@ Each technical domain is a separate Gradle subproject with explicit dependencies
 | `bdd-cucumber-gherkin-lib-db` | published | Database Gherkin step definitions, Liquibase integration, CSV comparison |
 | `bdd-cucumber-gherkin-lib-security-core` | published | Framework independent security scan: the scanner abstraction, the scan orchestration, the pass/fail gate, the configuration objects, the OWASP ZAP implementation and the jUnit entry points |
 | `bdd-cucumber-gherkin-lib-security` | published | Security scan (DAST) hook, Gherkin step definitions and the Spring Boot wiring on top of `security-core` |
+| `bdd-cucumber-gherkin-lib-security-cve-core` | published | Framework independent CVE scan of dependency archives: the scanner abstraction, the gate, the configuration objects, the Trivy implementation and the jUnit extension |
+| `bdd-cucumber-gherkin-lib-security-cve` | published | CVE scan Gherkin step definitions and the Spring Boot wiring on top of `security-cve-core` |
 | `bdd-cucumber-gherkin-lib-bom` | published | Bill of Materials for consumer dependency management |
 | `bdd-cucumber-gherkin-lib` | published | Convenience aggregator — pulls `core`, `rest`, and `db` as transitive `api` dependencies; consumers get everything with one dependency. Also hosts the integration test suite (demo app, Cucumber runner, Konsist architecture tests) in `src/test/`. |
 
@@ -32,6 +34,8 @@ rest          ──► core
 db            ──► core
 security      ──► security-core, rest ──► core
 security-core ──► (nothing in this repository)
+security-cve      ──► security-cve-core, core
+security-cve-core ──► (nothing in this repository)
 bdd-cucumber-gherkin-lib ──► rest, db, core
 ```
 
@@ -47,6 +51,11 @@ Rules:
 - `bdd-cucumber-gherkin-lib` is the only module that wires `core`, `rest` and `db` together (as `api`
   dependencies). `security` is deliberately **not** in that bundle: it needs Docker and is only useful for the
   runner that executes the scan, so a project adds it explicitly.
+- `security-cve-core` follows the same rules as `security-core` (no module of this repository, no Spring, no
+  Cucumber) and is also independent of `security-core`: it has its own severity scale with `CRITICAL`, so the DAST
+  `SecurityRisk` stays untouched and a CVE-only project does not pull the ZAP implementation.
+- `security-cve` needs no proxy and no hook, so it depends only on `core` and `security-cve-core` — not on `rest` and
+  not on `security`. Like `security`, it is not in the bundle.
 
 ---
 
@@ -143,6 +152,30 @@ configuration/com.ragin.bdd.cucumber.security/
 The two modules own disjoint sub-packages of `com.ragin.bdd.cucumber.security`, so nothing is split across artifacts.
 Do not move `glue/` or `hooks/` — `BddLibConfigConstants.Security` in `core` and the Konsist scopes name those
 packages as strings.
+
+### `bdd-cucumber-gherkin-lib-security-cve-core`
+
+```
+com.ragin.bdd.cucumber.security.cve
+  (root)        — scanner abstraction (VulnerabilityScanner), gate, VulnerabilityScan, ScanArtifacts
+  config/       — plain configuration data classes (bound from the prefix "cucumbertest.security.cve")
+  junit/        — jUnit 5 extension
+  models/       — Vulnerability, VulnerabilitySeverity, VulnerabilityScanResult
+  report/       — self-contained HTML report (styles embedded from a resource, no JavaScript)
+  trivy/        — the only package that names Trivy: containers, loading database archives, JSON report parser
+```
+
+### `bdd-cucumber-gherkin-lib-security-cve`
+
+```
+com.ragin.bdd.cucumber.security.cve
+  glue/         — CVE scan step definitions (Then)
+configuration/com.ragin.bdd.cucumber.security.cve/
+              — Spring bean configuration: binds the properties, creates the scanner and the scan
+```
+
+`glue/` is named as a string by `BddLibConfigConstants.Security.GLUE_PROPERTY_VALUES_GLUE_SECURITY_CVE` and the
+Konsist glue scope.
 
 The ZAP bean is `@ConditionalOnMissingBean(SecurityScanner::class)`, so a project replaces the product with one bean
 and no test change. There is exactly one `SecurityScanSession` bean: the hook remembers the targets and the step
@@ -441,4 +474,8 @@ Do not suppress or disable them.
 | Spring bean configuration for database infrastructure | `db` | `configuration/` |
 | Spring bean configuration for the security scan | `security` | `configuration/` |
 | Configuration property type for the security scan | `security-core` | `config/`, a plain data class |
+| Step that runs or gates the CVE scan | `security-cve` | a `Then*Glue` class |
+| CVE scan logic that is not Cucumber specific | `security-cve-core` | the root package, behind `VulnerabilityScanner` |
+| Anything that names a concrete vulnerability scanner | `security-cve-core` | `trivy/` |
+| Spring bean configuration / property type for the CVE scan | `security-cve` / `security-cve-core` | `configuration/` / `config/` |
 | Demo controller or fixture for testing a sentence | `bdd-cucumber-gherkin-lib` | `src/test/` |

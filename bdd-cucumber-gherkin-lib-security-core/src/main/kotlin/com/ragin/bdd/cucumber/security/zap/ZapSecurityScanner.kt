@@ -26,8 +26,32 @@ class ZapSecurityScanner(
     override val proxy: ProxyEndpoint
         get() = ProxyEndpoint(host = container.host, port = container.port)
 
+    /**
+     * Starts ZAP and turns every ignored rule into a false positive, so the report leaves out
+     * what the gate ignores. The filters go in before any traffic, because ZAP applies them only
+     * to alerts raised afterwards.
+     */
     override fun start(exposedHostPorts: Set<Int>) {
+        if (container.isRunning) {
+            return
+        }
         container.start(hostPorts = exposedHostPorts)
+        properties.alerts.ignoredRuleIds.forEach(::ignoreRule)
+    }
+
+    /**
+     * Lenient: without the filter only the report still lists the rule. The gate drops it by rule
+     * id either way, so the verdict does not depend on this call.
+     */
+    private fun ignoreRule(ruleId: String) {
+        log.info { "ignoring scanner rule $ruleId" }
+        runCatching {
+            client.addGlobalAlertFilter(ruleId = ruleId)
+        }.onFailure { error ->
+            log.warn(throwable = error) {
+                "could not ignore rule $ruleId in the report - is the 'alertFilters' add-on installed?"
+            }
+        }
     }
 
     override fun stop() {

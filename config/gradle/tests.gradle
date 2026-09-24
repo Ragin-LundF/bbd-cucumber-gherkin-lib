@@ -9,9 +9,11 @@ def readableTestOutput = {
     }
 }
 
-// exclude CucumberRunner tests from default test task
+// exclude the cucumber suites from the default test task
 test {
     exclude '**/*CucumberRunner*'
+    exclude '**/*CucumberSecurity*'
+    exclude '**/*CucumberCve*'
     useJUnitPlatform()
     configure readableTestOutput
 }
@@ -37,5 +39,78 @@ tasks.register('cucumber', Test) {
 
     onlyIf("Execute only if cucumber task is called directly") {
         gradle.startParameter.taskNames.contains("cucumber")
+    }
+}
+
+// The security scan starts a scanner container, routes the whole run through its proxy and then
+// attacks the application, so it never belongs to 'test' or 'cucumber'. It needs Docker and it is
+// slow, which is why it only runs when it is asked for by name.
+tasks.register('cucumberSecurity', Test) {
+    useJUnitPlatform()
+    group = 'verification'
+    exclude '**/*Test*'
+    include '**/*CucumberSecurity*'
+    testClassesDirs = testing.suites.test.sources.output.classesDirs
+    classpath = testing.suites.test.sources.runtimeClasspath
+
+    configure readableTestOutput
+
+    minHeapSize = "512m"
+    maxHeapSize = "1024m"
+
+    // A consuming project puts this into a spring profile. Here it has to be system properties,
+    // because the context configuration class pins its profile with @ActiveProfiles, which wins
+    // over spring.profiles.active.
+    systemProperty 'cucumbertest.security.enabled', 'true'
+
+    // The application under test runs in this JVM on the host while the scanner runs in a
+    // container, so every URL the tests build has to use the Testcontainers host alias. No port is
+    // configured: the main web server is discovered under the random port it actually bound, and
+    // the security hook exposes exactly that port to the container.
+    systemProperty 'cucumbertest.server.protocol', 'http'
+    systemProperty 'cucumbertest.server.host', 'host.testcontainers.internal'
+    systemProperty 'cucumbertest.services.server.path-prefixes[0]', '/api'
+
+    // REQUIRED. ZAP serves the proxy and its own REST API on one port and tells them apart by the
+    // Host header, and both JDK HTTP clients treat Host as restricted and would silently drop it.
+    systemProperty 'sun.net.http.allowRestrictedHeaders', 'true'
+    systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
+
+    // the report directory comes from application.yml; a system property of the same name would override it
+
+    onlyIf("Execute only if cucumberSecurity task is called directly") {
+        gradle.startParameter.taskNames.contains("cucumberSecurity")
+    }
+}
+
+// The CVE scan starts a scanner container and downloads its vulnerability databases, so like the
+// security scan it needs Docker and network and only runs when it is asked for by name.
+tasks.register('cucumberCve', Test) {
+    useJUnitPlatform()
+    group = 'verification'
+    exclude '**/*Test*'
+    include '**/*CucumberCve*'
+    testClassesDirs = testing.suites.test.sources.output.classesDirs
+    classpath = testing.suites.test.sources.runtimeClasspath
+
+    // the feature scans the packaged archive of the module as well
+    dependsOn tasks.named('jar')
+
+    configure readableTestOutput
+
+    minHeapSize = "512m"
+    maxHeapSize = "1024m"
+
+    // system properties instead of a spring profile, for the same reason as in 'cucumberSecurity'
+    systemProperty 'cucumbertest.security.cve.enabled', 'true'
+    // the report directory comes from application.yml; a system property of the same name would override it
+
+    // the test tooling is on the classpath of this JVM but never ships with the application
+    systemProperty 'cucumbertest.security.cve.vulnerabilities.excluded-packages[0]', 'org.junit*:*'
+    systemProperty 'cucumbertest.security.cve.vulnerabilities.excluded-packages[1]', 'io.cucumber:*'
+    systemProperty 'cucumbertest.security.cve.vulnerabilities.excluded-packages[2]', 'org.testcontainers:*'
+
+    onlyIf("Execute only if cucumberCve task is called directly") {
+        gradle.startParameter.taskNames.contains("cucumberCve")
     }
 }

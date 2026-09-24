@@ -59,6 +59,16 @@ internal class SecurityAlertGateTests {
     }
 
     @Test
+    internal fun `drops findings the scanner marked as false positive`() {
+        val gate = SecurityAlertGate(properties = AlertProperties())
+        val alerts = listOf(
+            alert(risk = SecurityRisk.MEDIUM, confidence = SecurityRisk.fromLabel(value = "False Positive"))
+        )
+
+        assertEquals(expected = emptyList(), actual = gate.relevant(alerts = alerts))
+    }
+
+    @Test
     internal fun `reports an identical finding only once`() {
         val gate = SecurityAlertGate(properties = AlertProperties())
         val duplicate = alert(risk = SecurityRisk.LOW)

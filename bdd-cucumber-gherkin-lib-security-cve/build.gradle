@@ -1,0 +1,26 @@
+ext {
+    publishArtifactId = "bdd-cucumber-gherkin-lib-security-cve"
+    publishDescription = "CVE scan sentences for the dependencies of the application under test"
+}
+
+dependencies {
+    // the scanner abstraction, the gate and the Trivy implementation
+    api project(':bdd-cucumber-gherkin-lib-security-cve-core')
+    api project(':bdd-cucumber-gherkin-lib-core')
+
+    // --- Spring
+    implementation(libs.spring.boot)
+    implementation(libs.spring.boot.autoconfigure)
+
+    // --- Cucumber
+    implementation(libs.cucumber.java)
+
+    // --- Logging
+    implementation(libs.logging.logger)
+
+    // --- Testing
+    testImplementation(libs.testing.kotlin.test)
+
+    // SLF4J binding for the unit tests, otherwise SLF4J falls back to NOP and warns
+    testImplementation(libs.logging.slf4j)
+}

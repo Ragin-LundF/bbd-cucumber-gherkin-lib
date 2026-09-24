@@ -7,9 +7,9 @@ data class ReportProperties @JvmOverloads constructor(
     /**
      * Directory the report is written to, absolute or relative to the working directory.
      *
-     * A dedicated Gradle task usually points it at the root project directory, so the report
-     * ends up next to the other top level build artifacts rather than buried in a module's
-     * `build/`. The default only applies to runs that do not go through Gradle.
+     * Nothing here reads system properties: a project that creates this object itself hands the
+     * directory over. With Spring it is `cucumbertest.security.report.output-dir` of the normal
+     * configuration, where a system property of that name still overrides it.
      */
     val outputDir: String = ".",
     val fileName: String = "security-report.html"

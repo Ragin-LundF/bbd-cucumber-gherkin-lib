@@ -30,6 +30,11 @@ dependencies {
     implementation(libs.testing.kotlin.test)
 
     // Tests
+    // Only a test dependency, exactly as a consuming project adds it: the security scan is not
+    // part of this bundle and every one of its hooks and steps is a no-op while it is disabled.
+    testImplementation project(":bdd-cucumber-gherkin-lib-security")
+    testImplementation project(":bdd-cucumber-gherkin-lib-security-cve")
+
     testImplementation(libs.logging.slf4j)
     testImplementation(libs.testing.konsist)
 
@@ -39,6 +44,8 @@ dependencies {
     testImplementation(libs.jakarta.validation)
     testImplementation(libs.spring.boot.starter.actuator)
     testImplementation(libs.spring.boot.starter.web)
+    // the embedded Tomcat of the demo application, raised above the version Spring Boot manages - see libs.versions.toml
+    testImplementation(libs.bundles.tomcat)
     testImplementation(libs.spring.boot.starter.data.jpa)
     testImplementation(libs.spring.boot.starter.liquibase)
     testImplementation(libs.spring.boot.rest.test.client)

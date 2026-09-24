@@ -1,6 +1,6 @@
 ---
 name: bdd-cucumber-gherkin
-description: Write, extend and fix Cucumber/Gherkin tests for Spring Boot REST APIs and databases with the bdd-cucumber-gherkin-lib step library. Use when creating or changing .feature files, asserting JSON responses with dynamic values (UUIDs, dates, generated ids), configuring authentication/polling/form-data/database steps, or adding custom JSON-Unit matchers. Triggers: "write a cucumber test", "add a feature file", "gherkin step", "json-unit matcher", "bdd-cucumber-gherkin-lib".
+description: Write, extend and fix Cucumber/Gherkin tests for Spring Boot REST APIs and databases with the bdd-cucumber-gherkin-lib step library. Use when creating or changing .feature files, asserting JSON responses with dynamic values (UUIDs, dates, generated ids), configuring authentication/polling/form-data/database steps, adding custom JSON-Unit matchers, setting up the DAST security scan that routes the suite through a scanner proxy, or the CVE scan of the dependencies. Triggers: "write a cucumber test", "add a feature file", "gherkin step", "json-unit matcher", "bdd-cucumber-gherkin-lib", "security scan", "DAST", "bdd-cucumber-gherkin-lib-security", "CVE scan", "vulnerable dependencies", "bdd-cucumber-gherkin-lib-security-cve".
 ---
 
 # Skill: BDD Cucumber Gherkin Tests
@@ -11,12 +11,14 @@ project that uses `io.github.ragin-lundf:bdd-cucumber-gherkin-lib`.
 The library ships ready-made step definitions for REST calls, authentication, request/response
 manipulation, polling, form-data uploads, database setup and JSON assertions, plus a scenario-wide
 state container and a set of [JSON-Unit](https://github.com/lukas-krecan/JsonUnit) matchers for
-dynamic values. This skill is self-contained: everything needed to write a working feature file is
-below.
+dynamic values. An optional module (`bdd-cucumber-gherkin-lib-security`) turns the same suite into a
+DAST security scan. This skill is self-contained: everything needed to write a working feature file
+is below.
 
 Optional extras, if more information is needed:
 
 - [BDD_CUCUMBER_AGENT_INSTRUCTIONS.md](https://raw.githubusercontent.com/Ragin-LundF/bbd-cucumber-gherkin-lib/refs/heads/main/BDD_CUCUMBER_AGENT_INSTRUCTIONS.md) — the long-form reference with the full sentence catalogue.
+- [bdd-cucumber-gherkin-lib-security/README.md](https://raw.githubusercontent.com/Ragin-LundF/bbd-cucumber-gherkin-lib/refs/heads/main/bdd-cucumber-gherkin-lib-security/README.md) — the security scan module in full (architecture, replay mode, replacing the scanner).
 
 ## Non-negotiable rules
 
@@ -30,6 +32,9 @@ Optional extras, if more information is needed:
 4. **Prefer independent scenarios.** Cross-scenario context is supported but is an anti-pattern —
    seed data with Liquibase/SQL where possible.
 5. **Never weaken an assertion to make a test pass.** Fix the expectation or the code.
+6. **Never weaken the security gate.** Do not lower the risk in the scan sentence and do not ignore
+   a scanner rule id without a comment saying why the finding was assessed and accepted. The same
+   goes for the CVE scan: never lower its severity, and ignore an advisory id only with a comment.
 
 ## Feature file organisation
 
@@ -83,15 +88,17 @@ src/test/resources/features/
 ## Setup (only if the project does not run Cucumber yet)
 
 Dependency (`bdd-cucumber-gherkin-lib` = REST + DB; `-rest` / `-db` for single modules; `-bom` for
-version alignment). `cucumber-java`, `cucumber-spring`, `cucumber-junit-platform-engine`,
-`json-unit` and `json-path` come in transitively.
+version alignment; `-security` for the DAST scan and `-security-cve` for the CVE scan, which are not
+part of the bundle and are added separately). `cucumber-java`, `cucumber-spring`, `cucumber-junit-platform-engine`, `json-unit` and
+`json-path` come in transitively.
 
 ```groovy
 testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib:${bddCucumberVersion}"
 ```
 
 Runner — the library glue packages must be registered via `BddLibConfigConstants`
-(`GLUE_PROPERTY_VALUES_REST`, `GLUE_PROPERTY_VALUES_DATABASE`, `GLUE_PROPERTY_VALUES_REST_DATABASE`):
+(`GLUE_PROPERTY_VALUES_REST`, `GLUE_PROPERTY_VALUES_DATABASE`, `GLUE_PROPERTY_VALUES_REST_DATABASE`,
+plus `GLUE_PROPERTY_VALUES_SECURITY` appended for the scan runner):
 
 ```kotlin
 @Suite
@@ -371,6 +378,161 @@ The parameter may be JSON, which allows several arguments in one matcher:
 Extra date patterns for `isValidDate` / `isDateOfContext`: register a `BddCucumberDateTimeFormat`
 bean returning the additional `DateTimeFormatter`s.
 
+## Security scan (DAST, optional module)
+
+`bdd-cucumber-gherkin-lib-security` needs Docker and is **not** part of the
+`bdd-cucumber-gherkin-lib` bundle. A `@Before` hook starts a scanner container, exposes the host
+ports of the application under test to it and routes every request of the run through the scanner's
+proxy; a final scenario attacks the recorded traffic, writes a report and fails the build on
+findings. The recorded traffic *is* the attack surface — an endpoint no scenario calls is only
+scanned when its OpenAPI definition is imported. Nothing a project writes names the scanner
+(currently OWASP ZAP): tags, properties and sentences are all `security*`. The scanner, the
+orchestration and the configuration types live in `bdd-cucumber-gherkin-lib-security-core`, which
+comes in transitively and needs neither Cucumber nor Spring — a suite without Cucumber depends on
+that module directly.
+
+Integration is one dependency plus configuration — no glue code, and the Spring context class stays
+untouched (the beans come from Spring auto-configuration):
+
+```groovy
+testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security:${bddCucumberVersion}"
+```
+
+```kotlin
+// runner glue: append the security value to the one already in use
+value = BddLibConfigConstants.GLUE_PROPERTY_VALUES_REST +
+    BddLibConfigConstants.Base.COMMA +
+    BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY
+```
+
+The scan profile (e.g. `application-cucumberSecurity.yaml`) — the application runs in the test JVM
+on the host, the scanner in a container, so **every URL and target has to use the Testcontainers
+host alias**:
+
+```yaml
+cucumbertest:
+  server: { protocol: http, host: host.testcontainers.internal, port: "${server.port}" }
+  security:
+    enabled: true                     # false (the default) = every hook and step is a no-op
+    target:
+      host: host.testcontainers.internal
+      exposed-ports: ["${server.port}", "${management.server.port}"]
+    alerts:
+      ignored-rule-ids: ["40042"]     # assessed and accepted, with a comment saying why
+```
+
+A dedicated Gradle task and runner keep the scan out of the regular run:
+
+```groovy
+tasks.register('cucumberSecurity', Test) {
+    include '**/*CucumberSecurity*'
+    systemProperty 'spring.profiles.active', 'cucumberSecurity'
+    // REQUIRED — ZAP separates proxy and API by the Host header, which both JDK clients drop
+    systemProperty 'sun.net.http.allowRestrictedHeaders', 'true'
+    systemProperty 'jdk.httpclient.allowRestrictedHeaders', 'host'
+    // report.output-dir belongs in the profile; a system property of that name overrides it (optional)
+    // systemProperty 'cucumbertest.security.report.output-dir', rootProject.projectDir.absolutePath
+}
+```
+
+```kotlin
+@Suite @IncludeEngines("cucumber") @SelectPackages("cucumber")
+@ConfigurationParameter(key = Constants.EXECUTION_ORDER_PROPERTY_NAME, value = "lexical")
+@ExcludeTags("ignore") @IncludeTags("securityScan")
+class CucumberSecurityRunner
+```
+
+Because the order is `lexical` and the scan must see the traffic of every other feature, the scan
+feature lives in a directory that sorts last (`cucumber/zzz_securityscan/`). `@securityScan` marks
+every feature that contributes traffic; `@securityExecuteScan` marks the scan scenario itself (in
+replay mode every scenario without it is skipped).
+
+```gherkin
+@securityScan
+Feature: Security scan
+
+  @securityExecuteScan
+  Scenario: scan the application and fail on relevant findings
+    Then I run the security scan for max. 30 minutes and fail on findings of risk "MEDIUM" or higher
+```
+
+That one sentence exports the recording, imports the configured API definitions, scans every target,
+waits for the analysis, writes the report, gates on the findings and stops the scanner. Granular
+alternatives, for a different order or to opt out of a part:
+
+```gherkin
+Then I import the API definition "https://host/openapi.json" into the security scanner
+Then I run the security scan for max. 30 minutes
+Then I ensure that no security finding has a risk of "MEDIUM" or higher
+Then I store the security scan report to the file "build/reports/security/report.html"
+Then I export the recorded security scan traffic to the file "build/reports/security/recording.har"
+Then I make sure that the security scanner is stopped
+```
+
+Risk and confidence scale: `INFORMATIONAL` < `LOW` < `MEDIUM` < `HIGH`. The time budget and the
+failing risk are sentence parameters on purpose, so a profile can never weaken the gate; the budget
+covers the whole run and is shared by all target ports.
+
+Properties (prefix `cucumbertest.security`, all optional, defaults in brackets): `enabled`
+[`false`], `scanner.image` [`zaproxy/zap-stable:latest`; pin it when a build must be reproducible],
+`scanner.startup-timeout` [`5m`], `scanner.plugins`, `target.host`
+[`host.testcontainers.internal`], `target.port` [the bound port], `target.exposed-ports`,
+`api.definition-urls`, `scan.poll-interval` [`10s`], `scan.recurse` [`true`], `scan.in-scope-only`
+[`false`], `alerts.ignored-rule-ids`, `alerts.min-confidence` [`LOW`], `report.template`
+[`traditional-html`], `report.title`, `report.output-dir` [`.`], `report.file-name`
+[`security-report.html`], `recording.export` [`true`], `recording.export-path`
+[`build/reports/security/recording.har`], `recording.replay-from`.
+
+To iterate on the scan itself, set `recording.replay-from` to a HAR of an earlier run: the
+functional scenarios are skipped and only the scan runs. The recording is exported *before* the
+scan on purpose — afterwards it would also contain the scanner's own attack requests.
+
+Automated scanners produce false positives. Check every finding manually and put the accepted ones
+into `alerts.ignored-rule-ids` with a comment; never lower the risk threshold to get a green build.
+Ignored rule ids are dropped by the gate and left out of the report.
+
+## CVE scan of the dependencies (optional module)
+
+`bdd-cucumber-gherkin-lib-security-cve` scans the libraries of the application under test for known
+vulnerabilities with Trivy in a Testcontainers container. It needs Docker, is **not** part of the
+bundle and is independent of the DAST scan: no proxy, no hook, no traffic, no execution order. The
+archives come from the classpath of the test JVM, so there is no build plugin and no SBOM. A suite
+without Cucumber uses `bdd-cucumber-gherkin-lib-security-cve-core` and its
+`VulnerabilityScanExtension` (jUnit 5) instead.
+
+```groovy
+testImplementation "io.github.ragin-lundf:bdd-cucumber-gherkin-lib-security-cve:${bddCucumberVersion}"
+```
+
+Runner glue: append `BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY_CVE`; keep the runner and its
+Gradle task separate from the regular run (`@IncludeTags("cveScan")`), like the security scan.
+
+```gherkin
+@cveScan
+Feature: CVE scan
+
+  Scenario: No dependency has a known critical vulnerability
+    Then I scan the dependencies for known vulnerabilities and fail on findings of severity "CRITICAL" or higher
+
+  Scenario: The packaged application has no known high vulnerability
+    Then I scan the artifacts "build/libs" for known vulnerabilities and fail on findings of severity "HIGH" or higher
+```
+
+Severity scale: `UNKNOWN` < `LOW` < `MEDIUM` < `HIGH` < `CRITICAL`. Properties (prefix
+`cucumbertest.security.cve`, all optional): `enabled` [`false`], `scanner.image` [`aquasec/trivy:latest`;
+pin by digest for reproducible scans], `scanner.timeout` [`10m`], `scanner.cache-volume` [empty = no volume, for an
+image with the databases built into `/cache`],
+`scanner.database.*` / `scanner.java-database.*` [`repositories` = registry mirror or pull-through cache in
+priority order; `archive` = `http(s)` URL or file path of a `.tar.gz` in a daily updated storage, loaded when older
+than `max-age` (`24h`), with `archive-headers`], `scanner.registry-username` / `-password`, `scanner.https-proxy`,
+`scanner.no-proxy`, `vulnerabilities.ignored-ids`,
+`vulnerabilities.ignore-unfixed` [`false`], `vulnerabilities.excluded-packages` [`group:artifact`
+patterns with `*`, for the test tooling such as `org.junit*:*`], `report.output-dir` [`.`],
+`report.name-prefix` [`vulnerability-report`]. Put `report.output-dir` into the profile; a system property of that
+name overrides it. Every sentence writes `<prefix>-<scan>.json` and one self-contained HTML report
+`<prefix>-<scan>.html` (scan = `dependencies` or `artifacts-<paths>`); it stays readable when Jenkins' default CSP
+drops its embedded styles.
+
 ## Output expectations
 
 - One feature per file, grouped in a domain directory with its own resources and tag.
@@ -379,4 +541,6 @@ bean returning the additional `DateTimeFormatter`s.
 - Referenced JSON/SQL/CSV files exist and resolve against the configured base path.
 - Polling scenarios configure the number of polls; custom matchers are registered in the context
   class.
+- A security scan feature is tagged `@securityScan`, its scan scenario `@securityExecuteScan`, the
+  feature file sorts last, and the risk threshold is never lowered to make a build pass.
 - Test results are reported honestly, including failures.
