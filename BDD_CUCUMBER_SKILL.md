@@ -519,8 +519,9 @@ Feature: CVE scan
 ```
 
 Severity scale: `UNKNOWN` < `LOW` < `MEDIUM` < `HIGH` < `CRITICAL`. Properties (prefix
-`cucumbertest.security.cve`, all optional): `enabled` [`false`], `scanner.image` [Trivy, pinned by
-digest - keep any override pinned by digest too], `scanner.timeout` [`10m`], `scanner.cache-volume`,
+`cucumbertest.security.cve`, all optional): `enabled` [`false`], `scanner.image` [`aquasec/trivy:latest`;
+pin by digest for reproducible scans], `scanner.timeout` [`10m`], `scanner.cache-volume` [empty = no volume, for an
+image with the databases built into `/cache`],
 `scanner.database.*` / `scanner.java-database.*` [`repositories` = registry mirror or pull-through cache in
 priority order; `archive` = `http(s)` URL or file path of a `.tar.gz` in a daily updated storage, loaded when older
 than `max-age` (`24h`), with `archive-headers`], `scanner.registry-username` / `-password`, `scanner.https-proxy`,

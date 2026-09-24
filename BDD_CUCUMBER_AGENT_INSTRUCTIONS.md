@@ -1120,9 +1120,9 @@ Feature: CVE scan
   `Class-Path` is followed, class directories are skipped. **Artifacts** = comma separated
   archives or directories (searched recursively), relative to the working directory.
 * Severity scale: `UNKNOWN` < `LOW` < `MEDIUM` < `HIGH` < `CRITICAL`.
-* Properties (prefix `cucumbertest.security.cve`): `enabled` [`false`], `scanner.image` [Trivy,
-  pinned by digest], `scanner.timeout` [`10m`], `scanner.cache-volume`
-  [`bdd-cucumber-trivy-cache`], `scanner.database.*` / `scanner.java-database.*`
+* Properties (prefix `cucumbertest.security.cve`): `enabled` [`false`], `scanner.image`
+  [`aquasec/trivy:latest`], `scanner.timeout` [`10m`], `scanner.cache-volume`
+  [`bdd-cucumber-trivy-cache`; empty = no volume], `scanner.database.*` / `scanner.java-database.*`
   (`repositories`, `archive`, `archive-headers`, `max-age` [`24h`]), `scanner.registry-username`,
   `scanner.registry-password`, `scanner.https-proxy`, `scanner.no-proxy`,
   `vulnerabilities.ignored-ids`, `vulnerabilities.ignore-unfixed` [`false`],
@@ -1137,6 +1137,11 @@ Feature: CVE scan
   (`scanner.database.archive`: `http(s)` URL or file path of a `.tar.gz`, loaded into the cache
   volume when older than `max-age`), or a proxy (`scanner.https-proxy`). Same keys under
   `scanner.java-database`.
+* Databases built into the image: a scanner image rebuilt e.g. daily, with both databases in
+  `/cache` and `TRIVY_SKIP_DB_UPDATE` / `TRIVY_SKIP_JAVA_DB_UPDATE` set, needs no download at scan
+  time. Configure it as `scanner.image` with `scanner.cache-volume: ""` - a volume would hide the
+  image's `/cache` and keep the databases of its first run. An `archive` needs the volume and is
+  refused without one. Dockerfile in the README of `bdd-cucumber-gherkin-lib-security-cve-core`.
 * The test tooling (jUnit, Cucumber, Testcontainers) is on the scanned classpath too; exclude it
   with `vulnerabilities.excluded-packages` rather than raising the severity.
 * `scanner.image` defaults to `aquasec/trivy:latest`. Pin it by digest where reproducible scans
