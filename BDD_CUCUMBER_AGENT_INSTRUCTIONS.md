@@ -1139,8 +1139,8 @@ Feature: CVE scan
   `scanner.java-database`.
 * The test tooling (jUnit, Cucumber, Testcontainers) is on the scanned classpath too; exclude it
   with `vulnerabilities.excluded-packages` rather than raising the severity.
-* Keep an overridden `scanner.image` pinned by digest: tags of the Trivy image were compromised in
-  March 2026.
+* `scanner.image` defaults to `aquasec/trivy:latest`. Pin it by digest where reproducible scans
+  matter: tags of the Trivy image were repointed to malicious images in March 2026.
 
 ---
 

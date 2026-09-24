@@ -16,8 +16,8 @@ Then I scan the artifacts "build/libs" for known vulnerabilities and fail on fin
 The scan is configured under `cucumbertest.security.cve` (disabled by default), its glue is
 `BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY_CVE`. `bdd-cucumber-gherkin-lib-security-cve-core` has no Cucumber
 and no Spring dependency and brings a jUnit 5 extension, `VulnerabilityScanExtension`, for suites without Cucumber.
-Both modules are independent of the DAST scan. The default Trivy image is pinned by digest, because tags of that image
-were compromised in March 2026.
+Both modules are independent of the DAST scan. The default Trivy image is `aquasec/trivy:latest`; pin
+`scanner.image` by digest if you need reproducible scans.
 
 Every scan writes its raw JSON report and an HTML report named after the scan
 (`vulnerability-report-dependencies.html`, `vulnerability-report-artifacts-build-libs.html`), so the scans of one run
