@@ -6,7 +6,7 @@ import org.junit.platform.suite.api.ConfigurationParameter
 import org.junit.platform.suite.api.ExcludeTags
 import org.junit.platform.suite.api.IncludeEngines
 import org.junit.platform.suite.api.IncludeTags
-import org.junit.platform.suite.api.SelectClasspathResource
+import org.junit.platform.suite.api.SelectPackages
 import org.junit.platform.suite.api.Suite
 
 /**
@@ -17,13 +17,10 @@ import org.junit.platform.suite.api.Suite
  * attacks the application, which has no place in the regular run. The `cucumberSecurity` Gradle
  * task is the only thing that executes this suite, and only when it is asked for by name.
  *
- * Two details differ from the setup a consuming project would write:
- *
- * * The scan configuration arrives as system properties from the Gradle task rather than through
- *   a Spring profile, because the context class of this repository pins its profile with
- *   `@ActiveProfiles`, which would win over `spring.profiles.active`.
- * * Features are selected from the classpath resource instead of a package, because that is how
- *   the feature files of this repository are laid out.
+ * One detail differs from the setup a consuming project would write: the scan configuration
+ * arrives as system properties from the Gradle task rather than through a Spring profile, because
+ * the context class of this repository pins its profile with `@ActiveProfiles`, which would win
+ * over `spring.profiles.active`.
  *
  * Only features tagged `@securityScan` contribute traffic. The execution order is pinned to
  * lexical and the scan itself lives in `features/zzz_securityscan/`, so it runs after every
@@ -31,7 +28,7 @@ import org.junit.platform.suite.api.Suite
  */
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features")
+@SelectPackages("features")
 @ConfigurationParameter(key = Constants.EXECUTION_ORDER_PROPERTY_NAME, value = "lexical")
 @ConfigurationParameter(
     key = Constants.GLUE_PROPERTY_NAME,

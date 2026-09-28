@@ -103,7 +103,7 @@ plus `GLUE_PROPERTY_VALUES_SECURITY` appended for the scan runner):
 ```kotlin
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features")
+@SelectPackages("features")
 @ConfigurationParameter(
     key = Constants.GLUE_PROPERTY_NAME,
     value = BddLibConfigConstants.GLUE_PROPERTY_VALUES_REST_DATABASE +

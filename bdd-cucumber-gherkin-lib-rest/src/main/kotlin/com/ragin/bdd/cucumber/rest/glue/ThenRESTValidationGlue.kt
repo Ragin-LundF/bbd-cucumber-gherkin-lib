@@ -6,6 +6,7 @@ import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.executionTime
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.latestResponse
 import com.ragin.bdd.cucumber.core.ScenarioStateContext.scenarioContextMap
+import com.ragin.bdd.cucumber.rest.extensions.asNonNullMap
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Then
@@ -97,13 +98,11 @@ class ThenRESTValidationGlue(
 
     @Then("I ensure that the body of the response contains the following fields and values")
     fun thenEnsureTheBodyOfTheResponseContainsFieldWithValues(dataTable: DataTable) {
-        val contextDataTableMap = dataTable.asMap(String::class.java, String::class.java)
-        val keySet: Set<String> = contextDataTableMap.keys
-        for (key in keySet) {
+        dataTable.asNonNullMap().forEach { (fieldPath, expectedValue) ->
             jsonUtils.validateJsonField(
                 originalJson = latestResponse!!.body,
-                fieldPath = key,
-                expectedValue = contextDataTableMap[key]!!
+                fieldPath = fieldPath,
+                expectedValue = expectedValue
             )
         }
     }

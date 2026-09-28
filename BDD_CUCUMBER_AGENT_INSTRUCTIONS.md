@@ -81,7 +81,7 @@ The library's glue packages must be registered explicitly. Use the constants fro
 ```kotlin
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features")
+@SelectPackages("features")
 @ConfigurationParameter(
     key = Constants.GLUE_PROPERTY_NAME,
     value = BddLibConfigConstants.GLUE_PROPERTY_VALUES_REST_DATABASE +
