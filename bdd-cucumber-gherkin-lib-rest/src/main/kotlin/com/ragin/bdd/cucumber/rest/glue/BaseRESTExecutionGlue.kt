@@ -19,7 +19,6 @@ import io.cucumber.datatable.DataTable
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.TestRestTemplate
-import org.springframework.boot.resttestclient.exchange
 import org.springframework.boot.resttestclient.postForEntity
 import org.springframework.core.env.Environment
 import org.springframework.core.io.ByteArrayResource
@@ -133,11 +132,9 @@ abstract class BaseRESTExecutionGlue(
         val startedAt = System.currentTimeMillis()
         runCatching {
             setLatestResponse(
-                latestResponse = restTemplate.exchange<String>(
-                    url = targetUrl,
-                    method = httpMethod,
-                    requestEntity = httpEntity
-                )
+                // Not the reified exchange<String>(): inlined into this lambda, Kotlin generates a class that
+                // the JVM rejects on getDeclaringClass(), which Cucumber 8 calls for every glue class.
+                latestResponse = restTemplate.exchange(targetUrl, httpMethod, httpEntity, String::class.java)
             )
         }.onFailure { error ->
             handleRestError(error = error)
@@ -240,11 +237,9 @@ abstract class BaseRESTExecutionGlue(
         val startedAt = System.currentTimeMillis()
         runCatching {
             setLatestResponse(
-                latestResponse = restTemplate.exchange<String>(
-                    url = targetUrl,
-                    method = HttpMethod.POST,
-                    requestEntity = httpEntity
-                )
+                // Not the reified exchange<String>(): inlined into this lambda, Kotlin generates a class that
+                // the JVM rejects on getDeclaringClass(), which Cucumber 8 calls for every glue class.
+                latestResponse = restTemplate.exchange(targetUrl, HttpMethod.POST, httpEntity, String::class.java)
             )
         }.onFailure { error ->
             handleRestError(error = error)

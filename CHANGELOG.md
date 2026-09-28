@@ -1,5 +1,75 @@
 # Release 3.12.0
-Upgrade to Cucumber 8.x
+
+## Breaking Changes
+
+### Upgrade to Cucumber 8.x - jUnit 6.1 is required
+Cucumber 8 is built against jUnit 6.1 (e.g. `ParallelHierarchicalTestExecutorServiceFactory`), but Spring Boot 4.1.x
+still manages jUnit 6.0.x. With the managed version the Cucumber engine fails when the test run starts. The version
+override of this library is not published, so every consuming project has to raise the jUnit version itself until
+Spring Boot manages 6.1 or later:
+
+```groovy
+// build.gradle, with the io.spring.dependency-management plugin
+ext["junit-jupiter.version"] = "6.1.3"
+```
+
+```kotlin
+// build.gradle.kts, without the plugin
+testImplementation(platform("org.junit:junit-bom:6.1.3"))
+```
+
+### Other changes of Cucumber 8 that can affect a consuming project
+- **Nullability is declared with [JSpecify](https://jspecify.dev/).** Kotlin now sees the cells of
+  `DataTable.asLists()`, `asMap()` and similar as nullable. Own glue code that treats them as non-null gets compile
+  errors or warnings. An empty cell in a feature file is `null`.
+- **Classes not designed for extension are `final` now** and utility classes can no longer be instantiated.
+  Projects that extend Cucumber classes (plugins, formatters) have to switch to composition.
+- **Jackson is an opt-in dependency of `cucumber-core`.** The `json`, `message` and `html` plugins need it at runtime.
+  This library brings `jackson-databind` 3.x, so nothing changes as long as it is not excluded.
+- **Plugin exceptions are no longer suppressed**, so a plugin that failed silently before fails the run now.
+- Partial matches with `cucumber.filter.name` are aligned with the other Cucumber implementations.
+- Baseline is Java 17.
+
+### Deprecated and removed Cucumber modules
+- Deprecated for removal: `cucumber-junit` (jUnit 4 runner) and `cucumber-testng`. Use
+  `cucumber-junit-platform-engine` with `@Suite` runners, as this library does.
+- Removed: `cucumber-openejb` (use `cucumber-jakarta-openejb`), `cucumber-cdi2` (use `cucumber-jakarta-cdi`) and
+  `cucumber-deltaspike` (no replacement).
+
+### Glue classes must survive `getDeclaringClass()`
+Cucumber 8 inspects every class of a glue package with `getDeclaringClass()` to print hints about the glue
+configuration. Kotlin can generate classes that the JVM rejects there, which aborts the whole run with
+`IncompatibleClassChangeError: ... disagree on InnerClasses attribute`. A known trigger is a reified inline function
+that creates an anonymous object inside a lambda, e.g. `runCatching { restTemplate.exchange<String>(...) }`. The
+library glue no longer does this. Own glue classes of a project can hit the same error; use the non-reified variant
+there, e.g. `restTemplate.exchange(url, method, entity, String::class.java)`.
+
+## Changes
+
+### Empty `DataTable` cells
+- The key/value sentences (`that the following users and tokens are existing`,
+  `that the context contains the following 'key' and 'value' pairs`,
+  `I ensure that the body of the response contains the following fields and values`) fail with a message that names
+  the row when a cell is empty, instead of a `NullPointerException`.
+- A form-data sentence sends an empty value cell as an empty form field. An empty field name fails the step.
+
+## Hints
+
+### Management port and the security scan
+When the actuator runs on its own port, the security scan only exposes the application port to the scanner container,
+unless every port is listed in `cucumbertest.security.target.exposed-ports`. With `RANDOM_PORT`, placeholders like
+`${management.server.port}` resolve to `0` there, so they do not help.
+
+The simplest solution for the tests is to run the actuator on the application port:
+
+```yaml
+management:
+  server:
+    port: ${server.port}
+```
+
+Spring Boot then starts no separate management server, `/actuator/...` is answered by the application port and the
+scan covers it without any further configuration.
 
 # Release 3.11.0
 
