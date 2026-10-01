@@ -42,6 +42,8 @@ subprojects {
         apply plugin: "kotlin-spring"
         apply plugin: "org.springframework.boot"
         apply plugin: "io.spring.dependency-management"
+        // overrides the JUnit BOM version managed by Spring Boot - see libs.versions.toml
+        ext["junit-jupiter.version"] = libs.versions.junit.get()
         apply plugin: "dev.detekt"
         apply plugin: "org.jetbrains.kotlinx.kover"
 

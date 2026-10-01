@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CucumberJUnit" type="JUnit" factoryName="JUnit">
-    <module name="bdd-cucumber-gherkin-lib.test" />
+    <module name="bdd-cucumber-gherkin-lib.bdd-cucumber-gherkin-lib.test" />
     <useClassPathOnly />
     <extension name="com.egoshard.intellij.k8s-runtime-config-plugin">
       <option name="ENABLED" value="false" />

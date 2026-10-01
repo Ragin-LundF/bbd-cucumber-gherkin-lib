@@ -18,7 +18,14 @@ data class ScannerProperties @JvmOverloads constructor(
      * Empty by default because installing needs access to the scanner's marketplace, which
      * a locked-down build agent may not have.
      */
-    val plugins: List<String> = emptyList()
+    val plugins: List<String> = emptyList(),
+    /**
+     * Lets the scanner start a headless browser for rules that need one (ZAP: DOM based XSS).
+     *
+     * Off by default: a REST API has no DOM to attack, and the scanner image usually cannot
+     * launch the browser anyway, which only adds warnings and scan time.
+     */
+    val browserEnabled: Boolean = false
 ) {
     private companion object {
         const val DEFAULT_STARTUP_TIMEOUT_MINUTES = 5L

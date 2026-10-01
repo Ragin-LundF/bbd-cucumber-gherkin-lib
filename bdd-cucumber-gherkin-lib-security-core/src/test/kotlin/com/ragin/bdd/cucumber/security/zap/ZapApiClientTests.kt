@@ -69,6 +69,27 @@ internal class ZapApiClientTests {
     }
 
     @Test
+    internal fun `disables the scan rules as one comma separated list`() {
+        client.disableScanRules(ruleIds = listOf("40026", "40027"))
+
+        assertEquals(expected = listOf("/JSON/ascan/action/disableScanners/"), actual = paths)
+        assertEquals(expected = listOf(mapOf("ids" to "40026,40027")), actual = params)
+        assertEquals(expected = listOf<String?>(ZapContainer.API_HOST), actual = hosts)
+    }
+
+    @Test
+    internal fun `disabling scan rules fails when ZAP rejects it`() {
+        responseBody = """{"code":"does_not_exist","message":"Does Not Exist"}"""
+
+        val failure = assertFailsWith<IllegalStateException> { client.disableScanRules(ruleIds = listOf("40026")) }
+
+        assertEquals(
+            expected = true,
+            actual = failure.message!!.contains(other = "/JSON/ascan/action/disableScanners/")
+        )
+    }
+
+    @Test
     internal fun `report leaves out false positives`() {
         val containerPath = client.generateReport(title = "Scan", template = "traditional-html", fileName = "r.html")
 

@@ -3,6 +3,7 @@ package com.ragin.bdd.cucumber.rest.glue
 import com.ragin.bdd.cucumber.config.BddProperties
 import com.ragin.bdd.cucumber.core.BaseCucumberCore
 import com.ragin.bdd.cucumber.core.ScenarioStateContext
+import com.ragin.bdd.cucumber.rest.extensions.asNonNullMap
 import com.ragin.bdd.cucumber.utils.BddJsonUtils
 import io.cucumber.datatable.DataTable
 import io.cucumber.java.en.Given
@@ -60,11 +61,8 @@ class GivenRESTStateGlue(jsonUtils: BddJsonUtils, bddProperties: BddProperties) 
      */
     @Given("that the following users and tokens are existing")
     fun givenThatUsersAndTokensExisting(userDataTable: DataTable) {
-        val userDataMap = userDataTable.asMap(String::class.java, String::class.java)
-        val keySet: Set<String> = userDataMap.keys
-        for (key in keySet) {
-            ScenarioStateContext.userTokenMap[key] = ScenarioStateContext
-                .resolveEntry(key = userDataMap[key]!!)
+        userDataTable.asNonNullMap().forEach { (user, token) ->
+            ScenarioStateContext.userTokenMap[user] = ScenarioStateContext.resolveEntry(key = token)
         }
     }
 
@@ -146,11 +144,7 @@ class GivenRESTStateGlue(jsonUtils: BddJsonUtils, bddProperties: BddProperties) 
      */
     @Given("that the context contains the following 'key' and 'value' pairs")
     fun givenThatContextContainsKeyValuePairFromDataTable(dataTable: DataTable) {
-        val contextDataTableMap = dataTable.asMap(String::class.java, String::class.java)
-        val keySet: Set<String> = contextDataTableMap.keys
-        for (key in keySet) {
-            ScenarioStateContext.scenarioContextMap[key] = contextDataTableMap[key]!!
-        }
+        ScenarioStateContext.scenarioContextMap.putAll(dataTable.asNonNullMap())
     }
 
     /**

@@ -81,7 +81,7 @@ The library's glue packages must be registered explicitly. Use the constants fro
 ```kotlin
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features")
+@SelectPackages("features")
 @ConfigurationParameter(
     key = Constants.GLUE_PROPERTY_NAME,
     value = BddLibConfigConstants.GLUE_PROPERTY_VALUES_REST_DATABASE +
@@ -1028,6 +1028,7 @@ All properties are optional.
 | `scanner.image`           | `zaproxy/zap-stable:latest`            | Scanner image. A floating tag keeps the rule set current but makes runs irreproducible — pin it when needed. |
 | `scanner.startup-timeout` | `5m`                                   | Container start-up timeout.                                                                                  |
 | `scanner.plugins`         | *(empty)*                              | Scanner add-ons to install on start-up. Needs marketplace access from the build agent.                       |
+| `scanner.browser-enabled` | `false`                                | Let the scanner launch a headless browser for rules that need one (ZAP 40026, DOM based XSS). Off, because a REST API has no DOM.|
 | `target.host`             | `host.testcontainers.internal`         | How the application is reachable **from inside** the container.                                              |
 | `target.port`             | *(the bound port)*                     | Primary port. When unset, the port the application actually bound is used.                                   |
 | `target.exposed-ports`    | *(empty)*                              | All host ports that must be reachable from the container (public, intranet, management).                     |

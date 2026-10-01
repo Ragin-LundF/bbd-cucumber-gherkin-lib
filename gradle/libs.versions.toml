@@ -2,11 +2,14 @@
 kotlin = "2.3.21"
 detekt = "2.0.0-alpha.6"
 springBoot = "4.1.1"
-cucumber = "7.34.8"
+cucumber = "8.0.2"
 testcontainers = "2.0.5"
 # Only for the demo application of the tests: Spring Boot 4.1.1 manages 11.0.24, which has critical CVEs
 # (CVE-2026-65182, CVE-2026-65905, CVE-2026-68525). Drop this once Spring Boot manages 11.0.25 or later.
 tomcat = "11.0.26"
+# Cucumber 8 is built against JUnit 6.1 (e.g. ParallelHierarchicalTestExecutorServiceFactory), but Spring Boot 4.1.1
+# manages 6.0.3. Drop this once Spring Boot manages 6.1 or later.
+junit = "6.1.3"
 
 #
 [libraries]
@@ -15,7 +18,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 #
 # --- Common Libs and Utils
 logging-logger = "io.github.oshai:kotlin-logging-jvm:8.0.4"
-logging-slf4j = "org.slf4j:slf4j-simple:2.0.19"
+logging-slf4j = "org.slf4j:slf4j-simple:2.0.20"
 #
 commons-io = "commons-io:commons-io:2.22.0"
 commons-text = "org.apache.commons:commons-text:1.15.0"
@@ -58,7 +61,7 @@ testing-konsist = "com.lemonappdev:konsist:0.17.3"
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
 # pinned rather than managed by the Spring Boot BOM: the security core module is published for
 # projects on another Spring Boot generation, which would resolve no version for it at all
-jackson-databind = "tools.jackson.core:jackson-databind:3.1.5"
+jackson-databind = "tools.jackson.core:jackson-databind:3.2.3"
 jackson-jaxb = { module = "tools.jackson.module:jackson-module-jaxb-annotations" }
 jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
 jackson-module-blackbird = { module = "tools.jackson.module:jackson-module-blackbird" }
