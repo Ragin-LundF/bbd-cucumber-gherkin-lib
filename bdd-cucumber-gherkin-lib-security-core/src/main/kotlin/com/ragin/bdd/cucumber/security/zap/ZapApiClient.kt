@@ -70,6 +70,11 @@ class ZapApiClient(private val apiBaseUrl: () -> String) {
         )
     }
 
+    /** Disables the active scan rules [ruleIds] in the default scan policy. */
+    fun disableScanRules(ruleIds: Collection<String>): JsonNode {
+        return json(path = "/JSON/ascan/action/disableScanners/", "ids" to ruleIds.joinToString(separator = ","))
+    }
+
     fun startActiveScan(url: String, recurse: Boolean, inScopeOnly: Boolean): String {
         return required(
             response = json(

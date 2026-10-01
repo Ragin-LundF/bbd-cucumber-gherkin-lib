@@ -36,7 +36,23 @@ class ZapSecurityScanner(
             return
         }
         container.start(hostPorts = exposedHostPorts)
+        if (!properties.scanner.browserEnabled) {
+            disableBrowserRules()
+        }
         properties.alerts.ignoredRuleIds.forEach(::ignoreRule)
+    }
+
+    /**
+     * Lenient as well: if the rules stay on, ZAP only tries to launch a browser and logs warnings
+     * such as "Failed to configure ZAP extension on browser launch".
+     */
+    private fun disableBrowserRules() {
+        log.info { "disabling the browser based scan rules $BROWSER_RULE_IDS" }
+        runCatching {
+            client.disableScanRules(ruleIds = BROWSER_RULE_IDS)
+        }.onFailure { error ->
+            log.warn(throwable = error) { "could not disable the browser based scan rules $BROWSER_RULE_IDS" }
+        }
     }
 
     /**
@@ -166,6 +182,12 @@ class ZapSecurityScanner(
         }
 
         private const val COMPLETE = 100
+
+        /**
+         * Active scan rules that launch a browser: 40026 = Cross Site Scripting (DOM Based). The
+         * spiders do so as well, but the scan never starts one.
+         */
+        private val BROWSER_RULE_IDS = listOf("40026")
         private val log = KotlinLogging.logger {}
     }
 }

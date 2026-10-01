@@ -1,12 +1,12 @@
 package com.ragin.bdd.cucumber.security.config
 
 import com.ragin.bdd.cucumber.security.models.SecurityRisk
+import org.springframework.boot.context.properties.bind.Binder
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import org.springframework.boot.context.properties.bind.Binder
-import org.springframework.boot.context.properties.source.MapConfigurationPropertySource
 
 /**
  * The configuration is split over one file per group, so the kebab-case keys a project writes
@@ -18,6 +18,7 @@ internal class SecurityScanPropertiesTests {
         val properties = bind(
             "cucumbertest.security.enabled" to "true",
             "cucumbertest.security.scanner.image" to "zaproxy/zap-stable:latest",
+            "cucumbertest.security.scanner.browser-enabled" to "true",
             "cucumbertest.security.target.host" to "host.testcontainers.internal",
             "cucumbertest.security.target.exposed-ports[0]" to "50000",
             "cucumbertest.security.api.definition-urls[0]" to "http://localhost:50000/openapi.yaml",
@@ -30,6 +31,7 @@ internal class SecurityScanPropertiesTests {
 
         assertTrue(actual = properties.enabled)
         assertEquals(expected = "zaproxy/zap-stable:latest", actual = properties.scanner.image)
+        assertTrue(actual = properties.scanner.browserEnabled)
         assertEquals(expected = listOf(50000), actual = properties.target.exposedPorts)
         assertEquals(
             expected = listOf("http://localhost:50000/openapi.yaml"),
@@ -47,6 +49,7 @@ internal class SecurityScanPropertiesTests {
         val properties = bind()
 
         assertFalse(actual = properties.enabled)
+        assertFalse(actual = properties.scanner.browserEnabled)
         assertEquals(expected = SecurityRisk.LOW, actual = properties.alerts.minConfidence)
         assertFalse(actual = properties.recording.replayEnabled)
     }

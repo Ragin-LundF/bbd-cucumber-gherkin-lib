@@ -53,6 +53,12 @@ there, e.g. `restTemplate.exchange(url, method, entity, String::class.java)`.
   the row when a cell is empty, instead of a `NullPointerException`.
 - A form-data sentence sends an empty value cell as an empty form field. An empty field name fails the step.
 
+### Security scan without a browser
+The browser based scan rules (ZAP `40026`, Cross Site Scripting (DOM Based)) are disabled by default. A REST API has
+no DOM to attack, and the scanner container logged `RedirectScript - Failed to configure ZAP extension on browser
+launch` while the rule tried to start a browser. `cucumbertest.security.scanner.browser-enabled: true` restores the
+previous behavior.
+
 ## Hints
 
 ### Management port and the security scan

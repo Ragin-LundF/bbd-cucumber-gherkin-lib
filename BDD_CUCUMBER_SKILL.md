@@ -475,7 +475,8 @@ covers the whole run and is shared by all target ports.
 
 Properties (prefix `cucumbertest.security`, all optional, defaults in brackets): `enabled`
 [`false`], `scanner.image` [`zaproxy/zap-stable:latest`; pin it when a build must be reproducible],
-`scanner.startup-timeout` [`5m`], `scanner.plugins`, `target.host`
+`scanner.startup-timeout` [`5m`], `scanner.plugins`,
+`scanner.browser-enabled` [`false`], `target.host`
 [`host.testcontainers.internal`], `target.port` [the bound port], `target.exposed-ports`,
 `api.definition-urls`, `scan.poll-interval` [`10s`], `scan.recurse` [`true`], `scan.in-scope-only`
 [`false`], `alerts.ignored-rule-ids`, `alerts.min-confidence` [`LOW`], `report.template`
