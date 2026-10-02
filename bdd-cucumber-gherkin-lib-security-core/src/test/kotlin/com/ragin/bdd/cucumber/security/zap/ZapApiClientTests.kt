@@ -1,5 +1,7 @@
 package com.ragin.bdd.cucumber.security.zap
 
+import com.ragin.bdd.cucumber.security.config.AlertFilterProperties
+import com.ragin.bdd.cucumber.security.config.AlertFilterRisk
 import com.sun.net.httpserver.HttpServer
 import java.net.InetSocketAddress
 import java.net.URLDecoder
@@ -46,7 +48,7 @@ internal class ZapApiClientTests {
 
     @Test
     internal fun `global alert filter marks the rule as false positive`() {
-        client.addGlobalAlertFilter(ruleId = "40042")
+        client.addGlobalAlertFilter(filter = AlertFilterProperties(ruleId = "40042"))
 
         assertEquals(expected = listOf("/JSON/alertFilter/action/addGlobalAlertFilter/"), actual = paths)
         assertEquals(
@@ -60,11 +62,84 @@ internal class ZapApiClientTests {
     internal fun `global alert filter fails when ZAP rejects it`() {
         responseBody = """{"code":"no_implementor","message":"No Implementor"}"""
 
-        val failure = assertFailsWith<IllegalStateException> { client.addGlobalAlertFilter(ruleId = "40042") }
+        val failure = assertFailsWith<IllegalStateException> {
+            client.addGlobalAlertFilter(filter = AlertFilterProperties(ruleId = "40042"))
+        }
 
         assertEquals(
             expected = true,
             actual = failure.message!!.contains(other = "/JSON/alertFilter/action/addGlobalAlertFilter/")
+        )
+    }
+
+    @Test
+    internal fun `global alert filter maps the automation framework fields onto the API names`() {
+        client.addGlobalAlertFilter(
+            filter = AlertFilterProperties(
+                ruleId = "10038",
+                ruleName = "Content Security Policy (CSP) Header Not Set",
+                newRisk = AlertFilterRisk.LOW,
+                url = ".*/actuator/.*",
+                urlRegex = true,
+                parameter = "id",
+                parameterRegex = true,
+                attack = "<script>",
+                attackRegex = true,
+                evidence = "Server: .*",
+                evidenceRegex = true,
+                methods = listOf("GET", "POST")
+            )
+        )
+
+        assertEquals(
+            expected = listOf(
+                mapOf(
+                    "ruleId" to "10038",
+                    "newLevel" to "1",
+                    "enabled" to "true",
+                    "url" to ".*/actuator/.*",
+                    "urlIsRegex" to "true",
+                    "parameter" to "id",
+                    "parameterIsRegex" to "true",
+                    "attack" to "<script>",
+                    "attackIsRegex" to "true",
+                    "evidence" to "Server: .*",
+                    "evidenceIsRegex" to "true",
+                    "methods" to "GET,POST"
+                )
+            ),
+            actual = params
+        )
+    }
+
+    @Test
+    internal fun `global alert filter sends a matcher without its regex flag when it is a plain string`() {
+        client.addGlobalAlertFilter(
+            filter = AlertFilterProperties(ruleId = "10038", url = "http://localhost/actuator/health")
+        )
+
+        assertEquals(
+            expected = listOf(
+                mapOf(
+                    "ruleId" to "10038",
+                    "newLevel" to "-1",
+                    "enabled" to "true",
+                    "url" to "http://localhost/actuator/health"
+                )
+            ),
+            actual = params
+        )
+    }
+
+    @Test
+    internal fun `global alert filter sends the ZAP level of every new risk`() {
+        AlertFilterRisk.entries.forEach { risk ->
+            client.addGlobalAlertFilter(filter = AlertFilterProperties(ruleId = "10038", newRisk = risk))
+        }
+
+        assertEquals(
+            expected = listOf("-1", "0", "1", "2", "3"),
+            actual = params.map { it.getValue("newLevel") }
         )
     }
 

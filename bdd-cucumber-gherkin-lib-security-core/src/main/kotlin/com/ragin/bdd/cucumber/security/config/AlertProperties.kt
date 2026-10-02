@@ -17,5 +17,13 @@ data class AlertProperties @JvmOverloads constructor(
      */
     val ignoredRuleIds: Set<String> = emptySet(),
     /** Findings below this confidence are ignored. */
-    val minConfidence: SecurityRisk = SecurityRisk.LOW
+    val minConfidence: SecurityRisk = SecurityRisk.LOW,
+    /**
+     * Scanner alert filters, applied to every alert raised after the scanner started.
+     *
+     * Unlike [ignoredRuleIds] they act inside the scanner: the gate sees the changed risk because
+     * it reads the alerts back. A 'False Positive' alert carries the lowest confidence, so the gate
+     * drops it as long as [minConfidence] is above [SecurityRisk.INFORMATIONAL].
+     */
+    val alertFilter: List<AlertFilterProperties> = emptyList()
 )

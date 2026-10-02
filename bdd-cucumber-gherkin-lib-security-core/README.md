@@ -112,7 +112,13 @@ lives with whoever creates the bean. Build it directly:
 val properties = SecurityScanProperties(
     enabled = true,
     target = TargetProperties(port = 8080, exposedPorts = listOf(8080, 8081)),
-    alerts = AlertProperties(ignoredRuleIds = setOf("40042"))
+    alerts = AlertProperties(
+        ignoredRuleIds = setOf("40042"),
+        // fields of the ZAP Automation Framework 'alertFilter' job
+        alertFilter = listOf(
+            AlertFilterProperties(ruleId = "10038", url = ".*/actuator/.*", urlRegex = true, methods = listOf("GET"))
+        )
+    )
 )
 ```
 
@@ -175,7 +181,8 @@ silently drop findings on the others.
 - Automated scanners produce false positives. Every finding has to be checked manually; use
   `alerts.ignored-rule-ids` for the ones you have assessed and accepted, with a comment saying why. Ignored rules are
   dropped by the gate and left out of the report (ZAP marks them as false positive through the `alertFilters` add-on,
-  which `zap-stable` bundles).
+  which `zap-stable` bundles). `alerts.alert-filter` narrows this down to a url, parameter, attack, evidence or HTTP
+  methods, or sets another risk; its fields are those of the ZAP Automation Framework `alertFilter` job.
 - A floating image tag means two builds of the same commit can report different findings. Pin `scanner.image` when a
   run has to be reproducible.
 - The scan only covers what the proxy recorded. Growing the test suite grows the attack surface.
