@@ -13,7 +13,7 @@ plugins {
     id "java-library"
     id "maven-publish"
     alias(libs.plugins.sonarqube)
-    alias(libs.plugins.jreleaser) apply(false)
+    alias(libs.plugins.jreleaser)
     alias(libs.plugins.spring.boot) apply(false)
     alias(libs.plugins.kotlin.jvm) apply(false)
     alias(libs.plugins.kotlin.spring) apply(false)
@@ -26,6 +26,39 @@ apply from: "${rootDir}/config/gradle/wrapper.gradle"
 apply from: "${rootDir}/config/gradle/dependency_updates.gradle"
 apply from: "${rootDir}/config/gradle/kover_sonar.gradle"
 
+// JReleaser runs only in the root project: all modules are staged into the root
+// build/staging-deploy and uploaded to Maven Central as one deployment (one release).
+jreleaser {
+    project {
+        description = "Cucumber BDD library for simpler e2e tests"
+        copyright = "Ragin-LundF"
+        license = "MIT"
+        links {
+            homepage = "https://github.com/Ragin-LundF/bbd-cucumber-gherkin-lib"
+        }
+        authors = ["Ragin-LundF"]
+    }
+    signing {
+        active = 'ALWAYS'
+        verify = false
+        armored = true
+        mode = 'FILE'
+        publicKey = "${rootDir}/ragin_public.pgp"
+        secretKey = "${rootDir}/ragin_secret.pgp"
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository(layout.buildDirectory.dir('staging-deploy').get().asFile.path)
+                }
+            }
+        }
+    }
+}
+
 subprojects {
     // export of classes for subscripts
     ext.Detekt = Detekt
@@ -33,7 +66,6 @@ subprojects {
 
     apply plugin: "idea"
     apply plugin: "maven-publish"
-    apply plugin: "org.jreleaser"
     apply from: "${rootDir}/config/gradle/publishing.gradle"
 
     if (it.name != 'bdd-cucumber-gherkin-lib-bom') {
