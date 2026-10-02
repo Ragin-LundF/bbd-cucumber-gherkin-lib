@@ -93,8 +93,28 @@ class SecurityScan(
         gate.verify(alerts = relevantAlerts(), failFrom = failFrom)
     }
 
-    fun storeReport(destination: Path) {
-        scanner.storeReport(destination = destination)
+    fun storeReport(template: String, destination: Path) {
+        scanner.storeReport(template = template, destination = destination)
+    }
+
+    /**
+     * Writes every configured report into [outputDir].
+     *
+     * One broken template must not cost the other reports, so all of them are attempted before
+     * the first failure is rethrown, with the later ones attached as suppressed.
+     */
+    fun storeReports(outputDir: Path = Path.of(properties.report.outputDir)) {
+        val failures = properties.report.templates.mapNotNull { report ->
+            runCatching {
+                storeReport(template = report.template, destination = outputDir.resolve(report.fileName))
+            }.onFailure { error ->
+                log.error(throwable = error) { "could not write the report ${report.fileName} (${report.template})" }
+            }.exceptionOrNull()
+        }
+        failures.firstOrNull()?.let { first ->
+            failures.drop(n = 1).forEach(first::addSuppressed)
+            throw first
+        }
     }
 
     fun exportRecording(destination: Path) {
@@ -119,7 +139,7 @@ class SecurityScan(
         runScan(maxDuration = maxDuration)
         awaitAnalysis()
 
-        storeReport(destination = Path.of(properties.report.outputDir).resolve(properties.report.fileName))
+        storeReports()
         verifyAlerts(failFrom = failFrom)
     }
 

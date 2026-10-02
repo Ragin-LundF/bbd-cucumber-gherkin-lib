@@ -1,0 +1,91 @@
+{
+    "@programName": "ZAP",
+    "@version": "2.16.1",
+    "@generated": "Fri, 2 Oct 2026 09:16:33",
+    "created": "2026-10-02T09:16:33.000Z",
+    "site": [
+        {
+            "@name": "http://host.testcontainers.internal:50000",
+            "@host": "host.testcontainers.internal",
+            "@port": "50000",
+            "@ssl": "false",
+            "alerts": [
+                {
+                    "pluginid": "10038",
+                    "alertRef": "10038-1",
+                    "alert": "Content Security Policy (CSP) Header Not Set",
+                    "name": "Content Security Policy (CSP) Header Not Set",
+                    "riskcode": "2",
+                    "confidence": "3",
+                    "riskdesc": "Medium (High)",
+                    "desc": "<p>Content Security Policy (CSP) is an added layer of security.</p><p>It detects <script> injection.</p>",
+                    "instances": [
+                        {
+                            "id": "7",
+                            "uri": "http://host.testcontainers.internal:50000/api/v1/labelling",
+                            "nodeName": "http://host.testcontainers.internal:50000/api/v1/labelling",
+                            "method": "GET",
+                            "param": "",
+                            "attack": "",
+                            "evidence": "<script>alert(1)</script>",
+                            "otherinfo": "",
+                            "request-header": "GET http://host.testcontainers.internal:50000/api/v1/labelling HTTP/1.1\r\nHost: host.testcontainers.internal:50000\r\n\r\n",
+                            "request-body": "",
+                            "response-header": "HTTP/1.1 200\r\nContent-Type: application/json\r\n\r\n",
+                            "response-body": "{\"id\":\"42\"}"
+                        },
+                        {
+                            "id": "8",
+                            "uri": "http://host.testcontainers.internal:50000/api/v1/other",
+                            "method": "POST",
+                            "param": "id",
+                            "attack": "' OR '1'='1",
+                            "evidence": "",
+                            "otherinfo": "found in the body"
+                        }
+                    ],
+                    "count": "2",
+                    "systemic": false,
+                    "solution": "<p>Ensure that your web server sets the Content-Security-Policy header.</p>",
+                    "otherinfo": "",
+                    "reference": "<p>https://developer.mozilla.org/en-US/docs/Web/Security/CSP</p><p>javascript:alert(1)</p>",
+                    "cweid": "693",
+                    "wascid": "15",
+                    "sourceid": "1",
+                    "tags": [
+                        {
+                            "tag": "OWASP_2021_A05",
+                            "link": "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "@name": "http://host.testcontainers.internal:8088",
+            "@host": "host.testcontainers.internal",
+            "@port": "8088",
+            "@ssl": "false",
+            "alerts": [
+                {
+                    "pluginid": "40042",
+                    "name": "Spring Actuator Information Leak",
+                    "riskcode": "1",
+                    "confidence": "2",
+                    "desc": "<p>Spring Actuator for Health is enabled.</p>",
+                    "instances": [],
+                    "cweid": "-1",
+                    "wascid": "13"
+                },
+                {
+                    "pluginid": "90022",
+                    "name": "Application Error Disclosure",
+                    "riskcode": "3",
+                    "confidence": "4",
+                    "instances": []
+                }
+            ]
+        }
+    ],
+    "sequences": []
+}

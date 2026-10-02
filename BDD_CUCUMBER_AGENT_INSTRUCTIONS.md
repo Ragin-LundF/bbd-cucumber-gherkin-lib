@@ -1008,7 +1008,9 @@ part:
 | `Then I import the API definition "<url>" into the security scanner`   | imports one OpenAPI definition; a failure is logged and ignored     |
 | `Then I run the security scan for max. <int> minutes`                  | attacks every target, then waits for the analysis to catch up       |
 | `Then I ensure that no security finding has a risk of "<risk>" or higher` | the gate on its own                                               |
-| `Then I store the security scan report to the file "<path>"`           | writes the report                                                   |
+| `Then I store the security scan reports to the directory "<path>"`     | writes every report of `report.templates` into the directory        |
+| `Then I store the security scan report to the file "<path>"`           | writes the first report of `report.templates`                       |
+| `Then I store the security scan report with template "<template>" to the file "<path>"` | writes one report with any template                |
 | `Then I export the recorded security scan traffic to the file "<path>"` | writes the HAR recording                                           |
 | `Then I make sure that the security scanner is stopped`                | stops the container (the only sentence that also runs when disabled) |
 
@@ -1044,10 +1046,9 @@ All properties are optional.
 | `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report. |
 | `alerts.alert-filter`     | *(empty)*                              | ZAP global alert filters: `rule-id`, `rule-name`, `new-risk` (`False Positive` default, `Info`, `Low`, `Medium`, `High`), `url`/`url-regex`, `parameter`/`parameter-regex`, `attack`/`attack-regex`, `evidence`/`evidence-regex`, `methods` — the fields of the ZAP Automation Framework `alertFilter` job. A rejected filter fails the scan start. |
 | `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                  |
-| `report.template`         | `traditional-html`                     | Report template.                                                                                             |
 | `report.title`            | `Security scan`                        | Report title.                                                                                                |
-| `report.output-dir`       | `.`                                    | Directory the report is written to, absolute or relative to the working directory.                           |
-| `report.file-name`        | `security-report.html`                 | Report file name.                                                                                            |
+| `report.output-dir`       | `.`                                    | Directory the reports are written to, absolute or relative to the working directory.                         |
+| `report.templates`        | `bdd-modern-plus` → `security-report.html`, `traditional-xml` → `security-report.xml` | Reports to write, each `template` + `file-name`. Any ZAP template name, or `bdd-modern-plus` = the library's own all-in-one HTML (built from `traditional-json-plus`). A failing template does not stop the others; the scan fails afterwards. |
 | `recording.export`        | `true`                                 | Export the recorded traffic (HAR) after the run.                                                             |
 | `recording.export-path`   | `build/reports/security/recording.har` | Where the recording is written.                                                                              |
 | `recording.replay-from`   | *(unset)*                              | Host path of a previously exported recording — see §7.5.                                                     |
