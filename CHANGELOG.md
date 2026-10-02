@@ -1,3 +1,52 @@
+# Release 3.14.0
+
+## Breaking Changes
+
+### Several security scan reports: `report.templates` replaces `report.template` and `report.file-name`
+The DAST scan writes a list of reports now, each with its own template and file name. `report.template` and
+`report.file-name` (`ReportProperties.template` / `fileName`) are gone; move them into one entry of `report.templates`:
+
+```yaml
+# before
+cucumbertest:
+    security:
+        report:
+            template: traditional-html-plus
+            file-name: security-report.html
+# after
+cucumbertest:
+    security:
+        report:
+            templates:
+                - template: traditional-html-plus
+                  file-name: security-report.html
+```
+
+Without Spring: `ReportProperties(outputDir = ..., templates = listOf(ReportTemplateProperties(template = ..., fileName = ...)))`.
+A blank `template` or `file-name` fails at start-up.
+
+The default changes from `traditional-html` to two reports: the library's own `bdd-modern-plus` HTML
+(`security-report.html`) and `traditional-xml` (`security-report.xml`).
+
+An own `SecurityScanner` implementation has to take the template: `storeReport(template: String, destination: Path)`.
+
+## New features
+
+### Own all-in-one HTML report: `bdd-modern-plus`
+One self-contained HTML file built from ZAP's `traditional-json-plus`: counts per risk, an index of all alerts and, per
+alert, description, solution, references, CWE/WASC and every instance with evidence, request and response. Embedded
+styles, no JavaScript - instances fold away in `<details>` - so it stays readable when Jenkins strips inline styles.
+Any ZAP template can be listed next to it, e.g. `traditional-xml` to collect results across projects, see the
+[security README](bdd-cucumber-gherkin-lib-security/README.md#reports).
+
+All reports are attempted even if one template fails; the scan fails afterwards with the first error.
+
+### New sentences for reports
+- `I store the security scan reports to the directory {string}` - every report of `report.templates`.
+- `I store the security scan report with template {string} to the file {string}` - one report with any template.
+
+`I store the security scan report to the file {string}` writes the first entry of `report.templates`.
+
 # Release 3.13.0
 
 ## New features

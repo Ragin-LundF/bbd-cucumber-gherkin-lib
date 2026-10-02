@@ -1,5 +1,7 @@
 package com.ragin.bdd.cucumber.security
 
+import com.ragin.bdd.cucumber.security.config.ReportProperties
+import com.ragin.bdd.cucumber.security.config.ReportTemplateProperties
 import com.ragin.bdd.cucumber.security.config.SecurityScanProperties
 import com.ragin.bdd.cucumber.security.models.ProxyEndpoint
 import com.ragin.bdd.cucumber.security.models.SecurityAlert
@@ -13,6 +15,7 @@ import kotlin.test.assertFailsWith
 private const val PORT = 50000
 private const val INTRANET_PORT = 8088
 private const val PROXY_PORT = 8090
+private const val BROKEN_TEMPLATE = "does-not-exist"
 
 /**
  * Orchestration only - the pass/fail decision itself is covered by [SecurityAlertGateTests].
@@ -22,6 +25,7 @@ private const val PROXY_PORT = 8090
  */
 internal class SecurityScanTests {
     private val scannedTargets = mutableListOf<String>()
+    private val storedReports = mutableListOf<Pair<String, Path>>()
 
     @Test
     internal fun `derives one base url per distinct port in ascending order`() {
@@ -80,6 +84,49 @@ internal class SecurityScanTests {
         assertFailsWith<IllegalStateException> { scan.runScan(maxDuration = Duration.ofMinutes(1)) }
     }
 
+    @Test
+    internal fun `writes every configured report into the output directory`() {
+        val scan = SecurityScan(
+            properties = SecurityScanProperties(report = ReportProperties(outputDir = "build/reports/security")),
+            scanner = fakeScanner()
+        )
+
+        scan.storeReports()
+
+        assertEquals(
+            expected = listOf(
+                ReportProperties.OWN_HTML_TEMPLATE to Path.of("build/reports/security/security-report.html"),
+                "traditional-xml" to Path.of("build/reports/security/security-report.xml")
+            ),
+            actual = storedReports
+        )
+    }
+
+    @Test
+    internal fun `writes the remaining reports before failing on a broken template`() {
+        val scan = SecurityScan(
+            properties = SecurityScanProperties(
+                report = ReportProperties(
+                    templates = listOf(
+                        ReportTemplateProperties(template = BROKEN_TEMPLATE, fileName = "first.html"),
+                        ReportTemplateProperties(template = "traditional-xml", fileName = "report.xml"),
+                        ReportTemplateProperties(template = BROKEN_TEMPLATE, fileName = "third.html")
+                    )
+                )
+            ),
+            scanner = fakeScanner()
+        )
+
+        val failure = assertFailsWith<IllegalStateException> { scan.storeReports(outputDir = Path.of("out")) }
+
+        assertEquals(expected = listOf("traditional-xml" to Path.of("out/report.xml")), actual = storedReports)
+        assertEquals(expected = "no template $BROKEN_TEMPLATE for first.html", actual = failure.message)
+        assertEquals(
+            expected = listOf("no template $BROKEN_TEMPLATE for third.html"),
+            actual = failure.suppressed.map { it.message }
+        )
+    }
+
     private fun scanFor(
         ports: List<Int>,
         alertsByTarget: Map<String, List<SecurityAlert>> = emptyMap()
@@ -125,7 +172,10 @@ internal class SecurityScanTests {
 
             override fun exportRecording(destination: Path) = Unit
 
-            override fun storeReport(destination: Path) = Unit
+            override fun storeReport(template: String, destination: Path) {
+                check(template != BROKEN_TEMPLATE) { "no template $template for ${destination.fileName}" }
+                storedReports += template to destination
+            }
         }
     }
 

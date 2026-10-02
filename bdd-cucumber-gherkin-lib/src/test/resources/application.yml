@@ -39,6 +39,14 @@ cucumberTest:
   security:
     report:
       output-dir: build/reports/security
+      # the library's own all-in-one report, the XML for collecting results and ZAP's own HTML for comparison
+      templates:
+        - template: bdd-modern-plus
+          file-name: security-report.html
+        - template: traditional-xml
+          file-name: security-report.xml
+        - template: traditional-html-plus
+          file-name: security-report-zap.html
     cve:
       report:
         output-dir: build/reports/cve-scan

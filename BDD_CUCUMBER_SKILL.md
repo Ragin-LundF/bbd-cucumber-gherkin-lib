@@ -466,7 +466,9 @@ alternatives, for a different order or to opt out of a part:
 Then I import the API definition "https://host/openapi.json" into the security scanner
 Then I run the security scan for max. 30 minutes
 Then I ensure that no security finding has a risk of "MEDIUM" or higher
+Then I store the security scan reports to the directory "build/reports/security"
 Then I store the security scan report to the file "build/reports/security/report.html"
+Then I store the security scan report with template "traditional-xml" to the file "build/reports/security/report.xml"
 Then I export the recorded security scan traffic to the file "build/reports/security/recording.har"
 Then I make sure that the security scanner is stopped
 ```
@@ -483,9 +485,9 @@ Properties (prefix `cucumbertest.security`, all optional, defaults in brackets):
 `api.definition-urls`, `scan.poll-interval` [`10s`], `scan.recurse` [`true`], `scan.in-scope-only`
 [`false`], `alerts.ignored-rule-ids`, `alerts.alert-filter` (`rule-id`, `rule-name`, `new-risk` [`False Positive`],
 `url`/`url-regex`, `parameter`/`parameter-regex`, `attack`/`attack-regex`, `evidence`/`evidence-regex`, `methods`),
-`alerts.min-confidence` [`LOW`], `report.template`
-[`traditional-html`], `report.title`, `report.output-dir` [`.`], `report.file-name`
-[`security-report.html`], `recording.export` [`true`], `recording.export-path`
+`alerts.min-confidence` [`LOW`], `report.title`, `report.output-dir` [`.`], `report.templates` (list of
+`template` + `file-name`; [`bdd-modern-plus` → `security-report.html`, `traditional-xml` → `security-report.xml`];
+any ZAP template name, `bdd-modern-plus` = the library's own all-in-one HTML), `recording.export` [`true`], `recording.export-path`
 [`build/reports/security/recording.har`], `recording.replay-from`.
 
 To iterate on the scan itself, set `recording.replay-from` to a HAR of an earlier run: the

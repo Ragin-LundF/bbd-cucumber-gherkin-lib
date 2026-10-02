@@ -1,11 +1,14 @@
 package com.ragin.bdd.cucumber.security.config
 
 import com.ragin.bdd.cucumber.security.models.SecurityRisk
+import org.springframework.boot.context.properties.bind.BindException
 import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 /**
@@ -25,7 +28,10 @@ internal class SecurityScanPropertiesTests {
             "cucumbertest.security.scan.poll-interval" to "5s",
             "cucumbertest.security.alerts.min-confidence" to "MEDIUM",
             "cucumbertest.security.alerts.ignored-rule-ids[0]" to "40042",
-            "cucumbertest.security.report.file-name" to "scan.html",
+            "cucumbertest.security.report.templates[0].template" to "traditional-html-plus",
+            "cucumbertest.security.report.templates[0].file-name" to "scan.html",
+            "cucumbertest.security.report.templates[1].template" to "traditional-xml",
+            "cucumbertest.security.report.templates[1].file-name" to "scan.xml",
             "cucumbertest.security.recording.export-path" to "build/recording.har"
         )
 
@@ -40,7 +46,13 @@ internal class SecurityScanPropertiesTests {
         assertEquals(expected = 5, actual = properties.scan.pollInterval.seconds)
         assertEquals(expected = SecurityRisk.MEDIUM, actual = properties.alerts.minConfidence)
         assertEquals(expected = setOf("40042"), actual = properties.alerts.ignoredRuleIds)
-        assertEquals(expected = "scan.html", actual = properties.report.fileName)
+        assertEquals(
+            expected = listOf(
+                ReportTemplateProperties(template = "traditional-html-plus", fileName = "scan.html"),
+                ReportTemplateProperties(template = "traditional-xml", fileName = "scan.xml")
+            ),
+            actual = properties.report.templates
+        )
         assertEquals(expected = "build/recording.har", actual = properties.recording.exportPath)
     }
 
@@ -95,6 +107,28 @@ internal class SecurityScanPropertiesTests {
         assertFalse(actual = properties.scanner.browserEnabled)
         assertEquals(expected = SecurityRisk.LOW, actual = properties.alerts.minConfidence)
         assertFalse(actual = properties.recording.replayEnabled)
+        assertEquals(
+            expected = listOf(
+                ReportTemplateProperties(
+                    template = ReportProperties.OWN_HTML_TEMPLATE,
+                    fileName = "security-report.html"
+                ),
+                ReportTemplateProperties(template = "traditional-xml", fileName = "security-report.xml")
+            ),
+            actual = properties.report.templates
+        )
+    }
+
+    @Test
+    internal fun `refuses a report with a blank file name`() {
+        val failure = assertFailsWith<BindException> {
+            bind(
+                "cucumbertest.security.report.templates[0].template" to "traditional-xml",
+                "cucumbertest.security.report.templates[0].file-name" to " "
+            )
+        }
+
+        assertIs<IllegalArgumentException>(value = failure.rootCause())
     }
 
     @Test
@@ -103,6 +137,10 @@ internal class SecurityScanPropertiesTests {
             actual = bind("cucumbertest.security.recording.replay-from" to "recording.har").recording.replayEnabled
         )
         assertFalse(actual = bind("cucumbertest.security.recording.replay-from" to " ").recording.replayEnabled)
+    }
+
+    private fun Throwable.rootCause(): Throwable {
+        return generateSequence(this) { it.cause }.last()
     }
 
     private fun bind(vararg entries: Pair<String, String>): SecurityScanProperties {
