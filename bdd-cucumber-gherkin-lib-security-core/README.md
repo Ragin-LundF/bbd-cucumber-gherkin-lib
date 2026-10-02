@@ -52,7 +52,14 @@ test touches are added by importing an API definition (`cucumbertest.security.ap
 val properties = SecurityScanProperties(
     enabled = true,
     // hand the report directory over - nothing in this module reads system properties
-    report = ReportProperties(outputDir = "build/reports/security")
+    report = ReportProperties(
+        outputDir = "build/reports/security",
+        // optional, this is the default: the library's own all-in-one HTML plus ZAP's XML
+        templates = listOf(
+            ReportTemplateProperties(template = ReportProperties.OWN_HTML_TEMPLATE, fileName = "security-report.html"),
+            ReportTemplateProperties(template = "traditional-xml", fileName = "security-report.xml")
+        )
+    )
 )
 
 SecurityScanSession(properties, ZapSecurityScanner.create(properties)).use { session ->

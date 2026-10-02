@@ -44,5 +44,10 @@ interface SecurityScanner {
 
     fun exportRecording(destination: Path)
 
-    fun storeReport(destination: Path)
+    /**
+     * Writes the report rendered by [template] to [destination].
+     *
+     * The template name means something only to the scanner, like the image name does.
+     */
+    fun storeReport(template: String, destination: Path)
 }

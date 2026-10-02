@@ -114,7 +114,7 @@ internal class SecurityScanSessionTests {
 
             override fun exportRecording(destination: Path) = Unit
 
-            override fun storeReport(destination: Path) = Unit
+            override fun storeReport(template: String, destination: Path) = Unit
         }
     }
 

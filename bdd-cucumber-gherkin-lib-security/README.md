@@ -99,6 +99,12 @@ cucumbertest:
         report:
             # relative to the working directory of the test JVM, i.e. the module directory
             output-dir: build/reports/security
+            # optional, this is the default: the library's own report plus an XML for collecting the results
+            templates:
+                - template: bdd-modern-plus
+                  file-name: security-report.html
+                - template: traditional-xml
+                  file-name: security-report.xml
 ```
 
 ### 4. Gradle task and runner
@@ -167,13 +173,70 @@ All properties are optional. Prefix: `cucumbertest.security`.
 | `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report.         |
 | `alerts.alert-filter`     | *(empty)*                              | ZAP global alert filters that change the risk of matching alerts, see [Alert filters](#alert-filters).    |
 | `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                                              |
-| `report.template`         | `traditional-html`                     | Report template.                                                                                                                         |
 | `report.title`            | `Security scan`                        | Report title.                                                                                                                            |
-| `report.output-dir`       | `.`                                    | Directory the report is written to, absolute or relative to the working directory. Set it in the profile; a system property of the same name overrides it. Without Spring, pass it to `ReportProperties`. |
-| `report.file-name`        | `security-report.html`                 | Report file name.                                                                                                                        |
+| `report.output-dir`       | `.`                                    | Directory the reports are written to, absolute or relative to the working directory. Set it in the profile; a system property of the same name overrides it. Without Spring, pass it to `ReportProperties`. |
+| `report.templates`        | `bdd-modern-plus` → `security-report.html`, `traditional-xml` → `security-report.xml` | Every report to write, each a `template` and a `file-name`, see [Reports](#reports). |
 | `recording.export`        | `true`                                 | Export the recorded traffic (HAR) after the run.                                                                                         |
 | `recording.export-path`   | `build/reports/security/recording.har` | Where the recording is written.                                                                                                          |
 | `recording.replay-from`   | *(unset)*                              | Host path of a previously exported recording - see [Replay mode](#replay-mode).                                                          |
+
+### Reports
+
+`report.templates` lists every report written after the scan; each entry is a `template` and a `file-name` below
+`report.output-dir`. Any [ZAP report template](https://www.zaproxy.org/docs/desktop/addons/report-generation/templates/)
+works, plus the library's own one:
+
+- `bdd-modern-plus` - one self-contained HTML file built from ZAP's `traditional-json-plus`: counts per risk, an index
+  of all alerts, and per alert the description, solution, references, CWE/WASC and every instance with its evidence,
+  request and response (folded away, without JavaScript; long messages are cut at 20,000 characters).
+- `traditional-xml` - for collecting the results of several projects into a management summary.
+- `traditional-html-plus`, `traditional-json-plus`, `sarif-json`, ... - ZAP's own reports.
+
+```yaml
+cucumbertest:
+    security:
+        report:
+            output-dir: build/reports/security
+            templates:
+                - template: bdd-modern-plus
+                  file-name: security-report.html
+                - template: traditional-xml
+                  file-name: security-report.xml
+                - template: traditional-html-plus
+                  file-name: security-report-zap.html
+```
+
+A template that fails does not cost the others: every report is attempted, then the scan fails with the first error.
+
+For Jenkins, publish the HTML and archive the rest:
+
+```groovy
+// Jenkinsfile
+post {
+    always {
+        publishHTML(target: [
+            reportName : 'Security scan',
+            reportDir  : 'build/reports/security',
+            reportFiles: 'security-report.html',
+            keepAll    : true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: true
+        ])
+        archiveArtifacts artifacts: 'build/reports/security/*', allowEmptyArchive: true
+    }
+}
+```
+
+Jenkins serves published HTML with `style-src 'self'` by default, which drops embedded styles. The `bdd-modern-plus`
+report stays complete and readable without them - risks are words, the findings are plain tables and lists. For the
+styled view, allow inline styles for published reports (Script Console or `-D` on the controller):
+
+```groovy
+System.setProperty("hudson.model.DirectoryBrowserSupport.CSP",
+    "sandbox allow-same-origin; default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline';")
+```
+
+The report needs no JavaScript, so `script-src` stays closed.
 
 ### Alert filters
 
@@ -233,7 +296,9 @@ The granular sentences exist for projects that need a different order or want to
 | `I import the API definition {string} into the security scanner`     | Import one OpenAPI definition. Failures are logged and ignored. |
 | `I run the security scan for max. {int} minutes`                     | Scan every target and wait for the analysis to catch up.        |
 | `I ensure that no security finding has a risk of {string} or higher` | The gate on its own.                                            |
-| `I store the security scan report to the file {string}`              | Write the report.                                               |
+| `I store the security scan reports to the directory {string}`                         | Write every report of `report.templates` into the directory. |
+| `I store the security scan report to the file {string}`                                | Write the first report of `report.templates`.                |
+| `I store the security scan report with template {string} to the file {string}`         | Write one report with any template.                          |
 | `I export the recorded security scan traffic to the file {string}`   | Write the HAR recording.                                        |
 | `I make sure that the security scanner is stopped`                   | Stop the container.                                             |
 

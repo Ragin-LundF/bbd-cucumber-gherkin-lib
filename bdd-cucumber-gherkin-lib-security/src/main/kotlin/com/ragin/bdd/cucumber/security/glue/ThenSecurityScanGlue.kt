@@ -65,12 +65,33 @@ class ThenSecurityScanGlue(
         session.scan.awaitAnalysis()
     }
 
+    /** Writes the first report of `cucumbertest.security.report.templates`. */
     @Then("I store the security scan report to the file {string}")
     fun storeReport(filePath: String) {
         if (skipWhenDisabled()) {
             return
         }
-        session.scan.storeReport(destination = Path.of(filePath))
+        val template = checkNotNull(properties.report.templates.firstOrNull()) {
+            "No report configured in '${SecurityScanProperties.PREFIX}.report.templates'."
+        }.template
+        session.scan.storeReport(template = template, destination = Path.of(filePath))
+    }
+
+    @Then("I store the security scan report with template {string} to the file {string}")
+    fun storeReportWithTemplate(template: String, filePath: String) {
+        if (skipWhenDisabled()) {
+            return
+        }
+        session.scan.storeReport(template = template, destination = Path.of(filePath))
+    }
+
+    /** Writes every report of `cucumbertest.security.report.templates` into the directory. */
+    @Then("I store the security scan reports to the directory {string}")
+    fun storeReports(directory: String) {
+        if (skipWhenDisabled()) {
+            return
+        }
+        session.scan.storeReports(outputDir = Path.of(directory))
     }
 
     @Then("I export the recorded security scan traffic to the file {string}")
