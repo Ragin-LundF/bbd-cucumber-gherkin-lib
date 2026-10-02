@@ -1,4 +1,4 @@
-# Release 3.13.0
+# Release 3.14.0
 
 ## Breaking Changes
 
@@ -46,6 +46,10 @@ All reports are attempted even if one template fails; the scan fails afterwards 
 - `I store the security scan report with template {string} to the file {string}` - one report with any template.
 
 `I store the security scan report to the file {string}` writes the first entry of `report.templates`.
+
+# Release 3.13.0
+
+## New features
 
 ### ZAP alert filters: `alerts.alert-filter`
 `cucumbertest.security.alerts.alert-filter` (`AlertProperties.alertFilter`) takes a list of ZAP global alert filters.
