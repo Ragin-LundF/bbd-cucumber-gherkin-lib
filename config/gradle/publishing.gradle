@@ -34,7 +34,7 @@ def configurePublication = { publicationComponent ->
 
         repositories {
             maven {
-                url = layout.buildDirectory.dir('staging-deploy')
+                url = rootProject.layout.buildDirectory.dir('staging-deploy')
             }
             maven {
                 name = "GitHubPackages"
@@ -56,26 +56,4 @@ pluginManager.withPlugin('java-platform') {
 // java-library modules
 pluginManager.withPlugin('java') {
     configurePublication(components.java)
-}
-
-jreleaser {
-    signing {
-        active = 'ALWAYS'
-        verify = false
-        armored = true
-        mode = 'FILE'
-        publicKey = "${rootDir}/ragin_public.pgp"
-        secretKey = "${rootDir}/ragin_secret.pgp"
-    }
-    deploy {
-        maven {
-            mavenCentral {
-                sonatype {
-                    active = 'ALWAYS'
-                    url = 'https://central.sonatype.com/api/v1/publisher'
-                    stagingRepository('build/staging-deploy')
-                }
-            }
-        }
-    }
 }
