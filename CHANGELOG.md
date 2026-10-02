@@ -44,6 +44,29 @@ that creates an anonymous object inside a lambda, e.g. `runCatching { restTempla
 library glue no longer does this. Own glue classes of a project can hit the same error; use the non-reified variant
 there, e.g. `restTemplate.exchange(url, method, entity, String::class.java)`.
 
+## New features
+
+### ZAP alert filters: `alerts.alert-filter`
+`cucumbertest.security.alerts.alert-filter` (`AlertProperties.alertFilter`) takes a list of ZAP global alert filters.
+Unlike `ignored-rule-ids`, which drops a whole rule, a filter can be limited to a url, parameter, attack, evidence or
+HTTP methods (each optionally as regex) and can set any risk: `False Positive`, `Info`, `Low`, `Medium` or `High`.
+The fields are those of the [ZAP Automation Framework `alertFilter` job](https://www.zaproxy.org/docs/desktop/addons/alert-filters/automation/),
+so filters from a ZAP plan can be copied over:
+
+```yaml
+cucumbertest:
+    security:
+        alerts:
+            alert-filter:
+                - rule-id: "10038"   # CSP header not set - the actuator serves no HTML
+                  new-risk: False Positive
+                  url: ".*/actuator/.*"
+                  url-regex: true
+```
+
+The filters are registered before any traffic, and the gate sees the changed risk. A filter that ZAP rejects fails
+the start of the scan. `context` is not supported; every filter is global.
+
 ## Changes
 
 ### Empty `DataTable` cells

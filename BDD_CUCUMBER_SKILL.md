@@ -419,6 +419,8 @@ cucumbertest:
       exposed-ports: ["${server.port}", "${management.server.port}"]
     alerts:
       ignored-rule-ids: ["40042"]     # assessed and accepted, with a comment saying why
+      alert-filter:                   # narrower; fields of the ZAP Automation Framework 'alertFilter' job
+        - { rule-id: "10038", new-risk: False Positive, url: ".*/actuator/.*", url-regex: true }
 ```
 
 A dedicated Gradle task and runner keep the scan out of the regular run:
@@ -479,7 +481,9 @@ Properties (prefix `cucumbertest.security`, all optional, defaults in brackets):
 `scanner.browser-enabled` [`false`], `target.host`
 [`host.testcontainers.internal`], `target.port` [the bound port], `target.exposed-ports`,
 `api.definition-urls`, `scan.poll-interval` [`10s`], `scan.recurse` [`true`], `scan.in-scope-only`
-[`false`], `alerts.ignored-rule-ids`, `alerts.min-confidence` [`LOW`], `report.template`
+[`false`], `alerts.ignored-rule-ids`, `alerts.alert-filter` (`rule-id`, `rule-name`, `new-risk` [`False Positive`],
+`url`/`url-regex`, `parameter`/`parameter-regex`, `attack`/`attack-regex`, `evidence`/`evidence-regex`, `methods`),
+`alerts.min-confidence` [`LOW`], `report.template`
 [`traditional-html`], `report.title`, `report.output-dir` [`.`], `report.file-name`
 [`security-report.html`], `recording.export` [`true`], `recording.export-path`
 [`build/reports/security/recording.har`], `recording.replay-from`.
@@ -489,7 +493,7 @@ functional scenarios are skipped and only the scan runs. The recording is export
 scan on purpose — afterwards it would also contain the scanner's own attack requests.
 
 Automated scanners produce false positives. Check every finding manually and put the accepted ones
-into `alerts.ignored-rule-ids` with a comment; never lower the risk threshold to get a green build.
+into `alerts.ignored-rule-ids` or `alerts.alert-filter` with a comment; never lower the risk threshold to get a green build.
 Ignored rule ids are dropped by the gate and left out of the report.
 
 ## CVE scan of the dependencies (optional module)

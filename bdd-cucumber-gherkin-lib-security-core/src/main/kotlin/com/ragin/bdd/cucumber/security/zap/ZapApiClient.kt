@@ -1,5 +1,7 @@
 package com.ragin.bdd.cucumber.security.zap
 
+import com.ragin.bdd.cucumber.security.config.AlertFilterProperties
+import com.ragin.bdd.cucumber.security.config.AlertFilterRisk
 import com.ragin.bdd.cucumber.security.models.SecurityAlert
 import com.ragin.bdd.cucumber.security.models.SecurityRisk
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -55,19 +57,47 @@ class ZapApiClient(private val apiBaseUrl: () -> String) {
     }
 
     /**
-     * Marks every alert of [ruleId] raised from now on as false positive. Requires the
-     * `alertFilters` add-on, which `zap-stable` bundles.
+     * Sets the risk of every matching alert raised from now on to [AlertFilterProperties.newRisk].
+     * Requires the `alertFilters` add-on, which `zap-stable` bundles.
      *
      * A filter only touches alerts raised after it exists, so it has to be in place before any
      * traffic is proxied or replayed.
+     *
+     * The properties use the names of the Automation Framework; this maps them onto the names of
+     * the API (`urlRegex` -> `urlIsRegex`, `newRisk` -> `newLevel`, ...). Unset matchers and false
+     * regex flags are left out, so ZAP applies its own defaults.
      */
-    fun addGlobalAlertFilter(ruleId: String): JsonNode {
+    fun addGlobalAlertFilter(filter: AlertFilterProperties): JsonNode {
         return json(
             path = "/JSON/alertFilter/action/addGlobalAlertFilter/",
-            "ruleId" to ruleId,
-            "newLevel" to FALSE_POSITIVE_LEVEL,
-            "enabled" to "true"
+            "ruleId" to filter.ruleId,
+            "newLevel" to newLevel(risk = filter.newRisk),
+            "enabled" to "true",
+            "url" to filter.url,
+            "urlIsRegex" to regexFlag(isRegex = filter.urlRegex),
+            "parameter" to filter.parameter,
+            "parameterIsRegex" to regexFlag(isRegex = filter.parameterRegex),
+            "attack" to filter.attack,
+            "attackIsRegex" to regexFlag(isRegex = filter.attackRegex),
+            "evidence" to filter.evidence,
+            "evidenceIsRegex" to regexFlag(isRegex = filter.evidenceRegex),
+            "methods" to filter.methods.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")
         )
+    }
+
+    /** The `newLevel` of the ZAP API: -1 = False Positive, 0 = Info up to 3 = High. */
+    private fun newLevel(risk: AlertFilterRisk): String {
+        return when (risk) {
+            AlertFilterRisk.FALSE_POSITIVE -> "-1"
+            AlertFilterRisk.INFO -> "0"
+            AlertFilterRisk.LOW -> "1"
+            AlertFilterRisk.MEDIUM -> "2"
+            AlertFilterRisk.HIGH -> "3"
+        }
+    }
+
+    private fun regexFlag(isRegex: Boolean): String? {
+        return if (isRegex) "true" else null
     }
 
     /** Disables the active scan rules [ruleIds] in the default scan policy. */
@@ -201,9 +231,6 @@ class ZapApiClient(private val apiBaseUrl: () -> String) {
     private companion object {
         const val REPORT_DIR = "/home/zap"
         const val PAGE_SIZE = 500
-
-        /** The `newLevel` of an alert filter that marks the alert as false positive. */
-        const val FALSE_POSITIVE_LEVEL = "-1"
 
         /** Every ZAP confidence except "False Positive", in the `|` separated form the API expects. */
         const val REPORTED_CONFIDENCES = "Low|Medium|High|Confirmed"

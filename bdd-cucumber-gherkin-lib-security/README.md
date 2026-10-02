@@ -88,6 +88,14 @@ cucumbertest:
         alerts:
             ignored-rule-ids:
                 - "40042"   # Spring Actuator Information Leak
+            # finer than ignored-rule-ids: same fields as the ZAP Automation Framework 'alertFilter' job
+            alert-filter:
+                - rule-id: "10038"              # CSP header not set - the actuator serves no HTML
+                  rule-name: Content Security Policy (CSP) Header Not Set
+                  new-risk: False Positive
+                  url: ".*/actuator/.*"
+                  url-regex: true
+                  methods: [GET]
         report:
             # relative to the working directory of the test JVM, i.e. the module directory
             output-dir: build/reports/security
@@ -157,6 +165,7 @@ All properties are optional. Prefix: `cucumbertest.security`.
 | `scan.recurse`            | `true`                                 | Attack the whole tree below a target, not just the exact URL.                                                                            |
 | `scan.in-scope-only`      | `false`                                | Also attack URLs the scanner does not consider part of a configured context.                                                             |
 | `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report.         |
+| `alerts.alert-filter`     | *(empty)*                              | ZAP global alert filters that change the risk of matching alerts, see [Alert filters](#alert-filters).    |
 | `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                                              |
 | `report.template`         | `traditional-html`                     | Report template.                                                                                                                         |
 | `report.title`            | `Security scan`                        | Report title.                                                                                                                            |
@@ -165,6 +174,32 @@ All properties are optional. Prefix: `cucumbertest.security`.
 | `recording.export`        | `true`                                 | Export the recorded traffic (HAR) after the run.                                                                                         |
 | `recording.export-path`   | `build/reports/security/recording.har` | Where the recording is written.                                                                                                          |
 | `recording.replay-from`   | *(unset)*                              | Host path of a previously exported recording - see [Replay mode](#replay-mode).                                                          |
+
+### Alert filters
+
+`alerts.alert-filter` is a list of ZAP alert filters. The fields are the ones of an `alertFilters` entry of the
+[ZAP Automation Framework `alertFilter` job](https://www.zaproxy.org/docs/desktop/addons/alert-filters/automation/),
+written in kebab-case, so a filter from a ZAP plan can be copied over:
+
+| Field             | Description                                                                                  |
+|-------------------|----------------------------------------------------------------------------------------------|
+| `rule-id`         | Mandatory, the scan rule id or the alert reference.                                          |
+| `rule-name`       | Optional, the name of the rule. Only used in the log.                                        |
+| `new-risk`        | `False Positive` *(default)*, `Info`, `Low`, `Medium` or `High`.                              |
+| `url`             | Optional string to match against the alert url.                                              |
+| `url-regex`       | `true` if `url` is a regex.                                                                  |
+| `parameter`       | Optional string to match against the alert parameter.                                        |
+| `parameter-regex` | `true` if `parameter` is a regex.                                                            |
+| `attack`          | Optional string to match against the alert attack.                                           |
+| `attack-regex`    | `true` if `attack` is a regex.                                                               |
+| `evidence`        | Optional string to match against the alert evidence.                                         |
+| `evidence-regex`  | `true` if `evidence` is a regex.                                                             |
+| `methods`         | Optional list of HTTP methods.                                                               |
+
+`context` is not supported: the scan creates no ZAP context, so every filter is global. The filters are registered
+right after ZAP started, before any traffic. The gate reads the alerts back from ZAP and therefore sees the new risk;
+a `False Positive` alert is dropped as long as `alerts.min-confidence` is above `INFORMATIONAL`. A filter that ZAP
+rejects fails the start of the scan, because a silently missing filter would change the verdict.
 
 The **time budget** and the **risk that fails the build** are deliberately *not* properties. Both are part of the
 Gherkin sentence, so a feature file states its own limits and no profile can silently weaken the gate.
@@ -278,7 +313,7 @@ started. No feature file, tag, property, sentence, Gradle task or CI change is n
 ## Notes and caveats
 
 - Automated scanners produce false positives. Every finding has to be checked manually; use
-  `cucumbertest.security.alerts.ignored-rule-ids` for the ones you have assessed and accepted, with a comment saying
-  why.
+  `cucumbertest.security.alerts.ignored-rule-ids` or a narrower `alerts.alert-filter` for the ones you have assessed
+  and accepted, with a comment saying why.
 - A floating image tag means two builds of the same commit can report different findings.
 - The scan only covers what the proxy recorded. Growing the functional suite grows the attack surface.

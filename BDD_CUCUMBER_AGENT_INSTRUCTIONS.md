@@ -924,6 +924,11 @@ cucumbertest:
         alerts:
             ignored-rule-ids:
                 - "40042"   # Spring Actuator Information Leak — assessed and accepted
+            alert-filter:   # fields of the ZAP Automation Framework 'alertFilter' job
+                - rule-id: "10038"   # CSP header not set — the actuator serves no HTML
+                  new-risk: False Positive
+                  url: ".*/actuator/.*"
+                  url-regex: true
 ```
 
 **Gradle task** — a dedicated task keeps the scan out of the regular Cucumber run:
@@ -1037,6 +1042,7 @@ All properties are optional.
 | `scan.recurse`            | `true`                                 | Attack the whole tree below a target, not just the exact URL.                                                |
 | `scan.in-scope-only`      | `false`                                | Also attack URLs the scanner does not consider part of a configured context.                                 |
 | `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report. |
+| `alerts.alert-filter`     | *(empty)*                              | ZAP global alert filters: `rule-id`, `rule-name`, `new-risk` (`False Positive` default, `Info`, `Low`, `Medium`, `High`), `url`/`url-regex`, `parameter`/`parameter-regex`, `attack`/`attack-regex`, `evidence`/`evidence-regex`, `methods` — the fields of the ZAP Automation Framework `alertFilter` job. A rejected filter fails the scan start. |
 | `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                  |
 | `report.template`         | `traditional-html`                     | Report template.                                                                                             |
 | `report.title`            | `Security scan`                        | Report title.                                                                                                |
@@ -1084,7 +1090,8 @@ is needed.
 ### 7.7 Caveats
 
 * Automated scanners produce **false positives**. Every finding has to be checked manually; put the
-  ones you have assessed and accepted into `alerts.ignored-rule-ids` **with a comment saying why**.
+  ones you have assessed and accepted into `alerts.ignored-rule-ids` — or, narrower, `alerts.alert-filter` —
+  **with a comment saying why**.
 * A floating image tag means two builds of the same commit can report different findings.
 * The scan only covers what the proxy recorded.
 
@@ -1176,8 +1183,8 @@ Feature: CVE scan
     `CucumberSecurityRunner` and `features/zzz_securityscan/` via `./gradlew cucumberSecurity`.
 11. **Never weaken the security gate.** Do not lower the risk in `... and fail on findings of risk
     "<risk>" or higher`, and do not add a rule id to
-    `cucumbertest.security.alerts.ignored-rule-ids` without a comment stating why the finding was
-    assessed and accepted. Fix the finding instead (§7). The same applies to the CVE scan (§7a):
+    `cucumbertest.security.alerts.ignored-rule-ids` or `alerts.alert-filter` without a comment stating
+    why the finding was assessed and accepted. Fix the finding instead (§7). The same applies to the CVE scan (§7a):
     never lower its severity; upgrade the library, and add to `vulnerabilities.ignored-ids` only
     with a comment stating why the vulnerability is not exploitable.
 

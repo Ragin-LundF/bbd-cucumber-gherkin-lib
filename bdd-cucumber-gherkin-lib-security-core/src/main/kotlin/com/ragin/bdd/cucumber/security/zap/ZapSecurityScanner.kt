@@ -1,6 +1,7 @@
 package com.ragin.bdd.cucumber.security.zap
 
 import com.ragin.bdd.cucumber.security.SecurityScanner
+import com.ragin.bdd.cucumber.security.config.AlertFilterProperties
 import com.ragin.bdd.cucumber.security.config.SecurityScanProperties
 import com.ragin.bdd.cucumber.security.models.ProxyEndpoint
 import com.ragin.bdd.cucumber.security.models.SecurityAlert
@@ -27,9 +28,9 @@ class ZapSecurityScanner(
         get() = ProxyEndpoint(host = container.host, port = container.port)
 
     /**
-     * Starts ZAP and turns every ignored rule into a false positive, so the report leaves out
-     * what the gate ignores. The filters go in before any traffic, because ZAP applies them only
-     * to alerts raised afterwards.
+     * Starts ZAP, turns every ignored rule into a false positive, so the report leaves out what
+     * the gate ignores, and registers the configured alert filters. The filters go in before any
+     * traffic, because ZAP applies them only to alerts raised afterwards.
      */
     override fun start(exposedHostPorts: Set<Int>) {
         if (container.isRunning) {
@@ -40,6 +41,7 @@ class ZapSecurityScanner(
             disableBrowserRules()
         }
         properties.alerts.ignoredRuleIds.forEach(::ignoreRule)
+        properties.alerts.alertFilter.forEach(::applyAlertFilter)
     }
 
     /**
@@ -62,11 +64,28 @@ class ZapSecurityScanner(
     private fun ignoreRule(ruleId: String) {
         log.info { "ignoring scanner rule $ruleId" }
         runCatching {
-            client.addGlobalAlertFilter(ruleId = ruleId)
+            client.addGlobalAlertFilter(filter = AlertFilterProperties(ruleId = ruleId))
         }.onFailure { error ->
             log.warn(throwable = error) {
                 "could not ignore rule $ruleId in the report - is the 'alertFilters' add-on installed?"
             }
+        }
+    }
+
+    /**
+     * Strict, unlike [ignoreRule]: the gate only sees what the filter changed inside ZAP, so a
+     * filter that is silently missing would change the verdict.
+     */
+    private fun applyAlertFilter(filter: AlertFilterProperties) {
+        val rule = filter.ruleName?.let { name -> "${filter.ruleId} ($name)" } ?: filter.ruleId
+        log.info { "alert filter: rule $rule -> ${filter.newRisk}" }
+        runCatching {
+            client.addGlobalAlertFilter(filter = filter)
+        }.getOrElse { error ->
+            throw IllegalStateException(
+                "Could not add the alert filter for rule $rule - is the 'alertFilters' add-on installed?",
+                error
+            )
         }
     }
 
