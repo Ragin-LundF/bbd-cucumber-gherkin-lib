@@ -89,7 +89,7 @@ object ZapHtmlReport {
             appendLine("<div class=\"tile tile-${cssClass(risk = risk)}\">")
             append("<span class=\"count\">${ofRisk.size}</span>")
             append("<span class=\"label\">${label(risk = risk)}</span>")
-            appendLine("<span class=\"muted\">${ofRisk.sumOf { it.instances.size }} instances</span>")
+            appendLine("<span class=\"muted\">${ofRisk.sumOf { it.instances.size }} instance(s)</span>")
             appendLine("</div>")
         }
         appendLine("</section>")

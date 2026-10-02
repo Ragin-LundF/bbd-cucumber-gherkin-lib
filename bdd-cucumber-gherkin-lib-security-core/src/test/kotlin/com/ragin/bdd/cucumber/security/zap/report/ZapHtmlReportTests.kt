@@ -15,13 +15,13 @@ internal class ZapHtmlReportTests {
         val html = render(
             alert(risk = SecurityRisk.HIGH, instances = listOf(instance(), instance())),
             alert(risk = SecurityRisk.HIGH, name = "Second high"),
-            alert(risk = SecurityRisk.LOW)
+            alert(risk = SecurityRisk.LOW, instances = listOf(instance()))
         )
 
-        assertTrue(actual = html.contains(tile(risk = "high", alerts = 2, instances = 2)))
-        assertTrue(actual = html.contains(tile(risk = "medium", alerts = 0, instances = 0)))
-        assertTrue(actual = html.contains(tile(risk = "low", alerts = 1, instances = 0)))
-        assertTrue(actual = html.contains(tile(risk = "informational", alerts = 0, instances = 0)))
+        assertTrue(actual = html.contains(tile(risk = "high", alerts = 2, instances = "2 instance(s)")))
+        assertTrue(actual = html.contains(tile(risk = "medium", alerts = 0, instances = "0 instance(s)")))
+        assertTrue(actual = html.contains(tile(risk = "low", alerts = 1, instances = "1 instance(s)")))
+        assertTrue(actual = html.contains(tile(risk = "informational", alerts = 0, instances = "0 instance(s)")))
     }
 
     @Test
@@ -184,10 +184,10 @@ internal class ZapHtmlReportTests {
         return ZapReport(zapVersion = "2.16.1", generated = "today", sites = listOf(SITE), alerts = alerts.toList())
     }
 
-    private fun tile(risk: String, alerts: Int, instances: Int): String {
+    private fun tile(risk: String, alerts: Int, instances: String): String {
         val label = risk.replaceFirstChar(Char::uppercase)
         return "<div class=\"tile tile-$risk\">\n<span class=\"count\">$alerts</span>" +
-            "<span class=\"label\">$label</span><span class=\"muted\">$instances instances</span>"
+            "<span class=\"label\">$label</span><span class=\"muted\">$instances</span>"
     }
 
     @Suppress("LongParameterList") // a test builder: every field can be varied by name
