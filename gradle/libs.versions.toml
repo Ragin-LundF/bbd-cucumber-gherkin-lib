@@ -2,7 +2,7 @@
 kotlin = "2.3.21"
 detekt = "2.0.0-alpha.6"
 springBoot = "4.1.1"
-cucumber = "8.0.2"
+cucumber = "8.0.4"
 testcontainers = "2.0.5"
 # Only for the demo application of the tests: Spring Boot 4.1.1 manages 11.0.24, which has critical CVEs
 # (CVE-2026-65182, CVE-2026-65905, CVE-2026-68525). Drop this once Spring Boot manages 11.0.25 or later.
