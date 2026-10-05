@@ -22,7 +22,7 @@ logging-slf4j = "org.slf4j:slf4j-simple:2.0.20"
 #
 commons-io = "commons-io:commons-io:2.22.0"
 commons-text = "org.apache.commons:commons-text:1.15.0"
-commons-lang = "org.apache.commons:commons-lang3:3.20.0"
+commons-lang = "org.apache.commons:commons-lang3:3.21.0"
 #
 jakarta-validation = "jakarta.validation:jakarta.validation-api:3.1.1"
 #
