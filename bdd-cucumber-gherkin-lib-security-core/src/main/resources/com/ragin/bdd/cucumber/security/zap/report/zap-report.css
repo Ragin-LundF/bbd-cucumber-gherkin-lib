@@ -177,6 +177,10 @@ pre {
 a { color: var(--informational); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
+/* Suppressed alerts keep their risk, so they are told apart from open findings by a muted look. */
+.suppressed-alerts .alert { border-style: dashed; }
+.suppressed-alerts .sev { background: var(--muted); }
+
 .empty {
     margin-top: 24px;
     padding: 24px;

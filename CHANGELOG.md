@@ -1,3 +1,40 @@
+# Release 3.15.0
+
+## New features
+
+### ZAP database recovery log: `scanner.database-recovery-log`
+ZAP keeps its session in a database and writes a recovery log for it. The scanner container is thrown away after the
+run, so the log only costs disk I/O and scan time. It is now **switched off by default**
+(`-config database.recoverylog=false`); set the property to `true` to restore ZAP's own behaviour:
+
+```yaml
+cucumbertest:
+    security:
+        scanner:
+            database-recovery-log: true
+```
+
+Without Spring: `ScannerProperties(databaseRecoveryLog = true)`.
+
+### Suppressed alerts in the reports: `report.include-suppressed-alerts`
+Suppressed alerts - marked as false positive by an `alerts.alert-filter` with `new-risk: False Positive` or by
+`alerts.ignored-rule-ids` - were always left out of the reports. They can be listed now, so a review sees what was
+suppressed (alerts a filter moves to another risk were and are reported at their new risk):
+
+```yaml
+cucumbertest:
+    security:
+        report:
+            include-suppressed-alerts: true
+```
+
+Without Spring: `ReportProperties(includeSuppressedAlerts = true)`.
+
+Applies to every template. ZAP's own templates show them with the confidence `False Positive`; `bdd-modern-plus`
+lists them in a section *Suppressed alerts* after the findings and leaves them out of the counts per
+risk. The default `false` keeps the reports as they were. The gate is not affected: suppressed alerts never fail the
+build.
+
 # Release 3.14.1
 
 ## Breaking Changes

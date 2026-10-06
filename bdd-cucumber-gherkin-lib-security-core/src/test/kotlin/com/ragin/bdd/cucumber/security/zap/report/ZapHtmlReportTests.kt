@@ -45,6 +45,54 @@ internal class ZapHtmlReportTests {
     }
 
     @Test
+    internal fun `leaves false positives out of the summary and the alert list`() {
+        val html = render(
+            alert(risk = SecurityRisk.HIGH, name = "Open finding"),
+            alert(risk = SecurityRisk.HIGH, name = "Suppressed finding", confidence = ZapReportAlert.FALSE_POSITIVE)
+        )
+
+        assertTrue(actual = html.contains(tile(risk = "high", alerts = 1, instances = "0 instance(s)")))
+        assertTrue(actual = html.contains("<h2>Alerts <span class=\"badge-count\">1</span></h2>"))
+        assertTrue(actual = html.contains("<a href=\"#alert-1\">Open finding</a>"))
+        assertFalse(actual = html.contains("id=\"alert-2\""))
+    }
+
+    @Test
+    internal fun `lists suppressed alerts in a section of their own after the findings`() {
+        val html = render(
+            alert(name = "Suppressed finding", confidence = ZapReportAlert.FALSE_POSITIVE),
+            alert(name = "Open finding")
+        )
+
+        val section = html.indexOf("<div class=\"suppressed-alerts\">")
+        assertTrue(actual = section > html.indexOf("id=\"alert-1\""))
+        assertTrue(
+            actual = html.contains(
+                "<h2>Suppressed alerts <span class=\"badge-count\">1</span></h2>"
+            )
+        )
+        assertTrue(actual = html.contains("<a href=\"#suppressed-1\">Suppressed finding</a>"))
+        assertTrue(actual = html.indexOf("id=\"suppressed-1\"") > section)
+        assertTrue(actual = html.contains("<dt>Confidence</dt><dd>False Positive</dd>"))
+    }
+
+    @Test
+    internal fun `shows no suppressed section without suppressed alerts`() {
+        val html = render(alert())
+
+        assertFalse(actual = html.contains("<div class=\"suppressed-alerts\">"))
+        assertFalse(actual = html.contains("<h2>Suppressed alerts"))
+    }
+
+    @Test
+    internal fun `says there is no open alert when every alert is a false positive`() {
+        val html = render(alert(confidence = ZapReportAlert.FALSE_POSITIVE))
+
+        assertTrue(actual = html.contains("<p class=\"empty\">No alerts.</p>"))
+        assertTrue(actual = html.contains("<a href=\"#suppressed-1\">"))
+    }
+
+    @Test
     internal fun `folds every instance with its request and response into details`() {
         val html = render(alert(instances = listOf(instance())))
 
@@ -194,6 +242,7 @@ internal class ZapHtmlReportTests {
     private fun alert(
         risk: SecurityRisk = SecurityRisk.MEDIUM,
         name: String = "Content Security Policy (CSP) Header Not Set",
+        confidence: String = "High",
         description: List<String> = emptyList(),
         references: List<String> = emptyList(),
         tags: Map<String, String> = emptyMap(),
@@ -205,7 +254,7 @@ internal class ZapHtmlReportTests {
             ruleId = "10038",
             name = name,
             risk = risk,
-            confidence = "High",
+            confidence = confidence,
             description = description,
             solution = emptyList(),
             otherInfo = emptyList(),

@@ -166,7 +166,12 @@ internal class ZapApiClientTests {
 
     @Test
     internal fun `report leaves out false positives`() {
-        val containerPath = client.generateReport(title = "Scan", template = "traditional-html", fileName = "r.html")
+        val containerPath = client.generateReport(
+            title = "Scan",
+            template = "traditional-html",
+            fileName = "r.html",
+            includeFalsePositives = false
+        )
 
         assertEquals(expected = listOf("/JSON/reports/action/generate/"), actual = paths)
         assertEquals(
@@ -180,6 +185,21 @@ internal class ZapApiClientTests {
             actual = params.single()
         )
         assertEquals(expected = "/home/zap/r.html", actual = containerPath)
+    }
+
+    @Test
+    internal fun `report lists false positives when asked to`() {
+        client.generateReport(
+            title = "Scan",
+            template = "traditional-xml",
+            fileName = "r.xml",
+            includeFalsePositives = true
+        )
+
+        assertEquals(
+            expected = "False Positive|Low|Medium|High|Confirmed",
+            actual = params.single()["includedConfidences"]
+        )
     }
 
     private fun parse(query: String?): Map<String, String> {

@@ -3,12 +3,12 @@ package com.ragin.bdd.cucumber.security.zap
 import com.ragin.bdd.cucumber.security.config.SecurityScanProperties
 import com.ragin.bdd.cucumber.security.utils.KLoggerLogConsumer
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.nio.file.Files
-import java.nio.file.Path
 import org.testcontainers.Testcontainers
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.MountableFile
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * Owns the lifecycle of the OWASP ZAP daemon container.
@@ -78,7 +78,7 @@ class ZapContainer(private val properties: SecurityScanProperties) {
         return path
     }
 
-    private fun buildCommand(): Array<String> {
+    internal fun buildCommand(): Array<String> {
         val command = mutableListOf(
             "zap.sh",
             "-daemon",
@@ -94,7 +94,8 @@ class ZapContainer(private val properties: SecurityScanProperties) {
             "api.disablekey=true",
             "api.addrs.addr.name=.*",
             "api.addrs.addr.regex=true",
-            "api.incerrordetails=true"
+            "api.incerrordetails=true",
+            "database.recoverylog=${properties.scanner.databaseRecoveryLog}"
         ).forEach { config ->
             command += listOf("-config", config)
         }

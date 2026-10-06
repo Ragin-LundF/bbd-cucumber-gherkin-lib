@@ -20,7 +20,18 @@ data class ReportProperties @JvmOverloads constructor(
     val templates: List<ReportTemplateProperties> = listOf(
         ReportTemplateProperties(template = OWN_HTML_TEMPLATE, fileName = "security-report.html"),
         ReportTemplateProperties(template = "traditional-xml", fileName = "security-report.xml")
-    )
+    ),
+    /**
+     * Also lists the suppressed alerts in every report.
+     *
+     * Suppressed means marked as false positive by the scanner: the alerts matched by an
+     * `alerts.alert-filter` with the risk 'False Positive' and every rule of
+     * `alerts.ignored-rule-ids`. Off by default, so the report shows only what is left to fix; turn
+     * it on to review what was suppressed. An alert filter with another risk suppresses nothing -
+     * those alerts are always reported at their new risk. The gate is not affected: it drops
+     * suppressed alerts either way.
+     */
+    val includeSuppressedAlerts: Boolean = false
 ) {
     companion object {
         /**

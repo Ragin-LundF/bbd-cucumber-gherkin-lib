@@ -12,8 +12,9 @@ data class AlertProperties @JvmOverloads constructor(
     /**
      * Scanner rule ids to ignore, e.g. ZAP 40042 = Spring Actuator Information Leak.
      *
-     * Applied to both the gate and the report: the gate drops the findings, and the scanner is
-     * told to leave them out of the report it writes.
+     * Applied to both the gate and the report: the gate drops the findings, and the scanner marks
+     * them as false positive, which leaves them out of the report unless
+     * [ReportProperties.includeSuppressedAlerts] lists them.
      */
     val ignoredRuleIds: Set<String> = emptySet(),
     /** Findings below this confidence are ignored. */
@@ -23,7 +24,8 @@ data class AlertProperties @JvmOverloads constructor(
      *
      * Unlike [ignoredRuleIds] they act inside the scanner: the gate sees the changed risk because
      * it reads the alerts back. A 'False Positive' alert carries the lowest confidence, so the gate
-     * drops it as long as [minConfidence] is above [SecurityRisk.INFORMATIONAL].
+     * drops it as long as [minConfidence] is above [SecurityRisk.INFORMATIONAL]. The report leaves
+     * it out unless [ReportProperties.includeSuppressedAlerts] lists it.
      */
     val alertFilter: List<AlertFilterProperties> = emptyList()
 )

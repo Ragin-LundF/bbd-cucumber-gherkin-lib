@@ -118,4 +118,17 @@ internal class ZapJsonPlusParserTests {
         assertEquals(expected = emptyList(), actual = empty.sites)
         assertEquals(expected = emptyList(), actual = empty.alerts)
     }
+
+    @Test
+    internal fun `recognises the false positive confidence`() {
+        val alerts = ZapJsonPlusParser.parse(
+            json = """{"site":[{"@name":"s","alerts":[""" +
+                """{"pluginid":"1","confidence":"0"},{"pluginid":"2","confidence":"1"}]}]}"""
+        ).alerts
+
+        assertEquals(
+            expected = listOf(ZapReportAlert.FALSE_POSITIVE to true, "Low" to false),
+            actual = alerts.map { it.confidence to it.falsePositive }
+        )
+    }
 }

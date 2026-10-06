@@ -480,14 +480,15 @@ covers the whole run and is shared by all target ports.
 Properties (prefix `cucumbertest.security`, all optional, defaults in brackets): `enabled`
 [`false`], `scanner.image` [`zaproxy/zap-stable:latest`; pin it when a build must be reproducible],
 `scanner.startup-timeout` [`5m`], `scanner.plugins`,
-`scanner.browser-enabled` [`false`], `target.host`
+`scanner.browser-enabled` [`false`], `scanner.database-recovery-log` [`false`; ZAP's session recovery log], `target.host`
 [`host.testcontainers.internal`], `target.port` [the bound port], `target.exposed-ports`,
 `api.definition-urls`, `scan.poll-interval` [`10s`], `scan.recurse` [`true`], `scan.in-scope-only`
 [`false`], `alerts.ignored-rule-ids`, `alerts.alert-filter` (`rule-id`, `rule-name`, `new-risk` [`False Positive`],
 `url`/`url-regex`, `parameter`/`parameter-regex`, `attack`/`attack-regex`, `evidence`/`evidence-regex`, `methods`),
 `alerts.min-confidence` [`LOW`], `report.title`, `report.output-dir` [`.`], `report.templates` (list of
 `template` + `file-name`; [`bdd-modern-plus` → `security-report.html`, `traditional-xml` → `security-report.xml`];
-any ZAP template name, `bdd-modern-plus` = the library's own all-in-one HTML), `recording.export` [`true`], `recording.export-path`
+any ZAP template name, `bdd-modern-plus` = the library's own all-in-one HTML), `report.include-suppressed-alerts`
+[`false`; also list alerts marked false positive by filters or ignored rules], `recording.export` [`true`], `recording.export-path`
 [`build/reports/security/recording.har`], `recording.replay-from`.
 
 To iterate on the scan itself, set `recording.replay-from` to a HAR of an earlier run: the
@@ -496,7 +497,7 @@ scan on purpose — afterwards it would also contain the scanner's own attack re
 
 Automated scanners produce false positives. Check every finding manually and put the accepted ones
 into `alerts.ignored-rule-ids` or `alerts.alert-filter` with a comment; never lower the risk threshold to get a green build.
-Ignored rule ids are dropped by the gate and left out of the report.
+Ignored rule ids are dropped by the gate and left out of the report unless `report.include-suppressed-alerts` is set.
 
 ## CVE scan of the dependencies (optional module)
 

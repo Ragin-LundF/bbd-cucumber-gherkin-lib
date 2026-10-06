@@ -125,7 +125,11 @@ val properties = SecurityScanProperties(
         alertFilter = listOf(
             AlertFilterProperties(ruleId = "10038", url = ".*/actuator/.*", urlRegex = true, methods = listOf("GET"))
         )
-    )
+    ),
+    // also list the suppressed alerts in the reports; the gate ignores them either way
+    report = ReportProperties(includeSuppressedAlerts = true),
+    // ZAP's session recovery log is off by default; true restores ZAP's own default
+    scanner = ScannerProperties(databaseRecoveryLog = false)
 )
 ```
 
@@ -188,7 +192,7 @@ silently drop findings on the others.
 - Automated scanners produce false positives. Every finding has to be checked manually; use
   `alerts.ignored-rule-ids` for the ones you have assessed and accepted, with a comment saying why. Ignored rules are
   dropped by the gate and left out of the report (ZAP marks them as false positive through the `alertFilters` add-on,
-  which `zap-stable` bundles). `alerts.alert-filter` narrows this down to a url, parameter, attack, evidence or HTTP
+  which `zap-stable` bundles); `ReportProperties.includeSuppressedAlerts` lists them in the report for a review. `alerts.alert-filter` narrows this down to a url, parameter, attack, evidence or HTTP
   methods, or sets another risk; its fields are those of the ZAP Automation Framework `alertFilter` job.
 - A floating image tag means two builds of the same commit can report different findings. Pin `scanner.image` when a
   run has to be reproducible.

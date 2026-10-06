@@ -188,7 +188,8 @@ class ZapSecurityScanner(
         val containerPath = client.generateReport(
             title = properties.report.title,
             template = template,
-            fileName = "$template-${destination.fileName}"
+            fileName = "$template-${destination.fileName}",
+            includeFalsePositives = properties.report.includeSuppressedAlerts
         )
         container.copyFileFromContainer(containerPath = containerPath, hostPath = destination)
     }

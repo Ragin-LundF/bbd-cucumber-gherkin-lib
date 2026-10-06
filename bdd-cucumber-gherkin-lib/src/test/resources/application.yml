@@ -39,6 +39,8 @@ cucumberTest:
   security:
     report:
       output-dir: build/reports/security
+      # shows what the alert filters and ignored rules suppressed, next to the findings
+      include-suppressed-alerts: true
       # the library's own all-in-one report, the XML for collecting results and ZAP's own HTML for comparison
       templates:
         - template: bdd-modern-plus
