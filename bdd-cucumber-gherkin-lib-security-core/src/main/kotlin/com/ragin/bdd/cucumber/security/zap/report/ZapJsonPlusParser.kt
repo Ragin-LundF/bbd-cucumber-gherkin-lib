@@ -14,7 +14,7 @@ object ZapJsonPlusParser {
     private val mapper = JsonMapper.builder().build()
 
     /** The labels ZAP uses for its confidence codes 0 to 4. */
-    private val CONFIDENCES = listOf("False Positive", "Low", "Medium", "High", "Confirmed")
+    private val CONFIDENCES = listOf(ZapReportAlert.FALSE_POSITIVE, "Low", "Medium", "High", "Confirmed")
 
     @JvmStatic
     fun parse(json: String): ZapReport {

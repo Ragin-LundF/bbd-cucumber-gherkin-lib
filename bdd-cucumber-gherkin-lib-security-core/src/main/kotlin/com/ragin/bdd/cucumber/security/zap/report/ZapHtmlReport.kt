@@ -19,6 +19,10 @@ import java.nio.file.Path
  * JavaScript and no external resource at all - the instances fold away in `<details>`, see
  * [ZapHtmlAlertSection].
  *
+ * Suppressed alerts - marked as false positive, present only when the report includes them - keep
+ * their original risk. They are therefore listed in a section of their own after the findings and
+ * left out of the summary, which would otherwise count them as open ones.
+ *
  * Jenkins serves published HTML with `style-src 'self'` by default, which drops the embedded
  * styles. The page is plain semantic HTML - headings, tables, the risk as text - so it stays
  * complete and readable unstyled; allowing `'unsafe-inline'` styles in the Jenkins
@@ -42,9 +46,9 @@ object ZapHtmlReport {
 
     @JvmStatic
     fun render(report: ZapReport, title: String): String {
-        val alerts = report.alerts.sortedWith(
+        val (falsePositives, alerts) = report.alerts.sortedWith(
             compareByDescending<ZapReportAlert> { it.risk.level }.thenBy { it.name }.thenBy { it.site }
-        )
+        ).partition { it.falsePositive }
         return buildString {
             appendLine("<!DOCTYPE html>")
             appendLine("<html lang=\"en\">")
@@ -62,6 +66,7 @@ object ZapHtmlReport {
             appendSummary(alerts = alerts)
             appendIndex(alerts = alerts)
             alerts.forEachIndexed { index, alert -> appendAlert(anchor = anchor(index = index), alert = alert) }
+            appendSuppressedAlerts(suppressed = falsePositives)
             appendLine("</main>")
             appendLine("</body>")
             appendLine("</html>")
@@ -102,6 +107,28 @@ object ZapHtmlReport {
         }
         appendLine("<section>")
         appendLine("<h2>Alerts <span class=\"badge-count\">${alerts.size}</span></h2>")
+        appendTable(alerts = alerts, anchor = ::anchor)
+        appendLine("</section>")
+    }
+
+    private fun StringBuilder.appendSuppressedAlerts(suppressed: List<ZapReportAlert>) {
+        if (suppressed.isEmpty()) {
+            return
+        }
+        appendLine("<div class=\"suppressed-alerts\">")
+        appendLine("<section>")
+        append("<h2>Suppressed alerts ")
+        appendLine("<span class=\"badge-count\">${suppressed.size}</span></h2>")
+        appendLine("<p class=\"muted\">Marked as false positive by an alert filter or an ignored rule.</p>")
+        appendTable(alerts = suppressed, anchor = ::suppressedAnchor)
+        appendLine("</section>")
+        suppressed.forEachIndexed { index, alert ->
+            appendAlert(anchor = suppressedAnchor(index = index), alert = alert)
+        }
+        appendLine("</div>")
+    }
+
+    private fun StringBuilder.appendTable(alerts: List<ZapReportAlert>, anchor: (index: Int) -> String) {
         appendLine("<div class=\"table-wrap\">")
         appendLine("<table>")
         append("<thead><tr><th>Risk</th><th>Alert</th><th>Rule</th><th>CWE</th>")
@@ -110,7 +137,7 @@ object ZapHtmlReport {
         alerts.forEachIndexed { index, alert ->
             append("<tr>")
             append("<td>${riskBadge(risk = alert.risk)}</td>")
-            append("<td><a href=\"#${anchor(index = index)}\">${escape(value = alert.name)}</a></td>")
+            append("<td><a href=\"#${anchor(index)}\">${escape(value = alert.name)}</a></td>")
             append("<td class=\"mono nowrap\">${escape(value = alert.ruleId)}</td>")
             append("<td class=\"mono nowrap\">${cweLink(cweId = alert.cweId)}</td>")
             append("<td class=\"mono\">${escape(value = alert.site)}</td>")
@@ -120,10 +147,13 @@ object ZapHtmlReport {
         appendLine("</tbody>")
         appendLine("</table>")
         appendLine("</div>")
-        appendLine("</section>")
     }
 
     private fun anchor(index: Int): String {
         return "alert-${index + 1}"
+    }
+
+    private fun suppressedAnchor(index: Int): String {
+        return "suppressed-${index + 1}"
     }
 }

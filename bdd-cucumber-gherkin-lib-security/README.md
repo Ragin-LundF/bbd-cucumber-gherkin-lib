@@ -99,6 +99,8 @@ cucumbertest:
         report:
             # relative to the working directory of the test JVM, i.e. the module directory
             output-dir: build/reports/security
+            # optional: also list what the alert filters and ignored rules marked as false positive
+            include-suppressed-alerts: true
             # optional, this is the default: the library's own report plus an XML for collecting the results
             templates:
                 - template: bdd-modern-plus
@@ -163,6 +165,7 @@ All properties are optional. Prefix: `cucumbertest.security`.
 | `scanner.startup-timeout` | `5m`                                   | Container start-up timeout.                                                                                                              |
 | `scanner.plugins`         | *(empty)*                              | Scanner add-ons to install on start-up. Needs marketplace access from the build agent.                                                   |
 | `scanner.browser-enabled` | `false`                                | Let the scanner launch a headless browser for rules that need one (ZAP 40026, DOM based XSS). Off, because a REST API has no DOM.        |
+| `scanner.database-recovery-log` | `false`                          | Let ZAP write the recovery log of its session database (`database.recoverylog`). Off, because the container is thrown away after the run; `true` restores ZAP's default. |
 | `target.host`             | `host.testcontainers.internal`         | How the application is reachable **from inside** the container.                                                                          |
 | `target.port`             | *(the bound port)*                     | Primary port. When unset, the port the application actually bound is used.                                                               |
 | `target.exposed-ports`    | *(empty)*                              | All host ports that must be reachable from the container (public, intranet, applications).                                               |
@@ -170,12 +173,13 @@ All properties are optional. Prefix: `cucumbertest.security`.
 | `scan.poll-interval`      | `10s`                                  | How often scan progress is polled.                                                                                                       |
 | `scan.recurse`            | `true`                                 | Attack the whole tree below a target, not just the exact URL.                                                                            |
 | `scan.in-scope-only`      | `false`                                | Also attack URLs the scanner does not consider part of a configured context.                                                             |
-| `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report.         |
+| `alerts.ignored-rule-ids` | *(empty)*                              | Scanner rule ids to ignore, e.g. ZAP `40042` = Spring Actuator Information Leak. Dropped by the gate and left out of the report unless `report.include-suppressed-alerts` is set. |
 | `alerts.alert-filter`     | *(empty)*                              | ZAP global alert filters that change the risk of matching alerts, see [Alert filters](#alert-filters).    |
 | `alerts.min-confidence`   | `LOW`                                  | Findings below this confidence are dropped.                                                                                              |
 | `report.title`            | `Security scan`                        | Report title.                                                                                                                            |
 | `report.output-dir`       | `.`                                    | Directory the reports are written to, absolute or relative to the working directory. Set it in the profile; a system property of the same name overrides it. Without Spring, pass it to `ReportProperties`. |
 | `report.templates`        | `bdd-modern-plus` → `security-report.html`, `traditional-xml` → `security-report.xml` | Every report to write, each a `template` and a `file-name`, see [Reports](#reports). |
+| `report.include-suppressed-alerts` | `false`                         | Also list the alerts marked as false positive by `alerts.alert-filter` or `alerts.ignored-rule-ids`, in every report. The gate ignores them either way. |
 | `recording.export`        | `true`                                 | Export the recorded traffic (HAR) after the run.                                                                                         |
 | `recording.export-path`   | `build/reports/security/recording.har` | Where the recording is written.                                                                                                          |
 | `recording.replay-from`   | *(unset)*                              | Host path of a previously exported recording - see [Replay mode](#replay-mode).                                                          |
@@ -207,6 +211,13 @@ cucumbertest:
 ```
 
 A template that fails does not cost the others: every report is attempted, then the scan fails with the first error.
+
+Suppressed alerts - marked as false positive by an `alerts.alert-filter` with `new-risk: False Positive` or by
+`alerts.ignored-rule-ids` - are left out of every report by default. `report.include-suppressed-alerts: true` lists them,
+so a review can see what was suppressed. An alert filter with another `new-risk` suppresses nothing: those alerts are
+always reported at their new risk. ZAP's own templates then show them with the confidence `False Positive`;
+`bdd-modern-plus` puts them into a section *Suppressed alerts* after the findings and leaves them out of
+the counts per risk. The gate is not affected: it drops false positives either way.
 
 For Jenkins, publish the HTML and archive the rest:
 
@@ -261,7 +272,8 @@ written in kebab-case, so a filter from a ZAP plan can be copied over:
 
 `context` is not supported: the scan creates no ZAP context, so every filter is global. The filters are registered
 right after ZAP started, before any traffic. The gate reads the alerts back from ZAP and therefore sees the new risk;
-a `False Positive` alert is dropped as long as `alerts.min-confidence` is above `INFORMATIONAL`. A filter that ZAP
+a `False Positive` alert is dropped as long as `alerts.min-confidence` is above `INFORMATIONAL`, and appears in the
+reports only with `report.include-suppressed-alerts: true`. A filter that ZAP
 rejects fails the start of the scan, because a silently missing filter would change the verdict.
 
 The **time budget** and the **risk that fails the build** are deliberately *not* properties. Both are part of the

@@ -25,7 +25,14 @@ data class ScannerProperties @JvmOverloads constructor(
      * Off by default: a REST API has no DOM to attack, and the scanner image usually cannot
      * launch the browser anyway, which only adds warnings and scan time.
      */
-    val browserEnabled: Boolean = false
+    val browserEnabled: Boolean = false,
+    /**
+     * Lets the scanner write the recovery log of its session database (ZAP: `database.recoverylog`).
+     *
+     * Off by default: the scanner container is thrown away after the run, so a log to recover the
+     * session from only costs disk I/O and scan time. `true` restores ZAP's own default.
+     */
+    val databaseRecoveryLog: Boolean = false
 ) {
     private companion object {
         const val DEFAULT_STARTUP_TIMEOUT_MINUTES = 5L

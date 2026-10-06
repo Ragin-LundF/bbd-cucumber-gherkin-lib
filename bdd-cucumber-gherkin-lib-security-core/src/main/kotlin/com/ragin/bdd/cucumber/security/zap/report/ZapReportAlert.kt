@@ -23,4 +23,12 @@ data class ZapReportAlert(
     /** Tag name to link, e.g. `OWASP_2021_A05` to the OWASP Top 10 page. */
     val tags: Map<String, String>,
     val instances: List<ZapReportInstance>
-)
+) {
+    /** Marked by an alert filter or an ignored rule; listed only when the report includes false positives. */
+    val falsePositive: Boolean get() = confidence == FALSE_POSITIVE
+
+    companion object {
+        /** The label of ZAP's lowest confidence. */
+        const val FALSE_POSITIVE = "False Positive"
+    }
+}

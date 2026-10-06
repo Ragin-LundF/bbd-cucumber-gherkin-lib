@@ -159,16 +159,17 @@ class ZapApiClient(private val apiBaseUrl: () -> String) {
      * [ZapContainer.copyFileFromContainer] brings it back to the host.
      *
      * The confidences are listed explicitly because an empty list makes ZAP include every
-     * confidence, false positives - and with them every ignored rule - included.
+     * confidence, false positives - and with them every ignored rule - included. They are part
+     * of the report only when [includeFalsePositives] asks for them.
      */
-    fun generateReport(title: String, template: String, fileName: String): String {
+    fun generateReport(title: String, template: String, fileName: String, includeFalsePositives: Boolean): String {
         json(
             path = "/JSON/reports/action/generate/",
             "title" to title,
             "template" to template,
             "reportFileName" to fileName,
             "reportDir" to REPORT_DIR,
-            "includedConfidences" to REPORTED_CONFIDENCES
+            "includedConfidences" to if (includeFalsePositives) ALL_CONFIDENCES else REPORTED_CONFIDENCES
         )
         return "$REPORT_DIR/$fileName"
     }
@@ -234,6 +235,9 @@ class ZapApiClient(private val apiBaseUrl: () -> String) {
 
         /** Every ZAP confidence except "False Positive", in the `|` separated form the API expects. */
         const val REPORTED_CONFIDENCES = "Low|Medium|High|Confirmed"
+
+        /** Every ZAP confidence, "False Positive" included. */
+        const val ALL_CONFIDENCES = "False Positive|$REPORTED_CONFIDENCES"
         val log = KotlinLogging.logger {}
 
         /** Only trees are read here, so the mapper needs none of the modules the library configures. */
