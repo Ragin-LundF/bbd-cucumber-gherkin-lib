@@ -1,5 +1,6 @@
 package com.ragin.bdd.cucumber.security.zap
 
+import com.github.dockerjava.api.model.LogConfig
 import com.ragin.bdd.cucumber.security.config.SecurityScanProperties
 import com.ragin.bdd.cucumber.security.utils.KLoggerLogConsumer
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -49,6 +50,9 @@ class ZapContainer(private val properties: SecurityScanProperties) {
             )
             withStartupTimeout(properties.scanner.startupTimeout)
             replayFile()?.let { withCopyFileToContainer(MountableFile.forHostPath(it), REPLAY_PATH) }
+            logConfig()?.let { config ->
+                withCreateContainerCmdModifier { cmd -> cmd.hostConfig?.withLogConfig(config) }
+            }
         }
 
         log.info { "starting ZAP from image ${properties.scanner.image}" }
@@ -99,7 +103,19 @@ class ZapContainer(private val properties: SecurityScanProperties) {
         ).forEach { config ->
             command += listOf("-config", config)
         }
+        properties.scanner.maxRequestBodySize?.let { size ->
+            command += listOf("-config", "database.request.bodysize=$size")
+        }
+        properties.scanner.maxResponseBodySize?.let { size ->
+            command += listOf("-config", "database.response.bodysize=$size")
+        }
         return command.toTypedArray()
+    }
+
+    /** A single file is enough: the output is streamed to the test log in full anyway. */
+    internal fun logConfig(): LogConfig? {
+        val maxSize = properties.scanner.containerLogMaxSize?.takeIf { it.isNotBlank() } ?: return null
+        return LogConfig(LogConfig.LoggingType.JSON_FILE, mapOf("max-size" to maxSize, "max-file" to "1"))
     }
 
     private fun requireStarted(): GenericContainer<*> {

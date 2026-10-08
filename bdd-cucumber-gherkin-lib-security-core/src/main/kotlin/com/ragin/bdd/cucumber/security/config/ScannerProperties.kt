@@ -32,8 +32,32 @@ data class ScannerProperties @JvmOverloads constructor(
      * Off by default: the scanner container is thrown away after the run, so a log to recover the
      * session from only costs disk I/O and scan time. `true` restores ZAP's own default.
      */
-    val databaseRecoveryLog: Boolean = false
+    val databaseRecoveryLog: Boolean = false,
+    /**
+     * Largest request body in bytes the scanner stores in its session database
+     * (ZAP: `database.request.bodysize`). Unset keeps ZAP's default of 16 MB.
+     *
+     * The session database keeps every proxied message and never shrinks while the scanner runs,
+     * so suites that upload large files grow it by up to this much per request. Longer bodies are
+     * cut off in storage: passive rules and reports only see the stored part.
+     */
+    val maxRequestBodySize: Int? = null,
+    /** Like [maxRequestBodySize] for response bodies (ZAP: `database.response.bodysize`). */
+    val maxResponseBodySize: Int? = null,
+    /**
+     * Largest size of the log Docker keeps of the scanner's console output, in Docker notation,
+     * e.g. `50m`. Unset keeps the log driver and limits of the Docker daemon.
+     *
+     * Docker stores everything a container prints on the host, without a limit by default. The
+     * output still reaches the test log in full, only Docker's own copy is capped.
+     */
+    val containerLogMaxSize: String? = null
 ) {
+    init {
+        maxRequestBodySize?.let { size -> require(size > 0) { "maxRequestBodySize must be positive, was $size" } }
+        maxResponseBodySize?.let { size -> require(size > 0) { "maxResponseBodySize must be positive, was $size" } }
+    }
+
     private companion object {
         const val DEFAULT_STARTUP_TIMEOUT_MINUTES = 5L
     }

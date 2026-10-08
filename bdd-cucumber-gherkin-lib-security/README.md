@@ -166,6 +166,9 @@ All properties are optional. Prefix: `cucumbertest.security`.
 | `scanner.plugins`         | *(empty)*                              | Scanner add-ons to install on start-up. Needs marketplace access from the build agent.                                                   |
 | `scanner.browser-enabled` | `false`                                | Let the scanner launch a headless browser for rules that need one (ZAP 40026, DOM based XSS). Off, because a REST API has no DOM.        |
 | `scanner.database-recovery-log` | `false`                          | Let ZAP write the recovery log of its session database (`database.recoverylog`). Off, because the container is thrown away after the run; `true` restores ZAP's default. |
+| `scanner.max-request-body-size` | *(ZAP: 16 MB)*                   | Largest request body in bytes ZAP stores in its session database (`database.request.bodysize`). Longer bodies are cut off in storage, so passive rules and reports only see the stored part. See [Disk usage](#disk-usage). |
+| `scanner.max-response-body-size` | *(ZAP: 16 MB)*                  | Like `scanner.max-request-body-size`, for response bodies (`database.response.bodysize`).                                                |
+| `scanner.container-log-max-size` | *(unset)*                       | Cap the log Docker keeps of ZAP's console output, e.g. `50m`. The test log still gets the full output.                                  |
 | `target.host`             | `host.testcontainers.internal`         | How the application is reachable **from inside** the container.                                                                          |
 | `target.port`             | *(the bound port)*                     | Primary port. When unset, the port the application actually bound is used.                                                               |
 | `target.exposed-ports`    | *(empty)*                              | All host ports that must be reachable from the container (public, intranet, applications).                                               |
@@ -386,6 +389,44 @@ fun securityScanner(/* … */): SecurityScanner {
 
 The ZAP bean is declared `@ConditionalOnMissingBean(SecurityScanner::class)`, so yours wins and ZAP is never
 started. No feature file, tag, property, sentence, Gradle task or CI change is needed.
+
+## Disk usage
+
+The image aside, ZAP's disk usage comes from what it records while the suite runs. All of it lives in the
+container, which takes up space on the Docker host, and disappears when the container is removed:
+
+- **Session database** (`/home/zap/.ZAP/session`). This is usually the biggest part. ZAP stores every request and
+  response the functional scenarios send through the proxy, plus every attack message that raised an alert, each
+  with a body of up to 16 MB. The database never shrinks while ZAP runs. Uploads, file downloads and large JSON lists
+  grow it fastest.
+- **Alert instances.** ZAP stores one message per alert instance and does not limit the alerts per rule, so many
+  endpoints with the same finding multiply the database.
+- **Console output.** Docker keeps a copy of everything ZAP prints, with no limit by default.
+- **Recording and reports.** `recording.har` and the JSON report the HTML report is rendered from hold full
+  bodies as well, so they grow with the database.
+
+To see which part dominates, run these just before the scan finishes:
+
+```shell
+docker exec <zap-container> du -ah /home/zap/.ZAP | sort -h | tail -20
+ls -lh "$(docker inspect --format '{{.LogPath}}' <zap-container>)"
+```
+
+Everything below is off by default:
+
+```yaml
+cucumbertest:
+    security:
+        scanner:
+            # store at most 64 KB of each body; passive rules and reports only see that part
+            max-request-body-size: 65536
+            max-response-body-size: 65536
+            # cap Docker's copy of the console output
+            container-log-max-size: 50m
+```
+
+ZAP's `database.recoverylog` is already off (see `scanner.database-recovery-log`). During an active scan, ZAP does not
+store the attack messages that raised nothing, because `scanner.persistTemporaryMessages` is off in daemon mode.
 
 ## Notes and caveats
 
