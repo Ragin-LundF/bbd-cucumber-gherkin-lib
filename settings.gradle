@@ -11,7 +11,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'bdd-cucumber-gherkin-lib'
+rootProject.name = 'bdd-cucumber-gherkin-lib-parent'
 
 include 'bdd-cucumber-gherkin-lib'
 include 'bdd-cucumber-gherkin-lib-bom'

@@ -30,6 +30,14 @@ apply from: "${rootDir}/config/gradle/kover_sonar.gradle"
 // build/staging-deploy and uploaded to Maven Central as one deployment (one release).
 jreleaser {
     project {
+        // the root project is named '-parent' so it does not share its coordinates with the
+        // 'bdd-cucumber-gherkin-lib' module (Kover rejects that), the release keeps the library name
+        name = "bdd-cucumber-gherkin-lib"
+        languages {
+            java {
+                artifactId = "bdd-cucumber-gherkin-lib"
+            }
+        }
         description = "Cucumber BDD library for simpler e2e tests"
         copyright = "Ragin-LundF"
         license = "MIT"
