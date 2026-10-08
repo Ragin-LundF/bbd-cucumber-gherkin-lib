@@ -23,6 +23,9 @@ internal class SecurityScanPropertiesTests {
             "cucumbertest.security.scanner.image" to "zaproxy/zap-stable:latest",
             "cucumbertest.security.scanner.browser-enabled" to "true",
             "cucumbertest.security.scanner.database-recovery-log" to "true",
+            "cucumbertest.security.scanner.max-request-body-size" to "1048576",
+            "cucumbertest.security.scanner.max-response-body-size" to "65536",
+            "cucumbertest.security.scanner.container-log-max-size" to "50m",
             "cucumbertest.security.target.host" to "host.testcontainers.internal",
             "cucumbertest.security.target.exposed-ports[0]" to "50000",
             "cucumbertest.security.api.definition-urls[0]" to "http://localhost:50000/openapi.yaml",
@@ -41,6 +44,9 @@ internal class SecurityScanPropertiesTests {
         assertEquals(expected = "zaproxy/zap-stable:latest", actual = properties.scanner.image)
         assertTrue(actual = properties.scanner.browserEnabled)
         assertTrue(actual = properties.scanner.databaseRecoveryLog)
+        assertEquals(expected = 1048576, actual = properties.scanner.maxRequestBodySize)
+        assertEquals(expected = 65536, actual = properties.scanner.maxResponseBodySize)
+        assertEquals(expected = "50m", actual = properties.scanner.containerLogMaxSize)
         assertEquals(expected = listOf(50000), actual = properties.target.exposedPorts)
         assertEquals(
             expected = listOf("http://localhost:50000/openapi.yaml"),
@@ -110,6 +116,9 @@ internal class SecurityScanPropertiesTests {
         assertFalse(actual = properties.enabled)
         assertFalse(actual = properties.scanner.browserEnabled)
         assertFalse(actual = properties.scanner.databaseRecoveryLog)
+        assertEquals(expected = null, actual = properties.scanner.maxRequestBodySize)
+        assertEquals(expected = null, actual = properties.scanner.maxResponseBodySize)
+        assertEquals(expected = null, actual = properties.scanner.containerLogMaxSize)
         assertFalse(actual = properties.report.includeSuppressedAlerts)
         assertEquals(expected = SecurityRisk.LOW, actual = properties.alerts.minConfidence)
         assertFalse(actual = properties.recording.replayEnabled)

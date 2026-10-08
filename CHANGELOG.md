@@ -1,3 +1,23 @@
+# Release 3.16.0
+
+## New features
+
+### Limit what ZAP writes to disk during the scan
+ZAP records every message of the run in its session database, which never shrinks while ZAP runs. In some
+environments this took several GB of disk. Three new opt-in `scanner` properties cap it; without them nothing
+changes:
+
+```yaml
+cucumbertest:
+    security:
+        scanner:
+            max-request-body-size: 65536    # database.request.bodysize, ZAP default 16 MB
+            max-response-body-size: 65536   # database.response.bodysize, ZAP default 16 MB
+            container-log-max-size: 50m     # cap Docker's copy of the console output
+```
+
+Without Spring: `ScannerProperties(maxRequestBodySize = ..., maxResponseBodySize = ..., containerLogMaxSize = ...)`. See "Disk usage" in the security module README.
+
 # Release 3.15.0
 
 ## New features
