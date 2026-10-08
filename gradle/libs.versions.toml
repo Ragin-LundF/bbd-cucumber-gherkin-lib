@@ -2,7 +2,7 @@
 kotlin = "2.3.21"
 detekt = "2.0.0-alpha.6"
 springBoot = "4.1.1"
-cucumber = "8.0.2"
+cucumber = "8.0.4"
 testcontainers = "2.0.5"
 # Only for the demo application of the tests: Spring Boot 4.1.1 manages 11.0.24, which has critical CVEs
 # (CVE-2026-65182, CVE-2026-65905, CVE-2026-68525). Drop this once Spring Boot manages 11.0.25 or later.
@@ -22,7 +22,7 @@ logging-slf4j = "org.slf4j:slf4j-simple:2.0.20"
 #
 commons-io = "commons-io:commons-io:2.22.0"
 commons-text = "org.apache.commons:commons-text:1.15.0"
-commons-lang = "org.apache.commons:commons-lang3:3.20.0"
+commons-lang = "org.apache.commons:commons-lang3:3.21.0"
 #
 jakarta-validation = "jakarta.validation:jakarta.validation-api:3.1.1"
 #
@@ -44,7 +44,7 @@ spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot
 #
 # --- JSON
 json-path = "com.jayway.jsonpath:json-path:3.0.0"
-json-unit = "net.javacrumbs.json-unit:json-unit:6.2.0"
+json-unit = "net.javacrumbs.json-unit:json-unit:6.3.0"
 #
 # --- Cucumber
 cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
@@ -73,7 +73,7 @@ httpclient = "org.apache.httpcomponents.client5:httpclient5:5.6.4"
 #
 # --- Database
 database-liquibase = "org.liquibase:liquibase-core:5.0.4"
-database-postgres = "org.postgresql:postgresql:42.7.13"
+database-postgres = "org.postgresql:postgresql:42.7.14"
 #
 # --- Testcontainers
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
@@ -124,6 +124,6 @@ sonarqube = "org.sonarqube:7.5.0.8588"
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
-kover = "org.jetbrains.kotlinx.kover:0.9.9"
+kover = "org.jetbrains.kotlinx.kover:0.9.11"
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.1"
