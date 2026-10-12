@@ -1,3 +1,15 @@
+# Release 3.17.0
+
+## Bugfixes
+
+### Inconsistent class files of the ZAP HTML report
+`ZapHtmlReport` sorted the alerts with a chain of inline comparator functions (`compareByDescending { }.thenBy { }
+.thenBy { }`). The Kotlin compiler copies each of them into the calling class as a synthetic class
+(`ZapHtmlReport$render$$inlined$compareByDescending$1`, `...$thenBy$1`, `...$thenBy$2`), whose generation is not
+stable across builds - incremental and clean builds could produce different class files from the same source. The sort
+uses the non-inline `compareBy(vararg selectors)` now, whose lambdas compile to `invokedynamic` without generated
+classes. The order of the alerts is unchanged: risk descending, then name, then site.
+
 # Release 3.16.0
 
 ## New features
