@@ -47,7 +47,7 @@ object ZapHtmlReport {
     @JvmStatic
     fun render(report: ZapReport, title: String): String {
         val (falsePositives, alerts) = report.alerts.sortedWith(
-            compareByDescending<ZapReportAlert> { it.risk.level }.thenBy { it.name }.thenBy { it.site }
+            compareBy<ZapReportAlert>({ -it.risk.level }, { it.name }, { it.site })
         ).partition { it.falsePositive }
         return buildString {
             appendLine("<!DOCTYPE html>")

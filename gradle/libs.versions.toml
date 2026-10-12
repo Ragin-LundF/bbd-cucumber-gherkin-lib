@@ -6,7 +6,7 @@ cucumber = "8.0.4"
 testcontainers = "2.0.5"
 # Only for the demo application of the tests: Spring Boot 4.1.1 manages 11.0.24, which has critical CVEs
 # (CVE-2026-65182, CVE-2026-65905, CVE-2026-68525). Drop this once Spring Boot manages 11.0.25 or later.
-tomcat = "11.0.26"
+tomcat = "11.0.27"
 # Cucumber 8 is built against JUnit 6.1 (e.g. ParallelHierarchicalTestExecutorServiceFactory), but Spring Boot 4.1.1
 # manages 6.0.3. Drop this once Spring Boot manages 6.1 or later.
 junit = "6.1.3"
@@ -55,7 +55,7 @@ cucumber-junit-platform = { module = "io.cucumber:cucumber-junit-platform-engine
 testing-junit-platform-suite = { module = "org.junit.platform:junit-platform-suite" }
 testing-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 testing-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
-testing-konsist = "com.lemonappdev:konsist:0.17.3"
+testing-konsist = "com.lemonappdev:konsist:0.18.1"
 #
 # --- Jackson
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations" }
@@ -69,7 +69,7 @@ jackson-dataformmat-yaml = { module = "tools.jackson.dataformat:jackson-dataform
 jackson-dataformat-csv = { module = "tools.jackson.dataformat:jackson-dataformat-csv" }
 #
 # --- HTTP Client
-httpclient = "org.apache.httpcomponents.client5:httpclient5:5.6.4"
+httpclient = "org.apache.httpcomponents.client5:httpclient5:5.6.5"
 #
 # --- Database
 database-liquibase = "org.liquibase:liquibase-core:5.0.4"
