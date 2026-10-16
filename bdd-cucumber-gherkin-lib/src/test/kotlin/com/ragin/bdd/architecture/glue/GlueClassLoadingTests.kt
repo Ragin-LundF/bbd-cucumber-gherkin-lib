@@ -1,7 +1,6 @@
 package com.ragin.bdd.architecture.glue
 
-import com.ragin.bdd.cucumber.constants.BddLibConfigConstants
-import com.ragin.bdd.cucumber.constants.BddLibConfigConstants.Base.COMMA
+import com.ragin.bdd.cucumber.constants.BddLibConfigConstants.Base.BASE_PACKAGE
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import kotlin.test.Test
@@ -15,12 +14,17 @@ import kotlin.test.fail
  * on InnerClasses attribute`, e.g. for a reified inline function that creates an anonymous object
  * inside a lambda (`runCatching { restTemplate.exchange<String>(...) }`). Such a class aborts the
  * whole Cucumber run of every project that uses the glue, so it must never end up in a glue package.
+ *
+ * Every class below the base package is checked, not only the glue packages of the library: projects
+ * often configure a broader glue path (e.g. `com.ragin.bdd.cucumber.security`), which also pulls in
+ * helpers like the HTML reports. Kotlin's inline comparator builders (`compareByDescending`, `thenBy`,
+ * `sortedByDescending`, ...) produce such classes, the non-inline `compareBy(vararg selectors)` does not.
  */
 internal class GlueClassLoadingTests {
     @Test
-    internal fun `every class of the library glue packages can be inspected by Cucumber`() {
-        val classNames = gluePackages().flatMap(::classNamesIn)
-        assertTrue(actual = classNames.isNotEmpty(), message = "No classes found in the glue packages")
+    internal fun `every class of the library can be inspected by Cucumber`() {
+        val classNames = classNamesIn(basePackage = BASE_PACKAGE)
+        assertTrue(actual = classNames.isNotEmpty(), message = "No classes found in $BASE_PACKAGE")
 
         val rejected = classNames.mapNotNull { className ->
             runCatching { Class.forName(className, false, javaClass.classLoader).declaringClass }
@@ -36,18 +40,8 @@ internal class GlueClassLoadingTests {
         }
     }
 
-    private fun gluePackages(): Set<String> {
-        return listOf(
-            BddLibConfigConstants.GLUE_PROPERTY_VALUES_REST_DATABASE,
-            BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY,
-            BddLibConfigConstants.GLUE_PROPERTY_VALUES_SECURITY_CVE
-        ).flatMap { value -> value.split(COMMA) }
-            .map(String::trim)
-            .toSet()
-    }
-
-    private fun classNamesIn(gluePackage: String): List<String> {
-        val pattern = "classpath*:${gluePackage.replace(oldChar = '.', newChar = '/')}/**/*.class"
+    private fun classNamesIn(basePackage: String): List<String> {
+        val pattern = "classpath*:${basePackage.replace(oldChar = '.', newChar = '/')}/**/*.class"
         val metadataReaderFactory = CachingMetadataReaderFactory()
 
         return PathMatchingResourcePatternResolver().getResources(pattern).map { resource ->

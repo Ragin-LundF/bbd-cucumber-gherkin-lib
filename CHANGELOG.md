@@ -1,3 +1,15 @@
+# Release 3.18.0
+
+## Bugfixes
+
+### `IncompatibleClassChangeError` when Cucumber loads a broad glue path
+Projects whose glue path covered more than the library's glue packages (e.g. `com.ragin.bdd.cucumber.security`) failed
+before the first scenario with `VulnerabilityHtmlReport and VulnerabilityHtmlReport$bySeverity$$inlined$thenBy$1
+disagree on InnerClasses attribute`. Cucumber calls `getDeclaringClass()` on every glue class, and the JVM rejects the
+synthetic classes of the inline comparator functions there. `VulnerabilityHtmlReport`, `ZapHtmlReport` and
+`ServiceUrlResolver` no longer use inline comparator functions, the sort orders are unchanged.
+`GlueClassLoadingTests` now checks every class below `com.ragin.bdd.cucumber` instead of only the glue packages.
+
 # Release 3.17.0
 
 ## Bugfixes
