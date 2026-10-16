@@ -29,7 +29,10 @@ import java.nio.file.Path
  * Content-Security-Policy brings the look back.
  */
 object ZapHtmlReport {
-    private val RISKS_DESCENDING = SecurityRisk.entries.sortedByDescending { it.level }
+    // No inline comparator builders in this class: they generate classes Cucumber cannot inspect
+    private val RISKS_DESCENDING = SecurityRisk.entries.sortedWith(
+        Comparator.comparingInt<SecurityRisk> { it.level }.reversed()
+    )
 
     private val STYLESHEET: String by lazy {
         checkNotNull(ZapHtmlReport::class.java.getResource("zap-report.css")) {

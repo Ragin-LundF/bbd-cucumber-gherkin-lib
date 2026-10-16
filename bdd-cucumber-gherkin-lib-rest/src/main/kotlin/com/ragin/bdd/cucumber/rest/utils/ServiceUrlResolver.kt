@@ -177,9 +177,12 @@ class ServiceUrlResolver(private val environment: Environment, private val bddPr
         return services.values
             .flatMap { service -> service.pathPrefixes.map { prefix -> service to prefix } }
             .filter { (_, prefix) -> prefix.isNotEmpty() && relativePath.startsWith(prefix = prefix) }
+            // the non-inline compareBy: the inline comparator builders generate classes Cucumber cannot inspect
             .sortedWith(
-                compareByDescending<Pair<ResolvedService, String>> { (_, prefix) -> prefix.length }
-                    .thenBy { (service, _) -> service.name }
+                compareBy<Pair<ResolvedService, String>>(
+                    { (_, prefix) -> -prefix.length },
+                    { (service, _) -> service.name }
+                )
             )
             .firstOrNull()
             ?.first
